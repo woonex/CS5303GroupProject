@@ -6,18 +6,14 @@ import java.awt.event.ActionListener;
 import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import edu.baylor.gitawayHotel.gui.AdminGui;
-import edu.baylor.gitawayHotel.gui.AuthenticatedGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.LoginGui;
-import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
@@ -30,8 +26,9 @@ public class MainController {
 	private final SplashScreen splashScreen;
 	private final LoginGui loginGui;
 	private final JFrame mainFrame;
-	private final AdminGui adminGui;
 	private final UserServices userServices;
+	
+	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
 	private final GuestGui guestGui;
 
@@ -39,37 +36,30 @@ public class MainController {
 			JFrame mainFrame, 
 			SplashScreen splashScreen, 
 			LoginGui loginGui, 
-			AdminGui adminGui, 
-			ClerkGui clerkGui, 
-			GuestGui guestGui, 
 			UserServices userServices
 			) {
 		this.mainFrame = mainFrame;
 		this.splashScreen = splashScreen;
 		this.loginGui = loginGui;
-		this.adminGui = adminGui;
+		
+		this.adminGui = new AdminGui();
+		this.clerkGui = new ClerkGui();
+		this.guestGui = new GuestGui();
+		
 		this.userServices = userServices;
-		this.clerkGui = clerkGui;
-		this.guestGui = guestGui;
 		
 		mainFrame.add(splashScreen.getPanel());
 		
-		setupPaging();
+		setupLoginPaging();
 	}
 
 	/**Sets up the handling from clicking finish on one page
 	 * 
 	 */
-	private void setupPaging() {
+	private void setupLoginPaging() {
 		setupSplashscreenActions();
 		
 		setupLoginActions();
-		
-		setupAdminActions();
-		
-		setupClerkActions();
-		
-		setupGuestActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -103,6 +93,7 @@ public class MainController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//get the credentials from the gui
 				String username = loginGui.getUsername();
 				String password = loginGui.getPassword();
 				boolean authenticated = userServices.isSuccessfulLogin(username, password);
@@ -112,9 +103,18 @@ public class MainController {
 					return;
 				}
 				
+				UserType userType = userServices.getUserType(username);
+				
+				//construct guis for the user
+				adminGui.setUsername(username);
+				clerkGui.setUsername(username);
+				guestGui.setUsername(username);
+				
+				setupLoggedInPaging();
+				
+				//redirect the user to the correct page
 				SwingUtilities.invokeLater(() -> {
 					mainFrame.remove(loginGui.getFullPanel());
-					UserType userType = userServices.getUserType(username);
 					
 					switch (userType) {
 					case ADMIN:
@@ -134,6 +134,17 @@ public class MainController {
 			}
 			
 		});
+	}
+	
+	/**Sets up the paging for logged in pages
+	 * 
+	 */
+	private void setupLoggedInPaging() {
+		setupAdminActions();
+		
+		setupClerkActions();
+		
+		setupGuestActions();
 	}
 	
 	/**Sets up the admin action event handling

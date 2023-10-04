@@ -22,12 +22,10 @@ public class GitawayHotelApplication {
 			MainFrame mainFrame = new MainFrame();
 			SplashScreen splash = new SplashScreen();
 			LoginGui loginGui = new LoginGui();
-			AdminGui adminGui = new AdminGui();
-			ClerkGui clerkGui = new ClerkGui();
-			GuestGui guestGui = new GuestGui();
+			
 			UserServices userServices = new UserServices();
 			
-			MainController mainController = new MainController(mainFrame, splash, loginGui, adminGui, clerkGui, guestGui, userServices);
+			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices);
 		});
 		
 	}

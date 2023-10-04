@@ -4,6 +4,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import edu.baylor.gitawayHotel.user.UserType;
+
 /**The admin GUI allows the logged in admin to create a hotel clerk with a username and a password
  * @author Nathan
  *
@@ -52,6 +54,11 @@ public class AdminGui extends AuthenticatedGui {
 	 */
 	public String getPassword() {
 		return createGui.getPassword();
+	}
+
+	@Override
+	protected UserType getUserType() {
+		return UserType.ADMIN;
 	}
 
 

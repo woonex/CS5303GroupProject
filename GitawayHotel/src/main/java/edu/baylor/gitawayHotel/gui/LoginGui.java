@@ -5,6 +5,8 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -65,6 +67,8 @@ public class LoginGui implements IGui {
 		
 		loginButton = new JButton(bottomButton);
 		panel.add(loginButton, BorderLayout.SOUTH);
+		
+		setupEnterHandling();
 	}
 	
 	/**Sets up the username area
@@ -104,6 +108,26 @@ public class LoginGui implements IGui {
 		panel.add(new NonVerticalExpanding(pwField));
 		panel.add(new NonVerticalExpanding(showPwButton));
 	}
+	
+	/**Sets up the enter key to default to login button
+	 * 
+	 */
+	private void setupEnterHandling() {
+		 // Create a KeyAdapter to handle the Enter key press
+		 KeyAdapter enterKeyAdapter = new KeyAdapter() {
+			 @Override
+			 public void keyPressed(KeyEvent e) {
+				 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					 // Trigger the loginButton's action when Enter is pressed
+					 loginButton.doClick();
+				 }
+			 }
+		 };
+
+		 // Add the KeyAdapter to the usernameField and pwField
+		 usernameField.addKeyListener(enterKeyAdapter);
+		 pwField.addKeyListener(enterKeyAdapter);
+	 }
 	
 	/**Gets the login button 
 	 * @return the login button

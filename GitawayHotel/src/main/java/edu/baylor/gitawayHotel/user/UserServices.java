@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -67,6 +66,7 @@ public class UserServices {
 	 * @return the updated user object
 	 */
 	public User updateUser(String username, String newPw) {
+		logger.trace("UserServices updateUser() invoked");
 		return updateUser(users.get(username), newPw);
 	}
 	
@@ -76,6 +76,7 @@ public class UserServices {
 	 * @return the updated user object
 	 */
 	public User updateUser(User user, String newPw) {
+		logger.trace("UserServices updateUser() invoked");
 		user.setPassword(newPw);
 		
 		saveUsersToDisk(this.users.values(), this.diskFile);
@@ -91,6 +92,7 @@ public class UserServices {
 	 * @throws InstanceAlreadyExistsException if the username is already taken
 	 */
 	public User addUser(String username, String password, UserType userType) throws InstanceAlreadyExistsException {
+		logger.trace("UserServices addUser() invoked");
 		if (!isUsernameAvailable(username)) {
 			throw new InstanceAlreadyExistsException(username);
 		}
@@ -113,6 +115,7 @@ public class UserServices {
 	 * @param diskFile the diskfile to save to
 	 */
 	private static void saveUsersToDisk(Collection<User> users, File diskFile) {
+		logger.trace("UserServices saveUsersToDisk() invoked");
 		try (FileWriter writer = new FileWriter(diskFile)) {
 			gson.toJson(users, writer);
         } catch (IOException e) {
@@ -126,6 +129,7 @@ public class UserServices {
 	 * @return true if the user is authenticated, false if they are not
 	 */
 	public boolean isSuccessfulLogin(String username, String password) {
+		logger.trace("UserServices isSuccessfulLogin() invoked");
 		User user = users.get(username);
 		
 		if (user == null) {
@@ -140,6 +144,7 @@ public class UserServices {
 	 * @return the userType the user is authorized as
 	 */
 	public UserType getUserType(String username) {
+		logger.trace("UserServices getUserType() invoked");
 		User user = users.get(username);
 		
 		if (user == null) {
@@ -153,6 +158,7 @@ public class UserServices {
 	 * @return map of users or blank map for file error
 	 */
 	private static Map<String, User> loadUsers(File file) {
+		logger.trace("UserServices loadUsers() invoked");
 		try (FileReader reader = new FileReader(file)) {
 			User[] aUsers = gson.fromJson(reader, User[].class);
 			

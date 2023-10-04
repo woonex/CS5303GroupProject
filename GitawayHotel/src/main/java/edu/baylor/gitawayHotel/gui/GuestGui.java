@@ -7,6 +7,10 @@ import edu.baylor.gitawayHotel.user.UserType;
 
 public class GuestGui extends AuthenticatedGui {
 	
+	public GuestGui() {
+		super();
+	}
+
 	@Override
 	protected JPanel layoutMainArea() {
 		JPanel panel = new JPanel();
@@ -14,6 +18,11 @@ public class GuestGui extends AuthenticatedGui {
 		panel.add(new JLabel("TODO WIP"));
 		
 		return panel;
+	}
+
+	@Override
+	protected UserType getUserType() {
+		return UserType.GUEST;
 	}
 	
 }

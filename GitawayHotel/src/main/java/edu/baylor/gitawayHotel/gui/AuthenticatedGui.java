@@ -4,7 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+
+import edu.baylor.gitawayHotel.user.UserType;
 
 /**A class that contains GUI components for logged in users. 
  * It conceptually has a change account details and a logout button
@@ -18,6 +21,8 @@ public abstract class AuthenticatedGui implements IGui {
 	
 	private JButton logoutButton;
 	private JButton modifyButton;
+	
+	private JLabel usernameLabel;
 	
 	AuthenticatedGui() {
 		doLayout();
@@ -41,12 +46,31 @@ public abstract class AuthenticatedGui implements IGui {
 	 */
 	private void addTopBar() {
 		topPanel = new JPanel();
-		topPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		topPanel.setLayout(new BorderLayout());
+		
+		JLabel userTypeLabel = new JLabel(getUserType().toString());
+		usernameLabel = new JLabel("");
+		
+		//create a left panel for aligning to the left for some display parameters
+		JPanel leftTopPanel = new JPanel();
+		leftTopPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		leftTopPanel.add(userTypeLabel);
+		leftTopPanel.add(usernameLabel);
 		
 		modifyButton = new JButton("Modify Account Details");
 		logoutButton = new JButton("Logout");
-		topPanel.add(modifyButton);
-		topPanel.add(logoutButton);
+		
+		//create a right panel for aligning to right for buttons
+		JPanel rightTopPanel = new JPanel();
+		rightTopPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		rightTopPanel.add(modifyButton);
+		rightTopPanel.add(logoutButton);
+	
+		//add the panels left and right to the top panel
+		topPanel.add(leftTopPanel, BorderLayout.WEST);
+		topPanel.add(rightTopPanel, BorderLayout.EAST);
 		
 		fullPanel.add(topPanel, BorderLayout.NORTH);
 	}
@@ -55,6 +79,11 @@ public abstract class AuthenticatedGui implements IGui {
 	 * @return the JPanel to add to the rest of the area
 	 */
 	protected abstract JPanel layoutMainArea();
+	
+	/**The method used to determine what type of user the authorized screen is for
+	 * @return the userType
+	 */
+	protected abstract UserType getUserType();
 	
 	/**Gets the full panel (used to add all components to another panel or frame)
 	 * @return
@@ -76,5 +105,12 @@ public abstract class AuthenticatedGui implements IGui {
 	 */
 	public JButton getModifyButton() {
 		return this.modifyButton;
+	}
+	
+	/**Sets the username for the display at the top
+	 * @param username the username
+	 */
+	public void setUsername(String username) {
+		this.usernameLabel.setText(username);
 	}
 }
