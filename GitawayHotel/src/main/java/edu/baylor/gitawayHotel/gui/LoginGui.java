@@ -1,7 +1,6 @@
 package edu.baylor.gitawayHotel.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -19,7 +18,7 @@ import javax.swing.JTextField;
  * @author Nathan
  *
  */
-public class LoginGui {
+public class LoginGui implements IGui {
 	private JPanel panel;
 	private JButton loginButton;
 	private JTextField usernameField;
@@ -37,17 +36,23 @@ public class LoginGui {
 	}
 	
 	public LoginGui() {
-		doLayout();
+		this("Please login to the Gitaway Hotel", "Login");
+	}
+	
+	public LoginGui(String topLabel, String bottomButton) {
+		doLayout(topLabel, bottomButton);
 	}
 	
 	/**Creates and lays out all components on the panel
+	 * @param bottomButton the string to display for the bottom button
+	 * @param topLabel the string to display along the top
 	 * 
 	 */
-	private void doLayout() {
+	private void doLayout(String topLabel, String bottomButton) {
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		
-		JLabel topDisplay = new JLabel("Please login to the Gitaway Hotel");
+		JLabel topDisplay = new JLabel(topLabel);
 		panel.add(topDisplay, BorderLayout.NORTH);
 		
 		JPanel authPanel = new JPanel();
@@ -58,7 +63,7 @@ public class LoginGui {
 		setupPasswordArea(authPanel);
 		panel.add(authPanel, BorderLayout.CENTER);
 		
-		loginButton = new JButton("Login");
+		loginButton = new JButton(bottomButton);
 		panel.add(loginButton, BorderLayout.SOUTH);
 	}
 	
@@ -126,7 +131,8 @@ public class LoginGui {
 	/**Gets the panel containing all interactable components
 	 * @return the panel
 	 */
-	public JPanel getPanel() {
+	@Override
+	public JPanel getFullPanel() {
 		return this.panel;
 	}
 }
