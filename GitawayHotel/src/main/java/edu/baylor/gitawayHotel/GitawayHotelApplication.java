@@ -10,6 +10,8 @@ import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.login.UserServices;
 
 public class GitawayHotelApplication {
+	
+	
 	public static void main(String[] args) {
 		new UserServices();
 		
@@ -23,5 +25,6 @@ public class GitawayHotelApplication {
 			UserServices userServices = new UserServices();
 			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices);
 		});
+		
 	}
 }

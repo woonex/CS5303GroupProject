@@ -15,12 +15,20 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+/**A class that lays out the login gui section the user interacts with
+ * @author Nathan
+ *
+ */
 public class LoginGui {
 	private JPanel panel;
 	private JButton loginButton;
 	private JTextField usernameField;
 	private JPasswordField pwField;
 	
+	/**Internal class to prevent vertically expanding components
+	 * @author Nathan
+	 *
+	 */
 	private static class NonVerticalExpanding extends JPanel {
 		NonVerticalExpanding(JComponent component) {
 			setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -32,6 +40,9 @@ public class LoginGui {
 		doLayout();
 	}
 	
+	/**Creates and lays out all components on the panel
+	 * 
+	 */
 	private void doLayout() {
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -51,6 +62,9 @@ public class LoginGui {
 		panel.add(loginButton, BorderLayout.SOUTH);
 	}
 	
+	/**Sets up the username area
+	 * @param panel the panel to add the username area to
+	 */
 	private void setupUsernameArea(JPanel panel) {
 		JLabel usernameLabel = new JLabel("Username");
 		usernameField = new JTextField(10);
@@ -59,6 +73,9 @@ public class LoginGui {
 		panel.add(new NonVerticalExpanding(usernameField));
 	}
 	
+	/**Sets up the password area
+	 * @param panel the panel to add the password area to
+	 */
 	private void setupPasswordArea(JPanel panel) {
 		JLabel passwordLabel = new JLabel("Password");
 		pwField = new JPasswordField(10);
@@ -83,22 +100,31 @@ public class LoginGui {
 		panel.add(new NonVerticalExpanding(showPwButton));
 	}
 	
+	/**Gets the login button 
+	 * @return the login button
+	 */
 	public JButton getLoginButton() {
 		return this.loginButton;
 	}
 	
+	/**Gets the username provided by input
+	 * @return the username provided
+	 */
 	public String getUsername() {
 		return this.usernameField.getText();
 	}
 	
+	/**Gets the password provided by input
+	 * @return the password provided
+	 */
 	public String getPassword() {
 		String pw = new String(pwField.getPassword());
 		pwField.setText("");
 		return new String(pw);
 	}
 
-	/**Gets the panel
-	 * @return
+	/**Gets the panel containing all interactable components
+	 * @return the panel
 	 */
 	public JPanel getPanel() {
 		return this.panel;

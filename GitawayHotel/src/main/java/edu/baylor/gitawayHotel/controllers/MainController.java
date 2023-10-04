@@ -14,6 +14,10 @@ import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.login.UserServices;
 
+/**A class that manages the UI screen paging and handling from one screen to the next
+ * @author Nathan
+ *
+ */
 public class MainController {
 	private SplashScreen splashScreen;
 	private LoginGui loginGui;
@@ -31,7 +35,12 @@ public class MainController {
 		setupPaging();
 	}
 
+	/**Sets up the handling from clicking finish on one page
+	 * 
+	 */
 	private void setupPaging() {
+		
+		//when the user is on the main screen and clicks next
 		JButton mainNext = splashScreen.getNextButton();
 		mainNext.addActionListener(new ActionListener() {
 
@@ -47,6 +56,7 @@ public class MainController {
 			
 		});
 		
+		//when the user is on the login screen and clicks login
 		JButton loginNext = loginGui.getLoginButton();
 		loginNext.addActionListener(new ActionListener() {
 
@@ -63,7 +73,7 @@ public class MainController {
 				
 				SwingUtilities.invokeLater(() -> {
 					mainFrame.remove(loginGui.getPanel());
-					mainFrame.add(new JLabel("USER AUTHENTICATED AS " + userServices.getUserType(username)));
+					mainFrame.add(new JLabel("USER AUTHENTICATED AS A " + userServices.getUserType(username)));
 //					mainFrame.add() //TODO implement the next page after the user is logged in
 					mainFrame.revalidate();
 					mainFrame.repaint();

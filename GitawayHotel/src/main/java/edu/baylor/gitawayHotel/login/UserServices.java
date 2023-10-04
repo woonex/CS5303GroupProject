@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import javax.management.InstanceAlreadyExistsException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -51,6 +53,30 @@ public class UserServices {
 	
 	public boolean isUsernameValid(String username) {
 		return !isUsernameAvailable(username);
+	}
+	
+	public User saveUser(String username, String password, UserType userType) throws InstanceAlreadyExistsException {
+		if (!isUsernameAvailable(username)) {
+			throw new InstanceAlreadyExistsException(username);
+		}
+		
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setUserType(userType);
+//		saveUsersToDisk(users);
+		return user;
+	}
+	
+	private static void saveUsersToDisk(List<User> users, File diskFile) {
+		try (FileWriter writer = new FileWriter(diskFile)) {
+			Gson gson = new Gson();
+			gson.newJsonWriter(writer);
+			
+            writer.write("[\n]\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**Gets if the username and password is valid in the system
