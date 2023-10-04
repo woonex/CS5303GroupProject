@@ -7,7 +7,7 @@ import edu.baylor.gitawayHotel.controllers.MainController;
 import edu.baylor.gitawayHotel.gui.LoginGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
-import edu.baylor.gitawayHotel.login.UserServices;
+import edu.baylor.gitawayHotel.user.UserServices;
 
 public class GitawayHotelApplication {
 	

@@ -1,4 +1,4 @@
-package edu.baylor.gitawayHotel.login;
+package edu.baylor.gitawayHotel.user;
 
 import java.io.File;
 import java.io.FileReader;
@@ -8,6 +8,7 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -19,17 +20,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
-
-import edu.baylor.gitawayHotel.user.User;
-import edu.baylor.gitawayHotel.user.UserType;
+import com.google.gson.GsonBuilder;
 
 /**Class related to servicing users
+ * includes saving users to disk; updating password for the user
  * @author Nathan
  *
  */
 public class UserServices {
 	private static final Logger logger = LogManager.getLogger(UserServices.class);
 	private static final String FILENAME = "users.json";
+	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
 	private File diskFile;
 	private Map<String, User> users;
 	
@@ -51,29 +53,68 @@ public class UserServices {
 		return !usernameTaken;
 	}
 	
+	/**Gets if the username is valid (the user exists in the system)
+	 * @param username the username to check
+	 * @return true if the user is valid, false if it is not
+	 */
 	public boolean isUsernameValid(String username) {
 		return !isUsernameAvailable(username);
 	}
 	
-	public User saveUser(String username, String password, UserType userType) throws InstanceAlreadyExistsException {
+	/**Updates the user's password by username
+	 * @param username the username to modify the password for
+	 * @param newPw the new password
+	 * @return the updated user object
+	 */
+	public User updateUser(String username, String newPw) {
+		return updateUser(users.get(username), newPw);
+	}
+	
+	/**Updates the user's password
+	 * @param user the user to update the password for
+	 * @param newPw the new password
+	 * @return the updated user object
+	 */
+	public User updateUser(User user, String newPw) {
+		user.setPassword(newPw);
+		
+		saveUsersToDisk(this.users.values(), this.diskFile);
+		
+		return user;
+	}
+	
+	/**Adds a user to the userlist
+	 * @param username the username
+	 * @param password the password
+	 * @param userType the userType
+	 * @return the created user object
+	 * @throws InstanceAlreadyExistsException if the username is already taken
+	 */
+	public User addUser(String username, String password, UserType userType) throws InstanceAlreadyExistsException {
 		if (!isUsernameAvailable(username)) {
 			throw new InstanceAlreadyExistsException(username);
 		}
 		
+		//create the new user
 		User user = new User();
 		user.setUsername(username);
 		user.setPassword(password);
 		user.setUserType(userType);
-//		saveUsersToDisk(users);
+		
+		//add the user to the in-mem storage
+		users.put(username, user);
+		
+		saveUsersToDisk(users.values(), diskFile);
 		return user;
 	}
 	
-	private static void saveUsersToDisk(List<User> users, File diskFile) {
+	/**Saves the users to the disk
+	 * @param users the users to save
+	 * @param diskFile the diskfile to save to
+	 */
+	private static void saveUsersToDisk(Collection<User> users, File diskFile) {
 		try (FileWriter writer = new FileWriter(diskFile)) {
-			Gson gson = new Gson();
-			gson.newJsonWriter(writer);
-			
-            writer.write("[\n]\n");
+			gson.toJson(users, writer);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -94,6 +135,10 @@ public class UserServices {
 		return user.getPassword().equals(password);
 	}
 	
+	/**Gets the usertype based on the username
+	 * @param username the username
+	 * @return the userType the user is authorized as
+	 */
 	public UserType getUserType(String username) {
 		User user = users.get(username);
 		
@@ -109,7 +154,6 @@ public class UserServices {
 	 */
 	private static Map<String, User> loadUsers(File file) {
 		try (FileReader reader = new FileReader(file)) {
-			Gson gson = new Gson();
 			User[] aUsers = gson.fromJson(reader, User[].class);
 			
 			List<User> users = Arrays.asList(aUsers);

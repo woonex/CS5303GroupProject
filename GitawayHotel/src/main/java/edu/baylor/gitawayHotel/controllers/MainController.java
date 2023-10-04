@@ -12,7 +12,7 @@ import javax.swing.SwingUtilities;
 import edu.baylor.gitawayHotel.gui.LoginGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
-import edu.baylor.gitawayHotel.login.UserServices;
+import edu.baylor.gitawayHotel.user.UserServices;
 
 /**A class that manages the UI screen paging and handling from one screen to the next
  * @author Nathan

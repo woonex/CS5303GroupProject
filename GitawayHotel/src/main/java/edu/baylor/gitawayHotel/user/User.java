@@ -13,7 +13,7 @@ public class User {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	protected void setUsername(String username) {
 		this.username = username;
 	}
 
@@ -21,7 +21,7 @@ public class User {
 		return password;
 	}
 
-	public void setPassword(String password) {
+	protected void setPassword(String password) {
 		this.password = password;
 	}
 
@@ -29,7 +29,7 @@ public class User {
 		return userType;
 	}
 
-	public void setUserType(UserType userType) {
+	protected void setUserType(UserType userType) {
 		this.userType = userType;
 	}
 	
