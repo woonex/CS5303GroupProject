@@ -12,7 +12,7 @@ import edu.baylor.gitawayHotel.user.UserType;
  */
 public class AdminGui extends AuthenticatedGui {
 
-	private LoginGui createGui;
+	private CredentialGui createGui;
 
 	public AdminGui() {
 		super();
@@ -28,7 +28,7 @@ public class AdminGui extends AuthenticatedGui {
 		JLabel label = new JLabel("Add a hotel clerk below");
 		
 		mainPanel.add(label);
-		createGui = new LoginGui("", "Create Hotel Clerk");
+		createGui = new CredentialGui("", "Create Hotel Clerk");
 		
 		mainPanel.add(createGui.getFullPanel());
 		

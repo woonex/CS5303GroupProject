@@ -20,11 +20,12 @@ import javax.swing.JTextField;
  * @author Nathan
  *
  */
-public class LoginGui implements IGui {
+public class CredentialGui implements IGui {
 	private JPanel panel;
 	private JButton loginButton;
 	private JTextField usernameField;
 	private JPasswordField pwField;
+	private boolean includeUsername;
 	
 	/**Internal class to prevent vertically expanding components
 	 * @author Nathan
@@ -37,11 +38,28 @@ public class LoginGui implements IGui {
 		}
 	}
 	
-	public LoginGui() {
+	/**Constructor with default names
+	 * 
+	 */
+	public CredentialGui() {
 		this("Please login to the Gitaway Hotel", "Login");
 	}
 	
-	public LoginGui(String topLabel, String bottomButton) {
+	/**Constructor with configurable names and includes username
+	 * @param topLabel
+	 * @param bottomButton
+	 */
+	public CredentialGui(String topLabel, String bottomButton) {
+		this(topLabel, bottomButton, true);
+	}
+	
+	/**Constructor with configurable parameters
+	 * @param topLabel
+	 * @param bottomButton
+	 * @param includeUsername
+	 */
+	public CredentialGui(String topLabel, String bottomButton, boolean includeUsername) {
+		this.includeUsername = includeUsername;
 		doLayout(topLabel, bottomButton);
 	}
 	
@@ -59,8 +77,11 @@ public class LoginGui implements IGui {
 		
 		JPanel authPanel = new JPanel();
 		authPanel.setLayout(new GridLayout(2,3));
-		setupUsernameArea(authPanel);
-		authPanel.add(Box.createGlue());
+		
+		if (includeUsername) {
+			setupUsernameArea(authPanel);
+			authPanel.add(Box.createGlue());
+		}
 		
 		setupPasswordArea(authPanel);
 		panel.add(authPanel, BorderLayout.CENTER);
