@@ -4,11 +4,21 @@ import com.google.gson.annotations.SerializedName;
 
 public enum UserType {
 	@SerializedName("admin")
-	ADMIN,
+	ADMIN ("Admin"),
 	
 	@SerializedName("clerk")
-	HOTEL_CLERK,
+	HOTEL_CLERK ("Hotel Clerk"),
 	
 	@SerializedName("guest")
-	GUEST
+	GUEST ("Guest");
+
+	private final String prettyName;
+	UserType(String prettyName) {
+		this.prettyName = prettyName;
+	}
+	
+	@Override
+	public String toString() {
+		return this.prettyName;
+	}
 }

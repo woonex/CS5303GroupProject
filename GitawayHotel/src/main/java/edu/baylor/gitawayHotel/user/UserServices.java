@@ -1,4 +1,4 @@
-package edu.baylor.gitawayHotel.login;
+package edu.baylor.gitawayHotel.user;
 
 import java.io.File;
 import java.io.FileReader;
@@ -8,26 +8,29 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
+
+import javax.management.InstanceAlreadyExistsException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
-
-import edu.baylor.gitawayHotel.user.User;
-import edu.baylor.gitawayHotel.user.UserType;
+import com.google.gson.GsonBuilder;
 
 /**Class related to servicing users
+ * includes saving users to disk; updating password for the user
  * @author Nathan
  *
  */
 public class UserServices {
 	private static final Logger logger = LogManager.getLogger(UserServices.class);
 	private static final String FILENAME = "users.json";
+	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	
 	private File diskFile;
 	private Map<String, User> users;
 	
@@ -49,8 +52,75 @@ public class UserServices {
 		return !usernameTaken;
 	}
 	
+	/**Gets if the username is valid (the user exists in the system)
+	 * @param username the username to check
+	 * @return true if the user is valid, false if it is not
+	 */
 	public boolean isUsernameValid(String username) {
 		return !isUsernameAvailable(username);
+	}
+	
+	/**Updates the user's password by username
+	 * @param username the username to modify the password for
+	 * @param newPw the new password
+	 * @return the updated user object
+	 */
+	public User updateUser(String username, String newPw) {
+		logger.trace("UserServices updateUser() invoked");
+		return updateUser(users.get(username), newPw);
+	}
+	
+	/**Updates the user's password
+	 * @param user the user to update the password for
+	 * @param newPw the new password
+	 * @return the updated user object
+	 */
+	public User updateUser(User user, String newPw) {
+		logger.trace("UserServices updateUser() invoked");
+		user.setPassword(newPw);
+		
+		saveUsersToDisk(this.users.values(), this.diskFile);
+		
+		return user;
+	}
+	
+	/**Adds a user to the userlist
+	 * @param username the username
+	 * @param password the password
+	 * @param userType the userType
+	 * @return the created user object
+	 * @throws InstanceAlreadyExistsException if the username is already taken
+	 */
+	public User addUser(String username, String password, UserType userType) throws InstanceAlreadyExistsException {
+		logger.trace("UserServices addUser() invoked");
+		if (!isUsernameAvailable(username)) {
+			throw new InstanceAlreadyExistsException(username);
+		}
+		
+		//create the new user
+		User user = new User();
+		user.setUsername(username);
+		user.setPassword(password);
+		user.setUserType(userType);
+		
+		//add the user to the in-mem storage
+		users.put(username, user);
+		
+		saveUsersToDisk(users.values(), diskFile);
+		return user;
+	}
+	
+	/**Saves the users to the disk
+	 * @param users the users to save
+	 * @param diskFile the diskfile to save to
+	 */
+	private static void saveUsersToDisk(Collection<User> users, File diskFile) {
+		logger.trace("UserServices saveUsersToDisk() invoked");
+		try (FileWriter writer = new FileWriter(diskFile)) {
+			gson.toJson(users, writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 	}
 	
 	/**Gets if the username and password is valid in the system
@@ -59,6 +129,7 @@ public class UserServices {
 	 * @return true if the user is authenticated, false if they are not
 	 */
 	public boolean isSuccessfulLogin(String username, String password) {
+		logger.trace("UserServices isSuccessfulLogin() invoked");
 		User user = users.get(username);
 		
 		if (user == null) {
@@ -68,7 +139,12 @@ public class UserServices {
 		return user.getPassword().equals(password);
 	}
 	
+	/**Gets the usertype based on the username
+	 * @param username the username
+	 * @return the userType the user is authorized as
+	 */
 	public UserType getUserType(String username) {
+		logger.trace("UserServices getUserType() invoked");
 		User user = users.get(username);
 		
 		if (user == null) {
@@ -82,8 +158,8 @@ public class UserServices {
 	 * @return map of users or blank map for file error
 	 */
 	private static Map<String, User> loadUsers(File file) {
+		logger.trace("UserServices loadUsers() invoked");
 		try (FileReader reader = new FileReader(file)) {
-			Gson gson = new Gson();
 			User[] aUsers = gson.fromJson(reader, User[].class);
 			
 			List<User> users = Arrays.asList(aUsers);

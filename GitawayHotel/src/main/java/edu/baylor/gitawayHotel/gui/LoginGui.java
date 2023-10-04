@@ -1,11 +1,12 @@
 package edu.baylor.gitawayHotel.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -15,12 +16,20 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-public class LoginGui {
+/**A class that lays out the login gui section the user interacts with
+ * @author Nathan
+ *
+ */
+public class LoginGui implements IGui {
 	private JPanel panel;
 	private JButton loginButton;
 	private JTextField usernameField;
 	private JPasswordField pwField;
 	
+	/**Internal class to prevent vertically expanding components
+	 * @author Nathan
+	 *
+	 */
 	private static class NonVerticalExpanding extends JPanel {
 		NonVerticalExpanding(JComponent component) {
 			setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -29,14 +38,23 @@ public class LoginGui {
 	}
 	
 	public LoginGui() {
-		doLayout();
+		this("Please login to the Gitaway Hotel", "Login");
 	}
 	
-	private void doLayout() {
+	public LoginGui(String topLabel, String bottomButton) {
+		doLayout(topLabel, bottomButton);
+	}
+	
+	/**Creates and lays out all components on the panel
+	 * @param bottomButton the string to display for the bottom button
+	 * @param topLabel the string to display along the top
+	 * 
+	 */
+	private void doLayout(String topLabel, String bottomButton) {
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		
-		JLabel topDisplay = new JLabel("Please login to the Gitaway Hotel");
+		JLabel topDisplay = new JLabel(topLabel);
 		panel.add(topDisplay, BorderLayout.NORTH);
 		
 		JPanel authPanel = new JPanel();
@@ -47,10 +65,15 @@ public class LoginGui {
 		setupPasswordArea(authPanel);
 		panel.add(authPanel, BorderLayout.CENTER);
 		
-		loginButton = new JButton("Login");
+		loginButton = new JButton(bottomButton);
 		panel.add(loginButton, BorderLayout.SOUTH);
+		
+		setupEnterHandling();
 	}
 	
+	/**Sets up the username area
+	 * @param panel the panel to add the username area to
+	 */
 	private void setupUsernameArea(JPanel panel) {
 		JLabel usernameLabel = new JLabel("Username");
 		usernameField = new JTextField(10);
@@ -59,6 +82,9 @@ public class LoginGui {
 		panel.add(new NonVerticalExpanding(usernameField));
 	}
 	
+	/**Sets up the password area
+	 * @param panel the panel to add the password area to
+	 */
 	private void setupPasswordArea(JPanel panel) {
 		JLabel passwordLabel = new JLabel("Password");
 		pwField = new JPasswordField(10);
@@ -83,24 +109,54 @@ public class LoginGui {
 		panel.add(new NonVerticalExpanding(showPwButton));
 	}
 	
+	/**Sets up the enter key to default to login button
+	 * 
+	 */
+	private void setupEnterHandling() {
+		 // Create a KeyAdapter to handle the Enter key press
+		 KeyAdapter enterKeyAdapter = new KeyAdapter() {
+			 @Override
+			 public void keyPressed(KeyEvent e) {
+				 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					 // Trigger the loginButton's action when Enter is pressed
+					 loginButton.doClick();
+				 }
+			 }
+		 };
+
+		 // Add the KeyAdapter to the usernameField and pwField
+		 usernameField.addKeyListener(enterKeyAdapter);
+		 pwField.addKeyListener(enterKeyAdapter);
+	 }
+	
+	/**Gets the login button 
+	 * @return the login button
+	 */
 	public JButton getLoginButton() {
 		return this.loginButton;
 	}
 	
+	/**Gets the username provided by input
+	 * @return the username provided
+	 */
 	public String getUsername() {
 		return this.usernameField.getText();
 	}
 	
+	/**Gets the password provided by input
+	 * @return the password provided
+	 */
 	public String getPassword() {
 		String pw = new String(pwField.getPassword());
 		pwField.setText("");
 		return new String(pw);
 	}
 
-	/**Gets the panel
-	 * @return
+	/**Gets the panel containing all interactable components
+	 * @return the panel
 	 */
-	public JPanel getPanel() {
+	@Override
+	public JPanel getFullPanel() {
 		return this.panel;
 	}
 }
