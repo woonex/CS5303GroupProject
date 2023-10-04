@@ -8,7 +8,7 @@ import edu.baylor.gitawayHotel.controllers.MainController;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
-import edu.baylor.gitawayHotel.gui.LoginGui;
+import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.user.UserServices;
@@ -21,7 +21,7 @@ public class GitawayHotelApplication {
 		SwingUtilities.invokeLater(() -> {
 			MainFrame mainFrame = new MainFrame();
 			SplashScreen splash = new SplashScreen();
-			LoginGui loginGui = new LoginGui();
+			CredentialGui loginGui = new CredentialGui();
 			
 			UserServices userServices = new UserServices();
 			

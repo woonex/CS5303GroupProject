@@ -13,7 +13,7 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
-import edu.baylor.gitawayHotel.gui.LoginGui;
+import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
@@ -24,7 +24,7 @@ import edu.baylor.gitawayHotel.user.UserType;
  */
 public class MainController {
 	private final SplashScreen splashScreen;
-	private final LoginGui loginGui;
+	private final CredentialGui loginGui;
 	private final JFrame mainFrame;
 	private final UserServices userServices;
 	
@@ -35,7 +35,7 @@ public class MainController {
 	public MainController(
 			JFrame mainFrame, 
 			SplashScreen splashScreen, 
-			LoginGui loginGui, 
+			CredentialGui loginGui, 
 			UserServices userServices
 			) {
 		this.mainFrame = mainFrame;

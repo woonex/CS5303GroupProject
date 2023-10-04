@@ -20,7 +20,7 @@ import javax.swing.JTextField;
  * @author Nathan
  *
  */
-public class LoginGui implements IGui {
+public class CredentialGui implements IGui {
 	private JPanel panel;
 	private JButton loginButton;
 	private JTextField usernameField;
@@ -37,11 +37,11 @@ public class LoginGui implements IGui {
 		}
 	}
 	
-	public LoginGui() {
+	public CredentialGui() {
 		this("Please login to the Gitaway Hotel", "Login");
 	}
 	
-	public LoginGui(String topLabel, String bottomButton) {
+	public CredentialGui(String topLabel, String bottomButton) {
 		doLayout(topLabel, bottomButton);
 	}
 	
