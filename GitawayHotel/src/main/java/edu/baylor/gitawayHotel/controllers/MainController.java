@@ -51,6 +51,8 @@ public class MainController {
 		mainFrame.add(splashScreen.getPanel());
 		
 		setupLoginPaging();
+		
+		setupLoggedInPaging();
 	}
 
 	/**Sets up the handling from clicking finish on one page
@@ -60,6 +62,17 @@ public class MainController {
 		setupSplashscreenActions();
 		
 		setupLoginActions();
+	}
+	
+	/**Sets up the paging for logged in pages
+	 * 
+	 */
+	private void setupLoggedInPaging() {
+		setupAdminActions();
+		
+		setupClerkActions();
+		
+		setupGuestActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -110,7 +123,7 @@ public class MainController {
 				clerkGui.setUsername(username);
 				guestGui.setUsername(username);
 				
-				setupLoggedInPaging();
+				
 				
 				//redirect the user to the correct page
 				SwingUtilities.invokeLater(() -> {
@@ -134,17 +147,6 @@ public class MainController {
 			}
 			
 		});
-	}
-	
-	/**Sets up the paging for logged in pages
-	 * 
-	 */
-	private void setupLoggedInPaging() {
-		setupAdminActions();
-		
-		setupClerkActions();
-		
-		setupGuestActions();
 	}
 	
 	/**Sets up the admin action event handling
