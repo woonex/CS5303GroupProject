@@ -258,10 +258,17 @@ public class MainController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String username = loginGui.getUsername();
+				String username = changeCredentialGui.getUsername();
 				String password = changeCredentialGui.getPassword();
+				String newPassword = changeCredentialGui.getNewPassword();
+				boolean authenticated = userServices.isSuccessfulLogin(username, password);
 				
-				userServices.updateUser(username, password);
+				if (!authenticated) {
+					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Invalid credentials. Please try again.", "Authentication Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				userServices.updateUser(username, newPassword);
 				
 				UserType userType = userServices.getUserType(username);
 				
