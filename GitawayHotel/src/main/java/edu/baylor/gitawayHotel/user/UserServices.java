@@ -97,6 +97,11 @@ public class UserServices {
 			throw new InstanceAlreadyExistsException(username);
 		}
 		
+		//default password if nothing entered
+		if (password.equals("")) {
+			password = "password";
+		}
+		
 		//create the new user
 		User user = new User();
 		user.setUsername(username);
