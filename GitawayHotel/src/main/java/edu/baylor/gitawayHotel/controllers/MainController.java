@@ -77,6 +77,8 @@ public class MainController {
 		setupClerkActions();
 		
 		setupGuestActions();
+		
+		setupModificationActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -249,7 +251,7 @@ public class MainController {
 	// Redirects to ChangeCredentialsGui.java
 	private void modifyCredentials(IGui iGui) {
 		mainFrame.add(changeCredentialGui.getFullPanel());
-		setupModificationActions();
+		
 	}
 	
 	private void setupModificationActions() {
