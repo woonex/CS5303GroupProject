@@ -10,6 +10,7 @@ import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
+import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.user.UserServices;

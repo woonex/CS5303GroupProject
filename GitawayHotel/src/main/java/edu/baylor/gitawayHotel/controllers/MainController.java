@@ -11,6 +11,7 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
+import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
@@ -29,6 +30,7 @@ public class MainController {
 	private final MainFrame mainFrame;
 	private final UserServices userServices;
 	private final ChangeCredentialGui changeCredentialGui;
+	private final ViewRoomsGui viewRoomsGui;
 	
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -39,12 +41,14 @@ public class MainController {
 			SplashScreen splashScreen, 
 			CredentialGui loginGui, 
 			UserServices userServices,
-			ChangeCredentialGui changeCredentialGui
+			ChangeCredentialGui changeCredentialGui,
+			ViewRoomsGui viewRoomsGui
 			) {
 		this.mainFrame = mainFrame;
 		this.splashScreen = splashScreen;
 		this.loginGui = loginGui;
 		this.changeCredentialGui = changeCredentialGui;
+		this.viewRoomsGui = viewRoomsGui;
 		
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
@@ -213,6 +217,14 @@ public class MainController {
 			}
 			
 		});
+
+		JButton viewRoomsButton = viewRoomsGui.getViewRoomsButton();
+		viewRoomsButton.addActionListener(new ActionListener() {
+			
+			@Overridepublic void actionPerformed(ActionEvent e ) {
+				viewRooms(viewRoomsGui);
+			}
+		});
 	}
 	
 	/**Sets up the clerk actions
@@ -293,5 +305,10 @@ public class MainController {
 				}
 			}
 		});
+	}
+
+	private void viewRooms(IGui iGui) {
+		// Redirects to ViewRoomsGui.java
+		mainFrame.add(viewRoomsGui.getFullPanel);
 	}
 }
