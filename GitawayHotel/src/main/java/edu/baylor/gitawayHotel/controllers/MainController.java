@@ -83,6 +83,7 @@ public class MainController {
 		setupGuestActions();
 		
 		setupModificationActions();
+
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -218,11 +219,12 @@ public class MainController {
 			
 		});
 
-		JButton viewRoomsButton = viewRoomsGui.getViewRoomsButton();
+		JButton viewRoomsButton = clerkGui.getViewRoomsButton();
 		viewRoomsButton.addActionListener(new ActionListener() {
 			
-			@Overridepublic void actionPerformed(ActionEvent e ) {
-				viewRooms(viewRoomsGui);
+			@Override
+			public void actionPerformed(ActionEvent e ) {
+				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
 	}
@@ -305,10 +307,5 @@ public class MainController {
 				}
 			}
 		});
-	}
-
-	private void viewRooms(IGui iGui) {
-		// Redirects to ViewRoomsGui.java
-		mainFrame.add(viewRoomsGui.getFullPanel);
 	}
 }

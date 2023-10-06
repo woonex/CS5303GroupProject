@@ -25,10 +25,11 @@ public class GitawayHotelApplication {
 			SplashScreen splash = new SplashScreen();
 			CredentialGui loginGui = new CredentialGui();
 			ChangeCredentialGui changeCredentialGui = new ChangeCredentialGui();
+			ViewRoomsGui viewRoomsGui = new ViewRoomsGui();
 			
 			UserServices userServices = new UserServices();
 			
-			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, changeCredentialGui);
+			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, changeCredentialGui, viewRoomsGui);
 		});
 		
 	}

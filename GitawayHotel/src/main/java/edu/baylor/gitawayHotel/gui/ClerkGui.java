@@ -18,8 +18,8 @@ import edu.baylor.gitawayHotel.user.UserType;
  *
  */
 public class ClerkGui extends AuthenticatedGui {
-
 	private JButton viewRoomsButton;
+	
 
 	public ClerkGui() {
 		super();
@@ -30,27 +30,17 @@ public class ClerkGui extends AuthenticatedGui {
 	@Override
 	protected JPanel layoutMainArea() {
 		panel = new JPanel();
-
-		// create an action panel to access common action buttons
-		JPanel actionPanel = new JPanel();
-		actionPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 		viewRoomsButton = new JButton("View Rooms");
-		viewRoomsButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// Replace "NewPage" with the name of the new page you want to redirect to
-				ViewRoomsGui viewRoomsGui = new ViewRoomsGui();
-				//viewRoomsGui.setVisible(true);
-			}
-		});
-
-		actionPanel.add(viewRoomsButton);
-
-
-
-		panel.add(actionPanel, BorderLayout.NORTH);
+		panel.add(viewRoomsButton, BorderLayout.CENTER);
 
 		return panel;
+	}
+
+	/**Gets the view rooms button 
+	 * @return the view rooms button
+	 */
+	public JButton getViewRoomsButton() {
+		return this.viewRoomsButton;
 	}
 
 	@Override
