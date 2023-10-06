@@ -1,62 +1,63 @@
 package edu.baylor.gitawayHotel.gui;
 
-import javax.swing.JButton;
-import javax.swing.JLabel;
-
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.io.File;
+import java.io.IOException;
 
 //import javax.swing.JButton;
 //import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import edu.baylor.gitawayHotel.Room.Room;
+
 
 //import edu.baylor.gitawayHotel.user.UserType;
 
-public class ViewRoomsGui implements IGui{
-    private JPanel panel;
-    private JButton viewRoomsButton;
+public class ViewRoomsGui implements IGui {
+	private JPanel panel;
 
-    /**Constructor with default names
-	 * 
-	 */
 	public ViewRoomsGui() {
-		this("All Rooms:", "Go Back");
-        System.out.println("ViewRoomsGui instantiated");
-	}
-
-    
-	/**Constructor with configurable names and includes username
-	 * @param topLabel
-	 * @param bottomButton
-	 */
-	public ViewRoomsGui(String topLabel, String bottomButton) {
 		layoutMainArea();
 	}
 
-    public void layoutMainArea () {
-        panel = new JPanel();
-		// panel.setLayout(new FlowLayout(FlowLayout.CENTER));
+	public void layoutMainArea() {
+		panel = new JPanel();
+		ObjectMapper objectMapper = new ObjectMapper();
 
-        // viewRoomsButton = new JButton("View Rooms");
-		
-		
-		// panel.add(viewRoomsButton, BorderLayout.NORTH);
-        panel.add(new JLabel("YEEHAW"));
-    }
+		// Read the JSON file and convert it to a Java object
+		Room[] rooms = null;
+		try {
+			rooms = objectMapper.readValue(new File("GitawayHotel\\target\\rooms.json"), Room[].class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
+		DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
-    /**Gets the button to move to the next screen
-	 * @return
-	 */
-	public JButton getViewRoomsButton() {
-		return this.viewRoomsButton;
+		// adds each object in the rooms.json file to the model 
+		for (Room room : rooms) {
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			model.addRow(row);
+		}
+
+		// makes a table with the rooms.json data
+		JTable table = new JTable(model);
+		table.setPreferredScrollableViewportSize(table.getPreferredSize());
+		JScrollPane scrollPane = new JScrollPane(table);
+		panel.add(scrollPane);
 	}
 
-    /**Gets the panel containing all interactable components
+	/**
+	 * Gets the panel containing all interactable components
+	 * 
 	 * @return the panel
 	 */
 	@Override
 	public JPanel getFullPanel() {
-        System.out.println("Panel retrieved");
 		return this.panel;
 	}
 }
