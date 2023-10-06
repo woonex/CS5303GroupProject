@@ -209,7 +209,7 @@ public class ChangeCredentialGui implements IGui {
 
 	public String getNewPassword() {
 		String pw = new String(newpwField.getPassword());
-		pwField.setText("");
+		newpwField.setText("");
 		return new String(pw);
 	}
 	/**Gets the panel containing all interactable components
