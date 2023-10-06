@@ -239,6 +239,7 @@ public class UserServices {
 		
 		URL url = source.getLocation();
 		String dir = new File(url.getPath()).getParent();
+		dir = dir.replace("%20", " ");
 		return dir;
 	}
 }
