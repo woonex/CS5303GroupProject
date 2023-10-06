@@ -2,6 +2,8 @@ package edu.baylor.gitawayHotel.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -73,6 +75,7 @@ public abstract class AuthenticatedGui implements IGui {
 		topPanel.add(rightTopPanel, BorderLayout.EAST);
 		
 		fullPanel.add(topPanel, BorderLayout.NORTH);
+		
 	}
 	
 	/**The method to override to layout the main area

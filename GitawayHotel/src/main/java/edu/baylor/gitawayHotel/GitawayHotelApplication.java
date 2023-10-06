@@ -6,6 +6,7 @@ import javax.swing.SwingUtilities;
 
 import edu.baylor.gitawayHotel.controllers.MainController;
 import edu.baylor.gitawayHotel.gui.AdminGui;
+import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
@@ -22,10 +23,11 @@ public class GitawayHotelApplication {
 			MainFrame mainFrame = new MainFrame();
 			SplashScreen splash = new SplashScreen();
 			CredentialGui loginGui = new CredentialGui();
+			ChangeCredentialGui changeCredentialGui = new ChangeCredentialGui();
 			
 			UserServices userServices = new UserServices();
 			
-			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices);
+			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, changeCredentialGui);
 		});
 		
 	}
