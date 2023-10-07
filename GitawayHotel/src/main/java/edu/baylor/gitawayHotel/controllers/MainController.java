@@ -154,6 +154,7 @@ public class MainController {
 				} catch (InstanceAlreadyExistsException e1) {
 					e1.printStackTrace();
 				}
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Guest user account " + username + " successfully created", "Successful Account Creation", JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 	}
