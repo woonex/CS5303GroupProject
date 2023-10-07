@@ -140,6 +140,30 @@ public class MainController {
 			}
 			
 		});
+		
+		//When the user is on the login screen and clicks Create Guest Account
+		JButton createGuest = loginGui.getCreateGuestButton();
+		createGuest.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String username = loginGui.getUsername();
+				String password = loginGui.getPassword();
+				
+				boolean usernameAvailable = userServices.isUsernameAvailable(username);
+				if (!usernameAvailable) {
+					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Username already exists.\nPlease choose another username", "Creation Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
+				try {
+					userServices.addUser(username, password, UserType.GUEST);
+				} catch (InstanceAlreadyExistsException e1) {
+					e1.printStackTrace();
+				}
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Guest user account " + username + " successfully created", "Successful Account Creation", JOptionPane.INFORMATION_MESSAGE);
+			}
+		});
 	}
 	
 	/**Sets up the admin action event handling

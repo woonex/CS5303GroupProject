@@ -22,10 +22,13 @@ import javax.swing.JTextField;
  */
 public class CredentialGui implements IGui {
 	private JPanel panel;
+	private JPanel createGuestPanel;
 	private JButton loginButton;
+	private JButton createGuestButton;
 	private JTextField usernameField;
 	private JPasswordField pwField;
 	private boolean includeUsername;
+	private boolean includeGuest = false;
 	
 	/**Internal class to prevent vertically expanding components
 	 * @author Nathan
@@ -42,7 +45,9 @@ public class CredentialGui implements IGui {
 	 * 
 	 */
 	public CredentialGui() {
-		this("Please login to the Gitaway Hotel", "Login");
+		this.includeGuest = true;
+		this.includeUsername = true;
+		doLayout("Please login to the Gitaway Hotel", "Login");
 	}
 	
 	/**Constructor with configurable names and includes username
@@ -86,8 +91,22 @@ public class CredentialGui implements IGui {
 		setupPasswordArea(authPanel);
 		panel.add(authPanel, BorderLayout.CENTER);
 		
-		loginButton = new JButton(bottomButton);
-		panel.add(loginButton, BorderLayout.SOUTH);
+		if(!includeGuest) {
+			loginButton = new JButton(bottomButton);
+			panel.add(loginButton, BorderLayout.SOUTH);
+		}
+		else {
+			createGuestPanel = new JPanel();
+			createGuestPanel.setLayout(new BorderLayout());
+			
+			loginButton = new JButton(bottomButton);
+			createGuestPanel.add(loginButton, BorderLayout.CENTER);
+			
+			createGuestButton = new JButton("Create Guest Account");
+			createGuestPanel.add(createGuestButton, BorderLayout.SOUTH);
+			
+			panel.add(createGuestPanel, BorderLayout.SOUTH);
+		}
 		
 		setupEnterHandling();
 	}
@@ -155,6 +174,13 @@ public class CredentialGui implements IGui {
 	 */
 	public JButton getLoginButton() {
 		return this.loginButton;
+	}
+	
+	/**Gets the createGuest button 
+	 * @return the createGuest button
+	 */
+	public JButton getCreateGuestButton() {
+		return this.createGuestButton;
 	}
 	
 	/**Gets the username provided by input
