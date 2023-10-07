@@ -37,6 +37,29 @@ public class RoomServices {
 		this.rooms = loadRooms(this.diskFile);
 	}
 	
+	/**Adds the room to disk
+	 * @param room
+	 */
+	public void addRoom(Room room) {
+		this.rooms.put(room.getRoom(), room);
+		saveRooms(getRooms());
+	}
+	
+	/**Removes the room from disk
+	 * @param room
+	 */
+	public void removeRoom(Room room) {
+		removeRoom(room.getRoom());
+	}
+	
+	/**Removes the room from disk
+	 * @param roomNum
+	 */
+	public void removeRoom(int roomNum) {
+		this.rooms.remove(roomNum);
+		saveRooms(getRooms());
+	}
+	
 	/**Gets the rooms sorted by numerical room number
 	 * @return
 	 */
