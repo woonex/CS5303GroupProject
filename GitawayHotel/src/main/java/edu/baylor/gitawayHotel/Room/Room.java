@@ -7,24 +7,24 @@ package edu.baylor.gitawayHotel.Room;
  *
  */
 public class Room {
-    private int room;
-    private int bedQty;
+    private String room;
+    private String bedQty;
     private String bedType;
-    private boolean noSmoking;
+    private String noSmoking;
 
-    public int getRoom() {
+    public String getRoom() {
         return room;
     }
 
-    public void getRoom(int room) {
+    public void getRoom(String room) {
         this.room = room;
     }
 
-    public int getBedQty() {
+    public String getBedQty() {
         return bedQty;
     }
 
-    public void setBedQty(int bedQty) {
+    public void setBedQty(String bedQty) {
         this.bedQty = bedQty;
     }
 
@@ -36,11 +36,11 @@ public class Room {
         this.bedType = bedType;
     }
 
-    public boolean getNoSmoking() {
+    public String getNoSmoking() {
         return noSmoking;
     }
 
-    public void setNoSmoking(boolean noSmoking) {
+    public void setNoSmoking(String noSmoking) {
         this.noSmoking = noSmoking;
     }
 }
