@@ -1,12 +1,14 @@
 package edu.baylor.gitawayHotel.Room;
 
+import java.util.Objects;
+
 /**
  * A concept of a room that has attributes
  * 
  * @author Nathan
  *
  */
-public class Room {
+public class Room implements Comparable<Room> {
     private int room;
     private int bedQty;
     private String bedType;
@@ -16,7 +18,7 @@ public class Room {
         return room;
     }
 
-    public void getRoom(int room) {
+    public void setRoom(int room) {
         this.room = room;
     }
 
@@ -43,4 +45,27 @@ public class Room {
     public void setNoSmoking(boolean noSmoking) {
         this.noSmoking = noSmoking;
     }
+    
+    @Override
+    public int compareTo(Room otherRoom) {
+        // Compare based on the room number
+        return Integer.compare(this.room, otherRoom.room);
+    }
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(room);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Room other = (Room) obj;
+		return room == other.room;
+	}
 }

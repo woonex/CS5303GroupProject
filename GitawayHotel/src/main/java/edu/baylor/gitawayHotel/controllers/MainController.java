@@ -7,6 +7,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
@@ -35,12 +36,14 @@ public class MainController {
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
 	private final GuestGui guestGui;
+	private final RoomServices roomServices;
 
 	public MainController(
 			MainFrame mainFrame, 
 			SplashScreen splashScreen, 
 			CredentialGui loginGui, 
 			UserServices userServices,
+			RoomServices roomServices, 
 			ChangeCredentialGui changeCredentialGui,
 			ViewRoomsGui viewRoomsGui
 			) {
@@ -55,6 +58,7 @@ public class MainController {
 		this.guestGui = new GuestGui();
 		
 		this.userServices = userServices;
+		this.roomServices = roomServices;
 		
 		mainFrame.add(splashScreen.getPanel());
 		
@@ -83,7 +87,8 @@ public class MainController {
 		setupGuestActions();
 		
 		setupModificationActions();
-
+		
+		setupRoomsActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -229,7 +234,7 @@ public class MainController {
 		});
 	}
 	
-	/**Sets up the clerk actions
+	/**Sets up the guest actions
 	 * 
 	 */
 	private void setupGuestActions() {
@@ -306,6 +311,31 @@ public class MainController {
 					break;
 				}
 			}
+		});
+	}
+	
+	/**Action handling for the room modification gui
+	 * 
+	 */
+	private void setupRoomsActions() {
+		JButton saveRoomsButton = viewRoomsGui.getSaveRoomsButton();
+		saveRoomsButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				roomServices.saveRooms(viewRoomsGui.getRoomsInTable());
+			} 
+			
+		});
+		
+		JButton backButton = viewRoomsGui.getBackButton();
+		backButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mainFrame.add(clerkGui.getFullPanel());
+			}
+			
 		});
 	}
 }

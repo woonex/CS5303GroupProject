@@ -4,6 +4,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.controllers.MainController;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
@@ -25,11 +26,14 @@ public class GitawayHotelApplication {
 			SplashScreen splash = new SplashScreen();
 			CredentialGui loginGui = new CredentialGui();
 			ChangeCredentialGui changeCredentialGui = new ChangeCredentialGui();
-			ViewRoomsGui viewRoomsGui = new ViewRoomsGui();
+			
 			
 			UserServices userServices = new UserServices();
+			RoomServices roomServices = new RoomServices();
 			
-			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, changeCredentialGui, viewRoomsGui);
+			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
+			
+			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui);
 		});
 		
 	}
