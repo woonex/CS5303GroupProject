@@ -219,4 +219,11 @@ public class ChangeCredentialGui implements IGui {
 	public JPanel getFullPanel() {
 		return this.panel;
 	}
+
+	/**Sets the username field to the given username 
+	 * @param username the username to default to
+	 */
+	public void setUsername(String username) {
+		this.usernameField.setText(username);
+	}
 }

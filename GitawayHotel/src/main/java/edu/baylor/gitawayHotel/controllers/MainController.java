@@ -274,6 +274,7 @@ public class MainController {
 	
 	// Redirects to ChangeCredentialsGui.java
 	private void modifyCredentials(IGui iGui) {
+		changeCredentialGui.setUsername(loginGui.getUsername());
 		mainFrame.add(changeCredentialGui.getFullPanel());
 		
 	}
