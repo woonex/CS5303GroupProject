@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
@@ -19,6 +20,12 @@ public class ViewRoomsGui implements IGui {
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
+	
+	private JTextField roomUpdateField;
+	private JButton removeRoomButton;
+	private JButton addRoomButton;
+	private JTable table = null;
+	private JScrollPane scrollPane;
 
 	public ViewRoomsGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
@@ -30,21 +37,17 @@ public class ViewRoomsGui implements IGui {
 	 */
 	public void layoutMainArea() {
 		panel = new JPanel();
-		List<Room> rooms = roomServices.getRooms();
+		
 		
 		model = new DefaultTableModel(columnNames, 0);
-
-		// adds each object in the rooms.json file to the model 
-		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
-			model.addRow(row);
-		}
+		
+		updateModel();
 
 		// makes a table with the rooms.json data
-		JTable table = new JTable(model);
+		table = new JTable(model);
 		table.setPreferredScrollableViewportSize(table.getPreferredSize());
 		
-		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane = new JScrollPane(table);
 		
 		//add the save rooms button
 		saveRoomsButton = new JButton("Save Rooms");
@@ -52,10 +55,45 @@ public class ViewRoomsGui implements IGui {
 		//add the back button
 		backButton = new JButton("Back to previous");
 		
+		roomUpdateField = new JTextField(20);
+		
+		addRoomButton = new JButton("Add Room");
+		removeRoomButton = new JButton("Remove Room");
 		
 		panel.add(scrollPane);
+		
+		panel.add(roomUpdateField);
+		panel.add(addRoomButton);
+		panel.add(removeRoomButton);
+		
 		panel.add(saveRoomsButton);
 		panel.add(backButton);
+	}
+	
+	public void updateModel() {
+		List<Room> rooms = roomServices.getRooms();
+		
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		
+		// adds each object in the rooms.json file to the model 
+		for (Room room : rooms) {
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			model.addRow(row);
+		}
+		
+		model.fireTableDataChanged();
+		
+		
+		
+		if (table != null) {
+			table.repaint();
+		}
+		if (scrollPane != null) {
+			scrollPane.repaint();
+		}
+		panel.repaint();
 	}
 	
 	/**Gets the rooms in the table that the user has entered
@@ -135,6 +173,18 @@ public class ViewRoomsGui implements IGui {
 	@Override
 	public JPanel getFullPanel() {
 		return this.panel;
+	}
+
+	public JTextField getRoomUpdateField() {
+		return roomUpdateField;
+	}
+
+	public JButton getRemoveRoomButton() {
+		return removeRoomButton;
+	}
+
+	public JButton getAddRoomButton() {
+		return addRoomButton;
 	}
 
 }

@@ -6,7 +6,9 @@ import java.awt.event.ActionListener;
 import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
+import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
@@ -359,6 +361,35 @@ public class MainController {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.add(clerkGui.getFullPanel());
+			}
+			
+		});
+		
+		JTextField field = viewRoomsGui.getRoomUpdateField();
+		
+		JButton remove = viewRoomsGui.getRemoveRoomButton();
+		remove.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				roomServices.removeRoom(Integer.parseInt(field.getText()));
+				viewRoomsGui.updateModel();
+			}
+			
+		});
+		
+		JButton add = viewRoomsGui.getAddRoomButton();
+		add.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Room defaultRoom = new Room();
+				defaultRoom.setBedQty(1);
+				defaultRoom.setBedType("queen");
+				defaultRoom.setNoSmoking(true);
+				defaultRoom.setRoom(Integer.parseInt(field.getText()));
+				roomServices.addRoom(defaultRoom);
+				viewRoomsGui.updateModel();
 			}
 			
 		});
