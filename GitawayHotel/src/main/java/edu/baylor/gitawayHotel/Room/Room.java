@@ -9,10 +9,10 @@ import java.util.Objects;
  *
  */
 public class Room implements Comparable<Room> {
-    private int room;
-    private int bedQty;
+    private Integer room;
+    private Integer bedQty;
     private String bedType;
-    private boolean noSmoking;
+    private Boolean noSmoking;
 
     public int getRoom() {
         return room;
@@ -44,6 +44,17 @@ public class Room implements Comparable<Room> {
 
     public void setNoSmoking(boolean noSmoking) {
         this.noSmoking = noSmoking;
+    }
+    
+    public static boolean satisfiesRequest(Room existing, Room request) {
+    	if (!(existing.bedQty >= request.bedQty)) {
+    		return false;
+    	} else if (existing.noSmoking != request.noSmoking) {
+    		return false;
+    	} else if (!Objects.equals(existing.bedType, request.bedType)) {
+    		return false;
+    	}
+    	return true;
     }
     
     @Override

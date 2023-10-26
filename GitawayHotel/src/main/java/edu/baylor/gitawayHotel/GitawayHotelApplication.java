@@ -58,8 +58,10 @@ public class GitawayHotelApplication {
 	private static void performTest(ReservationService reservationServices) {
 		User user = new User("Joe");
 		Room room = new Room();
-		room.setRoom(100);
-		room.setBedType("King");
+//		room.setRoom(100);
+		room.setBedQty(1);
+		room.setBedType("queen");
+		room.setNoSmoking(true);
 		
 		LocalDate now = LocalDate.now();
 		LocalDate startDate= now;
