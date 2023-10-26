@@ -1,9 +1,17 @@
 package edu.baylor.gitawayHotel.reservation;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -12,34 +20,20 @@ import com.google.gson.stream.JsonWriter;
  * @author Nathan
  *
  */
-public class LocalDateAdapter extends TypeAdapter<LocalDate> {
-	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+public class LocalDateAdapter implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-	@Override
-	public void write(JsonWriter out, LocalDate value) throws IOException {
-		out.beginObject();
-		out.name("date").value(formatter.format(value));
-		out.endObject();
-	}
+    @Override
+    public JsonElement serialize(LocalDate localDate, Type type, JsonSerializationContext jsonSerializationContext) {
+        return new JsonPrimitive(localDate.format(DATE_FORMATTER));
+    }
 
-	@Override
-	public LocalDate read(JsonReader in) throws IOException {
-		in.beginObject();
-		String date = null;
-		while (in.hasNext()) {
-			String key = in.nextName();
-			if ("date".equals(key)) {
-				date = in.nextString();
-			} else {
-				in.skipValue();
-			}
-		}
-		
-		in.endObject();
-		if (date != null) {
-			return LocalDate.parse(date, formatter);
-		}
-		
-		return null;
-	}
+    @Override
+    public LocalDate deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        try {
+            return LocalDate.parse(jsonElement.getAsString(), DATE_FORMATTER);
+        } catch (Exception e) {
+            throw new JsonParseException(e);
+        }
+    }
 }

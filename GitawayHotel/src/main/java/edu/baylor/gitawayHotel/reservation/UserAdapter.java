@@ -1,7 +1,15 @@
 package edu.baylor.gitawayHotel.reservation;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
@@ -12,33 +20,20 @@ import edu.baylor.gitawayHotel.user.User;
  * @author Nathan
  *
  */
-class UserAdapter extends TypeAdapter<User> {
-	@Override
-	public void write(JsonWriter out, User user) throws IOException {
-		out.beginObject();
-		out.name("name").value(user.getUsername());
-		out.endObject();
-	}
+class UserAdapter implements JsonSerializer<User>, JsonDeserializer<User> {
+   
+    @Override
+    public JsonElement serialize(User user, Type type, JsonSerializationContext jsonSerializationContext) {
+        return new JsonPrimitive(user.getUsername());
+    }
 
-	@Override
-	public User read(JsonReader in) throws IOException {
-		in.beginObject();
-		String name = null;
-		while (in.hasNext()) {
-            String key = in.nextName();
-            if ("name".equals(key)) {
-                name = in.nextString();
-            } else {
-                in.skipValue(); // Skip any other fields
-            }
+    @Override
+    public User deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        try {
+        	return new User(jsonElement.getAsString());
+//            return LocalDate.parse(jsonElement.getAsString(), DATE_FORMATTER);
+        } catch (Exception e) {
+            throw new JsonParseException(e);
         }
-
-        in.endObject();
-
-        if (name != null) {
-           return new User(name);
-        }
-
-        return null; // If 'name' is not found in the JSON
-	}
+    }
 }
