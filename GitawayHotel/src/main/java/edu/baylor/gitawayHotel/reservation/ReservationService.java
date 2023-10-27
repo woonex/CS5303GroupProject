@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,27 @@ public class ReservationService {
 		this.diskFile = getFile(filePath);
 		writeEmptyListJson(diskFile); //todo remove
 		this.reservations = loadReservations(this.diskFile, roomServices.getRooms());
+	}
+	
+	/**Gets the unique rooms and the qty of them
+	 * @return
+	 */
+	public Map<Room, Integer> getUniqueRoomTypes() {
+		Map<Room, Integer> map = new HashMap<Room, Integer>();
+		
+		//loop over all rooms and get only their unique characteristics
+		for (Room room : roomServices.getRooms()) {
+			Room duplicate = room.getUniqueCharacteristics();
+			
+			if (map.containsKey(duplicate)) {
+				Integer qty = map.get(duplicate);
+				map.replace(duplicate, ++qty);
+			} else {
+				map.put(duplicate, 1);
+			}
+		}
+		
+		return map;
 	}
 
 	/**Gets the available rooms based on a provided startDate and endDate
@@ -108,7 +130,7 @@ public class ReservationService {
 			}
 		}
 		if (exactRequest == null) {
-			throw new NoSuchElementException ("Could not locate suitable room");
+			throw new NoSuchElementException("Could not locate suitable room");
 		}
 		exactRequest.add(reservation);
 		

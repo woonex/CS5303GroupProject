@@ -1,6 +1,7 @@
 package edu.baylor.gitawayHotel;
 
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -38,6 +39,9 @@ public class GitawayHotelApplication {
 			
 			UserServices userServices = new UserServices();
 			RoomServices roomServices = new RoomServices();
+			
+			Map<Room, Integer> uniqueRooms = roomServices.getUniqueRoomTypes();
+			
 			ReservationService reservationServices = new ReservationService(roomServices);
 			
 			performTest(reservationServices);
@@ -62,6 +66,8 @@ public class GitawayHotelApplication {
 		room.setBedQty(1);
 		room.setBedType("queen");
 		room.setNoSmoking(true);
+		
+		
 		
 		LocalDate now = LocalDate.now();
 		LocalDate startDate= now;

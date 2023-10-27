@@ -9,6 +9,7 @@ import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,6 +69,27 @@ public class RoomServices {
 				.map(entry -> entry.getValue())
 				.sorted()
 				.collect(Collectors.toList());
+	}
+	
+	/**Gets the unique rooms and the qty of them
+	 * @return
+	 */
+	public Map<Room, Integer> getUniqueRoomTypes() {
+		Map<Room, Integer> map = new HashMap<Room, Integer>();
+		
+		//loop over all rooms and get only their unique characteristics
+		for (Room room : getRooms()) {
+			Room duplicate = room.getUniqueCharacteristics();
+			
+			if (map.containsKey(duplicate)) {
+				Integer qty = map.get(duplicate);
+				map.replace(duplicate, ++qty);
+			} else {
+				map.put(duplicate, 1);
+			}
+		}
+		
+		return map;
 	}
 	
 	/**Gets the map of rooms by room number that are present in the file
