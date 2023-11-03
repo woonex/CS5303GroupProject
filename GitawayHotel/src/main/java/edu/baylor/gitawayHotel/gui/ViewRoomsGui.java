@@ -1,12 +1,14 @@
 package edu.baylor.gitawayHotel.gui;
 
 import java.awt.FlowLayout;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -27,7 +29,6 @@ public class ViewRoomsGui implements IGui {
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
-	
 	private JTextField roomUpdateField;
 	private JButton removeRoomButton;
 	private JButton addRoomButton;
@@ -96,15 +97,12 @@ public class ViewRoomsGui implements IGui {
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
-
-
-		
+		panel.add(scrollPane);
 		
 		if (userType != null){
 			switch (userType) {
 				case ADMIN:
 				case HOTEL_CLERK:
-					panel.add(scrollPane);
 					panel.add(roomUpdateField);
 					panel.add(addRoomButton);
 					panel.add(removeRoomButton);
@@ -112,8 +110,6 @@ public class ViewRoomsGui implements IGui {
 					panel.add(backButton);
 					break;
 				case GUEST:
-					panel.add(scrollPane);
-
 					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 					startDatePrompt = new TextPrompt("Check-in date", startDateField);
 					endDatePrompt = new TextPrompt("Check-out date", endDateField);
@@ -131,8 +127,6 @@ public class ViewRoomsGui implements IGui {
 					
 					break;
 				default:
-					panel.add(scrollPane);
-
 					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 					startDatePrompt = new TextPrompt("Check-in date", startDateField);
 					endDatePrompt = new TextPrompt("Check-out date", endDateField);
@@ -167,8 +161,6 @@ public class ViewRoomsGui implements IGui {
 		}
 		
 		model.fireTableDataChanged();
-		
-		
 		
 		if (table != null) {
 			table.repaint();
@@ -247,6 +239,13 @@ public class ViewRoomsGui implements IGui {
 	public JButton getBackButton() {
 		return this.backButton;
 	}
+
+	/**Gets the search button
+	 * @return
+	 */
+	public JButton getSearchButton() {
+		return this.searchButton;
+	}
 	
 	/**
 	 * Gets the panel containing all interactable components
@@ -270,12 +269,60 @@ public class ViewRoomsGui implements IGui {
 		return addRoomButton;
 	}
 
+	/**Gets the check-in date provided by input
+	 * @return the username provided
+	 */
+	public LocalDate getStartDate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  		String date = this.startDateField.getText();
+		LocalDate localDate = LocalDate.parse(date, formatter);
+		return localDate;
+	}
+	
+	/**Gets the check-out date provided by input
+	 * @return the password provided
+	 */
+	public LocalDate getEndDate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+  		String date = this.endDateField.getText();
+		LocalDate localDate = LocalDate.parse(date, formatter);
+		return localDate;
+	}
+
 	/**Sets the user type to determine user view
 	 * @param userType the user type
 	 */
 	public void setUserType(UserType userType) {
 		this.userType = userType;
 		layoutMainArea();
+	}
+
+	/**Sets the table to the filtered value 
+	 * @param availableRooms a set of available rooms 
+	 */
+	public void setFilteredRooms(Set<Room> availableRooms) {
+		System.out.println("");
+		List<Room> rooms = new ArrayList<>(availableRooms);
+
+		for (int i = 0; i < model.getRowCount(); i++) {
+			model.removeRow(i);
+		}
+		
+		// adds each object in the rooms.json file to the model 
+		for (Room room : rooms) {
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			model.addRow(row);
+		}
+		
+		model.fireTableDataChanged();
+		
+		if (table != null) {
+			table.repaint();
+		}
+		if (scrollPane != null) {
+			scrollPane.repaint();
+		}
+		panel.repaint();
 	}
 
 }

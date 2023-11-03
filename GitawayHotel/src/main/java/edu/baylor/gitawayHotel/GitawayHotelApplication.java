@@ -1,29 +1,18 @@
 package edu.baylor.gitawayHotel;
 
-import java.time.LocalDate;
 import java.util.Map;
-import java.util.Set;
-
-import javax.management.InstanceAlreadyExistsException;
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.controllers.MainController;
-import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
-import edu.baylor.gitawayHotel.gui.ClerkGui;
-import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
-import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
-import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
-import edu.baylor.gitawayHotel.user.UserType;
 
 public class GitawayHotelApplication {
 	
@@ -47,7 +36,7 @@ public class GitawayHotelApplication {
 			
 			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
 			
-			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui);
+			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui, reservationServices);
 		});
 		
 		

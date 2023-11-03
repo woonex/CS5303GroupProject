@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,7 @@ public class ReservationService {
 
 		String filePath = getFilePath(FILENAME);
 		this.diskFile = getFile(filePath);
-		writeEmptyListJson(diskFile); //todo remove
+		//writeEmptyListJson(diskFile); //todo remove
 		this.reservations = loadReservations(this.diskFile, roomServices.getRooms());
 	}
 	
