@@ -1,9 +1,12 @@
 package edu.baylor.gitawayHotel.gui;
 
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -12,42 +15,52 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
-import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
+import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 
 public class ViewRoomsGui implements IGui {
 	private JPanel panel;
+	private JPanel datePanel;
+	private JPanel actionPanel;
 	private DefaultTableModel model;
 	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
-	private final UserServices userServices;
-	private final ChangeCredentialGui changeCredentialGui;
 	private JButton backButton;
 	
 	private JTextField roomUpdateField;
 	private JButton removeRoomButton;
 	private JButton addRoomButton;
+	private JButton searchButton;
+	private JTextField startDateField;
+	private TextPrompt startDatePrompt;
+	private JTextField endDateField;
+	private TextPrompt endDatePrompt;
 	private JTable table = null;
 	private JScrollPane scrollPane;
 
 	private UserType userType;
 
-	public ViewRoomsGui(
-			RoomServices roomServices, 
-			UserServices userServices,
-			ChangeCredentialGui changeCredentialGui) {
+	public ViewRoomsGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
-		this.userServices = userServices;
-		this.changeCredentialGui = changeCredentialGui;
 		layoutMainArea();
+	}
+
+		/**Internal class to prevent vertically expanding components
+	 * @author Nathan
+	 *
+	 */
+	private static class NonVerticalExpanding extends JPanel {
+		NonVerticalExpanding(JComponent component) {
+			setLayout(new FlowLayout(FlowLayout.CENTER));
+			add(component);
+		}
 	}
 
 	/**Performs the layout of the component
 	 * 
 	 */
 	public void layoutMainArea() {
-		System.out.println("View Rooms is building. ");
 		panel = new JPanel();
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
@@ -70,12 +83,23 @@ public class ViewRoomsGui implements IGui {
 
 		scrollPane = new JScrollPane(table);
 		
+		// clerk/admin actions
 		saveRoomsButton = new JButton("Save Rooms");
 		addRoomButton = new JButton("Add Room");
 		removeRoomButton = new JButton("Remove Room");
-		backButton = new JButton("Back to previous");
 		roomUpdateField = new JTextField(20);
+
+		// guest actions
+		startDateField = new JTextField(10);
+		endDateField = new JTextField(10);
+		searchButton = new JButton("Search");
+
+		// everybody actions
 		backButton = new JButton("Back to previous");
+
+
+		
+		
 		if (userType != null){
 			switch (userType) {
 				case ADMIN:
@@ -89,11 +113,40 @@ public class ViewRoomsGui implements IGui {
 					break;
 				case GUEST:
 					panel.add(scrollPane);
-					panel.add(backButton);
+
+					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					startDatePrompt = new TextPrompt("Check-in date", startDateField);
+					endDatePrompt = new TextPrompt("Check-out date", endDateField);
+					startDatePrompt.changeAlpha(0.5f);
+					endDatePrompt.changeAlpha(0.5f);
+					datePanel.add(new NonVerticalExpanding(startDateField));
+					datePanel.add(new NonVerticalExpanding(endDateField));
+
+					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					actionPanel.add(backButton);
+					actionPanel.add(searchButton);
+
+					panel.add(datePanel);
+					panel.add(actionPanel);
+					
 					break;
 				default:
 					panel.add(scrollPane);
-					panel.add(backButton);
+
+					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					startDatePrompt = new TextPrompt("Check-in date", startDateField);
+					endDatePrompt = new TextPrompt("Check-out date", endDateField);
+					startDatePrompt.changeAlpha(0.5f);
+					endDatePrompt.changeAlpha(0.5f);
+					datePanel.add(new NonVerticalExpanding(startDateField));
+					datePanel.add(new NonVerticalExpanding(endDateField));
+
+					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					actionPanel.add(backButton);
+					actionPanel.add(searchButton);
+
+					panel.add(datePanel);
+					panel.add(actionPanel);
 					break;
 			}
 		}

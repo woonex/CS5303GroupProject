@@ -45,7 +45,7 @@ public class GitawayHotelApplication {
 			
 			//performTest(reservationServices);
 			
-			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices, userServices, changeCredentialGui);
+			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
 			
 			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui);
 		});

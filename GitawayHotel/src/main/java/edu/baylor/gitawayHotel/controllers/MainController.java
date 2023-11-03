@@ -366,7 +366,6 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				mainFrame.add(clerkGui.getFullPanel());
 			}
-			
 		});
 		
 		JTextField field = viewRoomsGui.getRoomUpdateField();
