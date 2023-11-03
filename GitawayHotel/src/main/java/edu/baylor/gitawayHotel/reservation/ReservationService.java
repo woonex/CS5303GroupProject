@@ -130,7 +130,7 @@ public class ReservationService {
 			}
 		}
 		if (exactRequest == null) {
-			throw new NoSuchElementException("Could not locate suitable room");
+			//throw new NoSuchElementException("Could not locate suitable room");
 		}
 		exactRequest.add(reservation);
 		

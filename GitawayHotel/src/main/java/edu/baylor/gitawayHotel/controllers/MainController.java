@@ -271,7 +271,6 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				logoutUser(guestGui);
 			}
-			
 		});
 		
 		JButton guestModify = guestGui.getModifyButton();
@@ -281,7 +280,15 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				modifyCredentials(guestGui);
 			}
+		});
+
+		JButton viewRoomsButton = guestGui.getViewRoomsButton();
+		viewRoomsButton.addActionListener(new ActionListener() {
 			
+			@Override
+			public void actionPerformed(ActionEvent e ) {
+				mainFrame.add(viewRoomsGui.getFullPanel());
+			}
 		});
 	}
 	

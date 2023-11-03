@@ -12,6 +12,8 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
+import edu.baylor.gitawayHotel.user.UserServices;
+import edu.baylor.gitawayHotel.user.UserType;
 
 public class ViewRoomsGui implements IGui {
 	private JPanel panel;
@@ -19,6 +21,8 @@ public class ViewRoomsGui implements IGui {
 	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
+	private final UserServices userServices;
+	private final ChangeCredentialGui changeCredentialGui;
 	private JButton backButton;
 	
 	private JTextField roomUpdateField;
@@ -27,8 +31,13 @@ public class ViewRoomsGui implements IGui {
 	private JTable table = null;
 	private JScrollPane scrollPane;
 
-	public ViewRoomsGui(RoomServices roomServices) {
+	public ViewRoomsGui(
+			RoomServices roomServices, 
+			UserServices userServices,
+			ChangeCredentialGui changeCredentialGui) {
 		this.roomServices = roomServices;
+		this.userServices = userServices;
+		this.changeCredentialGui = changeCredentialGui;
 		layoutMainArea();
 	}
 
@@ -37,16 +46,32 @@ public class ViewRoomsGui implements IGui {
 	 */
 	public void layoutMainArea() {
 		panel = new JPanel();
+		//model = new DefaultTableModel(columnNames, 0);
 		
-		
-		model = new DefaultTableModel(columnNames, 0);
-		
-		updateModel();
 
+		scrollPane = new JScrollPane(table);
+		String username = changeCredentialGui.getUsername();
+		UserType userType = userServices.getUserType(username);
+
+		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				switch (userType) {
+					case ADMIN:
+					case HOTEL_CLERK:
+						return true;
+					case GUEST:
+						return false;
+					default:
+						return false;
+				}
+			}
+		};
+		updateModel();
 		// makes a table with the rooms.json data
 		table = new JTable(model);
 		table.setPreferredScrollableViewportSize(table.getPreferredSize());
-		
+
 		scrollPane = new JScrollPane(table);
 		
 		//add the save rooms button
