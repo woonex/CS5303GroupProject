@@ -31,6 +31,8 @@ public class ViewRoomsGui implements IGui {
 	private JTable table = null;
 	private JScrollPane scrollPane;
 
+	private UserType userType;
+
 	public ViewRoomsGui(
 			RoomServices roomServices, 
 			UserServices userServices,
@@ -45,14 +47,8 @@ public class ViewRoomsGui implements IGui {
 	 * 
 	 */
 	public void layoutMainArea() {
+		System.out.println("View Rooms is building. ");
 		panel = new JPanel();
-		//model = new DefaultTableModel(columnNames, 0);
-		
-
-		scrollPane = new JScrollPane(table);
-		String username = changeCredentialGui.getUsername();
-		UserType userType = userServices.getUserType(username);
-
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -74,27 +70,36 @@ public class ViewRoomsGui implements IGui {
 
 		scrollPane = new JScrollPane(table);
 		
-		//add the save rooms button
 		saveRoomsButton = new JButton("Save Rooms");
-		
-		//add the back button
-		backButton = new JButton("Back to previous");
-		
-		roomUpdateField = new JTextField(20);
-		
 		addRoomButton = new JButton("Add Room");
 		removeRoomButton = new JButton("Remove Room");
+		backButton = new JButton("Back to previous");
+		roomUpdateField = new JTextField(20);
+		backButton = new JButton("Back to previous");
+		if (userType != null){
+			switch (userType) {
+				case ADMIN:
+				case HOTEL_CLERK:
+					panel.add(scrollPane);
+					panel.add(roomUpdateField);
+					panel.add(addRoomButton);
+					panel.add(removeRoomButton);
+					panel.add(saveRoomsButton);
+					panel.add(backButton);
+					break;
+				case GUEST:
+					panel.add(scrollPane);
+					panel.add(backButton);
+					break;
+				default:
+					panel.add(scrollPane);
+					panel.add(backButton);
+					break;
+			}
+		}
 		
-		panel.add(scrollPane);
-		
-		panel.add(roomUpdateField);
-		panel.add(addRoomButton);
-		panel.add(removeRoomButton);
-		
-		panel.add(saveRoomsButton);
-		panel.add(backButton);
 	}
-	
+
 	public void updateModel() {
 		List<Room> rooms = roomServices.getRooms();
 		
@@ -210,6 +215,14 @@ public class ViewRoomsGui implements IGui {
 
 	public JButton getAddRoomButton() {
 		return addRoomButton;
+	}
+
+	/**Sets the user type to determine user view
+	 * @param userType the user type
+	 */
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+		layoutMainArea();
 	}
 
 }

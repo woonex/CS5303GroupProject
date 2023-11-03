@@ -82,15 +82,7 @@ public class MainController {
 	 * 
 	 */
 	private void setupLoggedInPaging() {
-		setupAdminActions();
-		
-		setupClerkActions();
-		
-		setupGuestActions();
-		
 		setupModificationActions();
-		
-		setupRoomsActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -136,19 +128,24 @@ public class MainController {
 				adminGui.setUsername(username);
 				clerkGui.setUsername(username);
 				guestGui.setUsername(username);
+				viewRoomsGui.setUserType(userType);
 				
 				//login redirects to the specific user pages
 				switch (userType) {
-				case ADMIN:
-					mainFrame.add(adminGui.getFullPanel());
-					break;
-				case HOTEL_CLERK:
-					mainFrame.add(clerkGui.getFullPanel());
-					break;
-				case GUEST:
-					mainFrame.add(guestGui.getFullPanel());
-					break;
+					case ADMIN:
+						setupAdminActions();
+						mainFrame.add(adminGui.getFullPanel());
+						break;
+					case HOTEL_CLERK:
+						setupClerkActions();
+						mainFrame.add(clerkGui.getFullPanel());
+						break;
+					case GUEST:
+						setupGuestActions();
+						mainFrame.add(guestGui.getFullPanel());
+						break;
 				}
+				setupRoomsActions();
 			}
 			
 		});
