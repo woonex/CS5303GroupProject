@@ -297,6 +297,13 @@ public class ViewRoomsGui implements IGui {
 		layoutMainArea();
 	}
 
+	/**Sets the user type to determine user view
+	 * @return the user type
+	 */
+	public UserType getUserType() {
+		return userType;
+	}
+
 	/**Sets the table to the filtered value 
 	 * @param availableRooms a set of available rooms 
 	 */

@@ -369,7 +369,19 @@ public class MainController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mainFrame.add(clerkGui.getFullPanel());
+				UserType userType = viewRoomsGui.getUserType();
+				// back button redirects to the specific user pages
+				switch (userType) {
+				case ADMIN:
+					mainFrame.add(adminGui.getFullPanel());
+					break;
+				case HOTEL_CLERK:
+					mainFrame.add(clerkGui.getFullPanel());
+					break;
+				case GUEST:
+					mainFrame.add(guestGui.getFullPanel());
+					break;
+				}
 			}
 		});
 
