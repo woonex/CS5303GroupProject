@@ -308,14 +308,11 @@ public class ViewRoomsGui implements IGui {
 	 * @param availableRooms a set of available rooms 
 	 */
 	public void setFilteredRooms(Set<Room> availableRooms) {
-		System.out.println("");
 		List<Room> rooms = new ArrayList<>(availableRooms);
 
-		for (int i = 0; i < model.getRowCount(); i++) {
-			model.removeRow(i);
-		}
+		model.setRowCount(0);
 		
-		// adds each object in the rooms.json file to the model 
+		// adds each object in availableRooms to the model 
 		for (Room room : rooms) {
 			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
 			model.addRow(row);
