@@ -9,10 +9,10 @@ import java.util.Objects;
  *
  */
 public class Room implements Comparable<Room> {
-    private int room;
-    private int bedQty;
+    private Integer room;
+    private Integer bedQty;
     private String bedType;
-    private boolean noSmoking;
+    private Boolean noSmoking;
 
     public int getRoom() {
         return room;
@@ -46,6 +46,28 @@ public class Room implements Comparable<Room> {
         this.noSmoking = noSmoking;
     }
     
+    /**Gets a clone of the room without the room number
+     * @return
+     */
+    public Room getUniqueCharacteristics() {
+    	Room room = new Room();
+    	room.setBedQty(getBedQty());
+    	room.setBedType(getBedType());
+    	room.setNoSmoking(getNoSmoking());
+    	return room;
+    }
+    
+    public static boolean satisfiesRequest(Room existing, Room request) {
+    	if (!Objects.equals(existing.bedQty,request.bedQty)) {
+    		return false;
+    	} else if (!Objects.equals(existing.noSmoking, request.noSmoking)) {
+    		return false;
+    	} else if (!Objects.equals(existing.bedType, request.bedType)) {
+    		return false;
+    	}
+    	return true;
+    }
+    
     @Override
     public int compareTo(Room otherRoom) {
         // Compare based on the room number
@@ -54,18 +76,22 @@ public class Room implements Comparable<Room> {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(room);
+		return Objects.hash(bedQty, bedType, noSmoking, room);
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
+		if (!(obj instanceof Room))
 			return false;
 		Room other = (Room) obj;
-		return room == other.room;
+		return Objects.equals(bedQty, other.bedQty) && Objects.equals(bedType, other.bedType)
+				&& Objects.equals(noSmoking, other.noSmoking) && Objects.equals(room, other.room);
+	}
+
+	@Override
+	public String toString() {
+		return room + ", bedQty=" + bedQty + ", bedType=" + bedType + ", noSmoking=" + noSmoking;
 	}
 }

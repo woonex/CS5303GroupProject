@@ -2,6 +2,7 @@ package edu.baylor.gitawayHotel.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JButton;
@@ -15,6 +16,7 @@ import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
@@ -34,6 +36,7 @@ public class MainController {
 	private final UserServices userServices;
 	private final ChangeCredentialGui changeCredentialGui;
 	private final ViewRoomsGui viewRoomsGui;
+	private final ReservationService reservationService;
 	
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -47,13 +50,15 @@ public class MainController {
 			UserServices userServices,
 			RoomServices roomServices, 
 			ChangeCredentialGui changeCredentialGui,
-			ViewRoomsGui viewRoomsGui
+			ViewRoomsGui viewRoomsGui,
+			ReservationService reservationService
 			) {
 		this.mainFrame = mainFrame;
 		this.splashScreen = splashScreen;
 		this.loginGui = loginGui;
 		this.changeCredentialGui = changeCredentialGui;
 		this.viewRoomsGui = viewRoomsGui;
+		this.reservationService = reservationService;
 		
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
@@ -82,15 +87,7 @@ public class MainController {
 	 * 
 	 */
 	private void setupLoggedInPaging() {
-		setupAdminActions();
-		
-		setupClerkActions();
-		
-		setupGuestActions();
-		
 		setupModificationActions();
-		
-		setupRoomsActions();
 	}
 
 	/**Adds action handling for buttons on the splash screen
@@ -136,19 +133,24 @@ public class MainController {
 				adminGui.setUsername(username);
 				clerkGui.setUsername(username);
 				guestGui.setUsername(username);
+				viewRoomsGui.setUserType(userType);
 				
 				//login redirects to the specific user pages
 				switch (userType) {
-				case ADMIN:
-					mainFrame.add(adminGui.getFullPanel());
-					break;
-				case HOTEL_CLERK:
-					mainFrame.add(clerkGui.getFullPanel());
-					break;
-				case GUEST:
-					mainFrame.add(guestGui.getFullPanel());
-					break;
+					case ADMIN:
+						setupAdminActions();
+						mainFrame.add(adminGui.getFullPanel());
+						break;
+					case HOTEL_CLERK:
+						setupClerkActions();
+						mainFrame.add(clerkGui.getFullPanel());
+						break;
+					case GUEST:
+						setupGuestActions();
+						mainFrame.add(guestGui.getFullPanel());
+						break;
 				}
+				setupRoomsActions();
 			}
 			
 		});
@@ -271,7 +273,6 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				logoutUser(guestGui);
 			}
-			
 		});
 		
 		JButton guestModify = guestGui.getModifyButton();
@@ -281,7 +282,15 @@ public class MainController {
 			public void actionPerformed(ActionEvent e) {
 				modifyCredentials(guestGui);
 			}
+		});
+
+		JButton viewRoomsButton = guestGui.getViewRoomsButton();
+		viewRoomsButton.addActionListener(new ActionListener() {
 			
+			@Override
+			public void actionPerformed(ActionEvent e ) {
+				mainFrame.add(viewRoomsGui.getFullPanel());
+			}
 		});
 	}
 	
@@ -360,9 +369,29 @@ public class MainController {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mainFrame.add(clerkGui.getFullPanel());
+				UserType userType = viewRoomsGui.getUserType();
+				// back button redirects to the specific user pages
+				switch (userType) {
+				case ADMIN:
+					mainFrame.add(adminGui.getFullPanel());
+					break;
+				case HOTEL_CLERK:
+					mainFrame.add(clerkGui.getFullPanel());
+					break;
+				case GUEST:
+					mainFrame.add(guestGui.getFullPanel());
+					break;
+				}
 			}
-			
+		});
+
+		JButton searchButton = viewRoomsGui.getSearchButton();
+		searchButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Set<Room> availableRooms = reservationService.getAvailableRooms(viewRoomsGui.getStartDate(), viewRoomsGui.getEndDate());
+				viewRoomsGui.setFilteredRooms(availableRooms);
+			}
 		});
 		
 		JTextField field = viewRoomsGui.getRoomUpdateField();
@@ -391,7 +420,6 @@ public class MainController {
 				roomServices.addRoom(defaultRoom);
 				viewRoomsGui.updateModel();
 			}
-			
 		});
 	}
 }

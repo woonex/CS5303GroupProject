@@ -1,9 +1,14 @@
 package edu.baylor.gitawayHotel.gui;
 
+import java.awt.FlowLayout;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -12,24 +17,45 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
+import edu.baylor.gitawayHotel.user.UserType;
+import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 
 public class ViewRoomsGui implements IGui {
 	private JPanel panel;
+	private JPanel datePanel;
+	private JPanel actionPanel;
 	private DefaultTableModel model;
 	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
-	
 	private JTextField roomUpdateField;
 	private JButton removeRoomButton;
 	private JButton addRoomButton;
+	private JButton searchButton;
+	private JTextField startDateField;
+	private TextPrompt startDatePrompt;
+	private JTextField endDateField;
+	private TextPrompt endDatePrompt;
 	private JTable table = null;
 	private JScrollPane scrollPane;
+
+	private UserType userType;
 
 	public ViewRoomsGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
 		layoutMainArea();
+	}
+
+		/**Internal class to prevent vertically expanding components
+	 * @author Nathan
+	 *
+	 */
+	private static class NonVerticalExpanding extends JPanel {
+		NonVerticalExpanding(JComponent component) {
+			setLayout(new FlowLayout(FlowLayout.CENTER));
+			add(component);
+		}
 	}
 
 	/**Performs the layout of the component
@@ -37,39 +63,90 @@ public class ViewRoomsGui implements IGui {
 	 */
 	public void layoutMainArea() {
 		panel = new JPanel();
-		
-		
-		model = new DefaultTableModel(columnNames, 0);
-		
+		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				switch (userType) {
+					case ADMIN:
+					case HOTEL_CLERK:
+						return true;
+					case GUEST:
+						return false;
+					default:
+						return false;
+				}
+			}
+		};
 		updateModel();
-
 		// makes a table with the rooms.json data
 		table = new JTable(model);
 		table.setPreferredScrollableViewportSize(table.getPreferredSize());
-		
+
 		scrollPane = new JScrollPane(table);
 		
-		//add the save rooms button
+		// clerk/admin actions
 		saveRoomsButton = new JButton("Save Rooms");
-		
-		//add the back button
-		backButton = new JButton("Back to previous");
-		
-		roomUpdateField = new JTextField(20);
-		
 		addRoomButton = new JButton("Add Room");
 		removeRoomButton = new JButton("Remove Room");
-		
+		roomUpdateField = new JTextField(20);
+
+		// guest actions
+		startDateField = new JTextField(10);
+		endDateField = new JTextField(10);
+		searchButton = new JButton("Search");
+
+		// everybody actions
+		backButton = new JButton("Back to previous");
 		panel.add(scrollPane);
 		
-		panel.add(roomUpdateField);
-		panel.add(addRoomButton);
-		panel.add(removeRoomButton);
+		if (userType != null){
+			switch (userType) {
+				case ADMIN:
+				case HOTEL_CLERK:
+					panel.add(roomUpdateField);
+					panel.add(addRoomButton);
+					panel.add(removeRoomButton);
+					panel.add(saveRoomsButton);
+					panel.add(backButton);
+					break;
+				case GUEST:
+					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					startDatePrompt = new TextPrompt("Check-in date", startDateField);
+					endDatePrompt = new TextPrompt("Check-out date", endDateField);
+					startDatePrompt.changeAlpha(0.5f);
+					endDatePrompt.changeAlpha(0.5f);
+					datePanel.add(new NonVerticalExpanding(startDateField));
+					datePanel.add(new NonVerticalExpanding(endDateField));
+
+					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					actionPanel.add(backButton);
+					actionPanel.add(searchButton);
+
+					panel.add(datePanel);
+					panel.add(actionPanel);
+					
+					break;
+				default:
+					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					startDatePrompt = new TextPrompt("Check-in date", startDateField);
+					endDatePrompt = new TextPrompt("Check-out date", endDateField);
+					startDatePrompt.changeAlpha(0.5f);
+					endDatePrompt.changeAlpha(0.5f);
+					datePanel.add(new NonVerticalExpanding(startDateField));
+					datePanel.add(new NonVerticalExpanding(endDateField));
+
+					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+					actionPanel.add(backButton);
+					actionPanel.add(searchButton);
+
+					panel.add(datePanel);
+					panel.add(actionPanel);
+					break;
+			}
+		}
 		
-		panel.add(saveRoomsButton);
-		panel.add(backButton);
 	}
-	
+
 	public void updateModel() {
 		List<Room> rooms = roomServices.getRooms();
 		
@@ -84,8 +161,6 @@ public class ViewRoomsGui implements IGui {
 		}
 		
 		model.fireTableDataChanged();
-		
-		
 		
 		if (table != null) {
 			table.repaint();
@@ -164,6 +239,13 @@ public class ViewRoomsGui implements IGui {
 	public JButton getBackButton() {
 		return this.backButton;
 	}
+
+	/**Gets the search button
+	 * @return
+	 */
+	public JButton getSearchButton() {
+		return this.searchButton;
+	}
 	
 	/**
 	 * Gets the panel containing all interactable components
@@ -185,6 +267,66 @@ public class ViewRoomsGui implements IGui {
 
 	public JButton getAddRoomButton() {
 		return addRoomButton;
+	}
+
+	/**Gets the check-in date provided by input
+	 * @return the username provided
+	 */
+	public LocalDate getStartDate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  		String date = this.startDateField.getText();
+		LocalDate localDate = LocalDate.parse(date, formatter);
+		return localDate;
+	}
+	
+	/**Gets the check-out date provided by input
+	 * @return the password provided
+	 */
+	public LocalDate getEndDate() {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+  		String date = this.endDateField.getText();
+		LocalDate localDate = LocalDate.parse(date, formatter);
+		return localDate;
+	}
+
+	/**Sets the user type to determine user view
+	 * @param userType the user type
+	 */
+	public void setUserType(UserType userType) {
+		this.userType = userType;
+		layoutMainArea();
+	}
+
+	/**Sets the user type to determine user view
+	 * @return the user type
+	 */
+	public UserType getUserType() {
+		return userType;
+	}
+
+	/**Sets the table to the filtered value 
+	 * @param availableRooms a set of available rooms 
+	 */
+	public void setFilteredRooms(Set<Room> availableRooms) {
+		List<Room> rooms = new ArrayList<>(availableRooms);
+
+		model.setRowCount(0);
+		
+		// adds each object in availableRooms to the model 
+		for (Room room : rooms) {
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			model.addRow(row);
+		}
+		
+		model.fireTableDataChanged();
+		
+		if (table != null) {
+			table.repaint();
+		}
+		if (scrollPane != null) {
+			scrollPane.repaint();
+		}
+		panel.repaint();
 	}
 
 }

@@ -1,5 +1,9 @@
 package edu.baylor.gitawayHotel.user;
 
+import java.util.Objects;
+
+import com.google.gson.JsonObject;
+
 public class User {
 	private String username;
 	private String password;
@@ -7,6 +11,16 @@ public class User {
 	
 	public User() {
 		
+	}
+	
+	public User(String username) {
+		this.username = username;
+	}
+
+	public User(JsonObject jsonObject) { // for use with UserAdapter
+		this.username = jsonObject.get("username").getAsString();
+    	this.password = jsonObject.get("password").getAsString();
+		this.userType = UserType.valueOf(jsonObject.get("userType").getAsString().toUpperCase());
 	}
 
 	public String getUsername() {
@@ -31,6 +45,25 @@ public class User {
 
 	protected void setUserType(UserType userType) {
 		this.userType = userType;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(username);
+	}
+
+	/**A user is defined as unique by the username alone 
+	 * their password is really a transient field that can change
+	 *
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof User))
+			return false;
+		User other = (User) obj;
+		return Objects.equals(username, other.username);
 	}
 	
 	
