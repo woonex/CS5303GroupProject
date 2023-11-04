@@ -13,5 +13,10 @@
     "username": "HotelClerk",
     "password": "password",
     "userType": "clerk"
-  }
+  },
+  {
+    "username": "JohnDoe",
+    "password": "password123",
+    "userType": "guest"
+}
 ]

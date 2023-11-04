@@ -26,8 +26,7 @@ class UserAdapter implements JsonSerializer<User>, JsonDeserializer<User> {
     @Override
     public User deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         try {
-        	return new User(jsonElement.getAsString());
-//            return LocalDate.parse(jsonElement.getAsString(), DATE_FORMATTER);
+        	return new User(jsonElement.getAsJsonObject()); // doesnt work; getAsString only works for JsonPrimitive or JsonArray, not JsonObject
         } catch (Exception e) {
             throw new JsonParseException(e);
         }

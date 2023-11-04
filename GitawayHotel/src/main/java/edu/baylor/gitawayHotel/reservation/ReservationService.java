@@ -86,8 +86,8 @@ public class ReservationService {
 	 * @return
 	 */
 	public Set<Room> getAvailableRooms(LocalDate startDate, LocalDate endDate) {
-		//		logger.debug("Desired start date: " + startDate );
-		//		logger.debug("Desired end date: " + endDate);
+		//	logger.debug("Desired start date: " + startDate );
+		//	logger.debug("Desired end date: " + endDate);
 		Set<Room> available = new HashSet<Room>();
 		for (Entry<Room, List<Reservation>> entry : reservations.entrySet()) {
 			Room room = entry.getKey();
@@ -161,9 +161,9 @@ public class ReservationService {
 	private static Map<Room, List<Reservation>> loadReservations(File file, List<Room> rooms) {
 		logger.trace("ReservationService loadReservations() invoked");
 		try (FileReader reader = new FileReader(file)) {
-			Reservation[] aRooms = gson.fromJson(reader, Reservation[].class);
+			Reservation[] aReservations = gson.fromJson(reader, Reservation[].class);
 
-			List<Reservation> reservations = Arrays.asList(aRooms);
+			List<Reservation> reservations = Arrays.asList(aReservations);
 			Map<Room, List<Reservation>> items = rooms.stream()
 					.collect(Collectors.toMap(
 							room -> room, 

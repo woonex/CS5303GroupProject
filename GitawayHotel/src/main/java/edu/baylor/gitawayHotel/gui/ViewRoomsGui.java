@@ -273,7 +273,7 @@ public class ViewRoomsGui implements IGui {
 	 * @return the username provided
 	 */
 	public LocalDate getStartDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   		String date = this.startDateField.getText();
 		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;
@@ -283,7 +283,7 @@ public class ViewRoomsGui implements IGui {
 	 * @return the password provided
 	 */
 	public LocalDate getEndDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   		String date = this.endDateField.getText();
 		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;

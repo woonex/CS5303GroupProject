@@ -2,6 +2,8 @@ package edu.baylor.gitawayHotel.user;
 
 import java.util.Objects;
 
+import com.google.gson.JsonObject;
+
 public class User {
 	private String username;
 	private String password;
@@ -13,6 +15,12 @@ public class User {
 	
 	public User(String username) {
 		this.username = username;
+	}
+
+	public User(JsonObject jsonObject) { // for use with UserAdapter
+		this.username = jsonObject.get("username").getAsString();
+    	this.password = jsonObject.get("password").getAsString();
+		this.userType = UserType.valueOf(jsonObject.get("userType").getAsString().toUpperCase());
 	}
 
 	public String getUsername() {
