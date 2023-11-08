@@ -5,6 +5,7 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -161,9 +162,16 @@ public class ViewRoomsGui implements IGui {
 	}
 	
 	private void manageReserveButtonAvailable() {
+		boolean validDates = true;
+		try {
+			LocalDate start = getStartDate();
+			LocalDate end = getEndDate();
+		} catch (DateTimeParseException e) {
+			validDates = false;
+		}
 		
 		int[] selectedRows = table.getSelectedRows();
-		if (selectedRows.length == 1) {
+		if (selectedRows.length == 1 && validDates) {
 			reserveButton.setEnabled(true);
 		} else {
 			reserveButton.setEnabled(false);
