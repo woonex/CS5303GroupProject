@@ -92,6 +92,6 @@ public class Room implements Comparable<Room> {
 
 	@Override
 	public String toString() {
-		return room + ", bedQty=" + bedQty + ", bedType=" + bedType + ", noSmoking=" + noSmoking;
+		return room + ", bedQty=" + bedQty + ", bedType=" + bedType + (noSmoking ? ", noSmoking" : ", Smoking");
 	}
 }

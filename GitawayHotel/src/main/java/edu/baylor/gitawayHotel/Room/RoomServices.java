@@ -61,6 +61,14 @@ public class RoomServices {
 		saveRooms(getRooms());
 	}
 	
+	/**Gets the room by the room number
+	 * @param roomNum
+	 * @return
+	 */
+	public Room getRoomByNumber(int roomNum) {
+		return this.rooms.get(roomNum);
+	}
+	
 	/**Gets the rooms sorted by numerical room number
 	 * @return
 	 */

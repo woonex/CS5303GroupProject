@@ -2,6 +2,7 @@ package edu.baylor.gitawayHotel.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -16,11 +17,14 @@ import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
+import edu.baylor.gitawayHotel.gui.ReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
+import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
 
@@ -37,6 +41,7 @@ public class MainController {
 	private final ChangeCredentialGui changeCredentialGui;
 	private final ViewRoomsGui viewRoomsGui;
 	private final ReservationService reservationService;
+	private final ReservationGui reservationGui;
 	
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -63,6 +68,7 @@ public class MainController {
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
 		this.guestGui = new GuestGui();
+		this.reservationGui = new ReservationGui(reservationService);
 		
 		this.userServices = userServices;
 		this.roomServices = roomServices;
@@ -147,10 +153,12 @@ public class MainController {
 						break;
 					case GUEST:
 						setupGuestActions();
+						reservationGui.setUser(new User(username));
 						mainFrame.add(guestGui.getFullPanel());
 						break;
 				}
 				setupRoomsActions();
+				
 			}
 			
 		});
@@ -292,6 +300,12 @@ public class MainController {
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
+		
+		JButton viewReservations = guestGui.getViewReservationsButton();
+		viewReservations.addActionListener(e -> {
+			setupReservationActions();
+			mainFrame.add(reservationGui.getFullPanel());
+		});
 	}
 	
 	/**Logs the active user out
@@ -394,6 +408,27 @@ public class MainController {
 			}
 		});
 		
+		JButton reserveButton = viewRoomsGui.getReserveRoomButton();
+		reserveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int desiredRoomNum = viewRoomsGui.getDesiredRoomReservation();
+				LocalDate startDate = viewRoomsGui.getStartDate();
+				LocalDate endDate = viewRoomsGui.getEndDate();
+				
+				String username = loginGui.getUsername();
+				User user = new User(username);
+				Room room = roomServices.getRoomByNumber(desiredRoomNum);
+				Reservation res = new Reservation(startDate, endDate, user, room);
+				
+				reservationService.addReservation(res);
+				
+				//go back to the previous screen after this
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Reservation Successfully Created", "Reservation Created", JOptionPane.INFORMATION_MESSAGE);
+				backButton.doClick();
+			}
+		});
+		
 		JTextField field = viewRoomsGui.getRoomUpdateField();
 		
 		JButton remove = viewRoomsGui.getRemoveRoomButton();
@@ -420,6 +455,13 @@ public class MainController {
 				roomServices.addRoom(defaultRoom);
 				viewRoomsGui.updateModel();
 			}
+		});
+	}
+	
+	private void setupReservationActions() {
+		JButton reservationViewBack = reservationGui.getBackButton();
+		reservationViewBack.addActionListener(e -> {
+			mainFrame.add(guestGui.getFullPanel());
 		});
 	}
 }

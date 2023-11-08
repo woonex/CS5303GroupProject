@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -118,23 +119,58 @@ public class ReservationService {
 	public void addReservation(Reservation reservation) {
 		//TODO throw exception if cannot
 		
-		List<Reservation> exactRequest = this.reservations.get(reservation.getRoom());
-		if (exactRequest == null) {
+		List<Reservation> roomReservations = this.reservations.get(reservation.getRoom());
+		if (roomReservations == null) {
 			for (Room room : roomServices.getRooms()) {
 				if (Room.satisfiesRequest(room, reservation.getRoom())) {
-					exactRequest = this.reservations.get(room);
+					roomReservations = this.reservations.get(room);
+					
+					boolean isAlreadyReserved = false;
+					for (Reservation existingRes : roomReservations) {
+						if (reservationOverlaps(reservation, existingRes)) {
+							isAlreadyReserved=true;
+							break;
+						}
+					}
+					
+					if (isAlreadyReserved) {
+						continue;
+					}
 					reservation.setRoom(room);
 					break;
 				}
 			}
 		}
-		if (exactRequest == null) {
-			//throw new NoSuchElementException("Could not locate suitable room");
+		if (roomReservations == null) {
+			throw new NoSuchElementException("Could not locate suitable room");
+		} else {
+			for (Reservation existingRes : roomReservations) {
+				if (reservationOverlaps(reservation, existingRes)) {
+//					isAlreadyReserved=true;
+					throw new RuntimeException("Reservation overlaps with another reservation");
+				}
+			}
 		}
-		exactRequest.add(reservation);
+		
+		
+		
+		roomReservations.add(reservation);
 		
 //		this.reservations.get(reservation.getRoom()).add(reservation);
 		saveReservations(getReservations());
+	}
+	
+	public List<Reservation> getReservationsByUser(User user) {
+		return getReservations().stream()
+				.filter(res -> res.getGuest().equals(user))
+				.collect(Collectors.toList());
+	}
+	
+	public static boolean reservationOverlaps(Reservation one, Reservation two) {
+		boolean startBeforeEnd = one.getStartDate().isBefore(two.getEndDate());
+		boolean endAfterStart = one.getEndDate().isAfter(two.getStartDate());
+		boolean item = startBeforeEnd && endAfterStart;//res.getStartDate().isBefore(endDate) || res.getEndDate().isAfter(startDate);
+		return item;
 	}
 	
 	/**Gets the reservations for the room
