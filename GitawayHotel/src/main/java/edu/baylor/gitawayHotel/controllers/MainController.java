@@ -2,6 +2,7 @@ package edu.baylor.gitawayHotel.controllers;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -16,11 +17,13 @@ import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
+import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
 
@@ -394,6 +397,27 @@ public class MainController {
 			}
 		});
 		
+		JButton reserveButton = viewRoomsGui.getReserveRoomButton();
+		reserveButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int desiredRoomNum = viewRoomsGui.getDesiredRoomReservation();
+				LocalDate startDate = viewRoomsGui.getStartDate();
+				LocalDate endDate = viewRoomsGui.getEndDate();
+				
+				String username = loginGui.getUsername();
+				User user = new User(username);
+				Room room = roomServices.getRoomByNumber(desiredRoomNum);
+				Reservation res = new Reservation(startDate, endDate, user, room);
+				
+				reservationService.addReservation(res);
+				
+				//go back to the previous screen after this
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Reservation Successfully Created", "Reservation Created", JOptionPane.INFORMATION_MESSAGE);
+				backButton.doClick();
+			}
+		});
+		
 		JTextField field = viewRoomsGui.getRoomUpdateField();
 		
 		JButton remove = viewRoomsGui.getRemoveRoomButton();
@@ -421,5 +445,7 @@ public class MainController {
 				viewRoomsGui.updateModel();
 			}
 		});
+		
+		
 	}
 }

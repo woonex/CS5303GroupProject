@@ -1,6 +1,8 @@
 package edu.baylor.gitawayHotel.gui;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,10 +11,13 @@ import java.util.Set;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
@@ -41,6 +46,7 @@ public class ViewRoomsGui implements IGui {
 	private JScrollPane scrollPane;
 
 	private UserType userType;
+	private JButton reserveButton;
 
 	public ViewRoomsGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
@@ -81,6 +87,18 @@ public class ViewRoomsGui implements IGui {
 		// makes a table with the rooms.json data
 		table = new JTable(model);
 		table.setPreferredScrollableViewportSize(table.getPreferredSize());
+		
+		
+		ListSelectionListener selectionListener = new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+                	manageReserveButtonAvailable();
+                }
+            }
+        };
+        table.getSelectionModel().addListSelectionListener(selectionListener);
+		
 
 		scrollPane = new JScrollPane(table);
 		
@@ -94,57 +112,61 @@ public class ViewRoomsGui implements IGui {
 		startDateField = new JTextField(10);
 		endDateField = new JTextField(10);
 		searchButton = new JButton("Search");
+		reserveButton = new JButton("Reserve Selected Room");
+		reserveButton.setEnabled(false);
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
 		panel.add(scrollPane);
 		
-		if (userType != null){
-			switch (userType) {
-				case ADMIN:
-				case HOTEL_CLERK:
-					panel.add(roomUpdateField);
-					panel.add(addRoomButton);
-					panel.add(removeRoomButton);
-					panel.add(saveRoomsButton);
-					panel.add(backButton);
-					break;
-				case GUEST:
-					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-					startDatePrompt = new TextPrompt("Check-in date", startDateField);
-					endDatePrompt = new TextPrompt("Check-out date", endDateField);
-					startDatePrompt.changeAlpha(0.5f);
-					endDatePrompt.changeAlpha(0.5f);
-					datePanel.add(new NonVerticalExpanding(startDateField));
-					datePanel.add(new NonVerticalExpanding(endDateField));
+		if (userType == null) {
+			return;
+		}
+		switch (userType) {
+		case ADMIN:
+		case HOTEL_CLERK:
+			panel.add(roomUpdateField);
+			panel.add(addRoomButton);
+			panel.add(removeRoomButton);
+			panel.add(saveRoomsButton);
+			panel.add(backButton);
+			break;
+		case GUEST:
+		default:
+			datePanel = new JPanel(new GridLayout(2, 2));
+			startDatePrompt = new TextPrompt("Check-in date", startDateField);
+			endDatePrompt = new TextPrompt("Check-out date", endDateField);
+			startDatePrompt.changeAlpha(0.5f);
+			endDatePrompt.changeAlpha(0.5f);
+			
+			datePanel.add(new NonVerticalExpanding(startDateField));
+			datePanel.add(new NonVerticalExpanding(endDateField));
 
-					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-					actionPanel.add(backButton);
-					actionPanel.add(searchButton);
+			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			
+			actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			actionPanel.add(backButton);
+			actionPanel.add(searchButton);
+			actionPanel.add(reserveButton);
 
-					panel.add(datePanel);
-					panel.add(actionPanel);
-					
-					break;
-				default:
-					datePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-					startDatePrompt = new TextPrompt("Check-in date", startDateField);
-					endDatePrompt = new TextPrompt("Check-out date", endDateField);
-					startDatePrompt.changeAlpha(0.5f);
-					endDatePrompt.changeAlpha(0.5f);
-					datePanel.add(new NonVerticalExpanding(startDateField));
-					datePanel.add(new NonVerticalExpanding(endDateField));
-
-					actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-					actionPanel.add(backButton);
-					actionPanel.add(searchButton);
-
-					panel.add(datePanel);
-					panel.add(actionPanel);
-					break;
-			}
+			panel.add(datePanel);
+			panel.add(actionPanel);
+			
+			
+			break;
 		}
 		
+	}
+	
+	private void manageReserveButtonAvailable() {
+		
+		int[] selectedRows = table.getSelectedRows();
+		if (selectedRows.length == 1) {
+			reserveButton.setEnabled(true);
+		} else {
+			reserveButton.setEnabled(false);
+		}
 	}
 
 	public void updateModel() {
@@ -267,6 +289,15 @@ public class ViewRoomsGui implements IGui {
 
 	public JButton getAddRoomButton() {
 		return addRoomButton;
+	}
+	
+	public JButton getReserveRoomButton() {
+		return this.reserveButton;
+	}
+	
+	public int getDesiredRoomReservation() {
+		int selectedRow = table.getSelectedRow();
+		return (int) model.getValueAt(selectedRow, 0);
 	}
 
 	/**Gets the check-in date provided by input
