@@ -22,6 +22,7 @@ import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
+import edu.baylor.gitawayHotel.gui.ReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
@@ -40,6 +41,7 @@ public class MainController {
 	private final ChangeCredentialGui changeCredentialGui;
 	private final ViewRoomsGui viewRoomsGui;
 	private final ReservationService reservationService;
+	private final ReservationGui reservationGui;
 	
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -66,6 +68,7 @@ public class MainController {
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
 		this.guestGui = new GuestGui();
+		this.reservationGui = new ReservationGui(reservationService);
 		
 		this.userServices = userServices;
 		this.roomServices = roomServices;
@@ -150,10 +153,12 @@ public class MainController {
 						break;
 					case GUEST:
 						setupGuestActions();
+						reservationGui.setUser(new User(username));
 						mainFrame.add(guestGui.getFullPanel());
 						break;
 				}
 				setupRoomsActions();
+				
 			}
 			
 		});
@@ -294,6 +299,12 @@ public class MainController {
 			public void actionPerformed(ActionEvent e ) {
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
+		});
+		
+		JButton viewReservations = guestGui.getViewReservationsButton();
+		viewReservations.addActionListener(e -> {
+			setupReservationActions();
+			mainFrame.add(reservationGui.getFullPanel());
 		});
 	}
 	
@@ -445,7 +456,12 @@ public class MainController {
 				viewRoomsGui.updateModel();
 			}
 		});
-		
-		
+	}
+	
+	private void setupReservationActions() {
+		JButton reservationViewBack = reservationGui.getBackButton();
+		reservationViewBack.addActionListener(e -> {
+			mainFrame.add(guestGui.getFullPanel());
+		});
 	}
 }

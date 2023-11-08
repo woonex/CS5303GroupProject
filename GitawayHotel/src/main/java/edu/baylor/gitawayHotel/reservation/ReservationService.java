@@ -160,7 +160,13 @@ public class ReservationService {
 		saveReservations(getReservations());
 	}
 	
-	public boolean reservationOverlaps(Reservation one, Reservation two) {
+	public List<Reservation> getReservationsByUser(User user) {
+		return getReservations().stream()
+				.filter(res -> res.getGuest().equals(user))
+				.collect(Collectors.toList());
+	}
+	
+	public static boolean reservationOverlaps(Reservation one, Reservation two) {
 		boolean startBeforeEnd = one.getStartDate().isBefore(two.getEndDate());
 		boolean endAfterStart = one.getEndDate().isAfter(two.getStartDate());
 		boolean item = startBeforeEnd && endAfterStart;//res.getStartDate().isBefore(endDate) || res.getEndDate().isAfter(startDate);

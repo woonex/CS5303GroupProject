@@ -9,6 +9,7 @@ import edu.baylor.gitawayHotel.user.UserType;
 
 public class GuestGui extends AuthenticatedGui {
 	private JButton viewRoomsButton;
+	private JButton viewReservationsButton;
 	private JPanel panel;
 
 	public GuestGui() {
@@ -19,8 +20,10 @@ public class GuestGui extends AuthenticatedGui {
 	protected JPanel layoutMainArea() {
 		panel = new JPanel();
 		viewRoomsButton = new JButton("View Rooms");
-		panel.add(viewRoomsButton, BorderLayout.CENTER);
+		viewReservationsButton = new JButton("View Reservations");
 		
+		panel.add(viewRoomsButton);
+		panel.add(viewReservationsButton);
 		return panel;
 	}
 
@@ -29,6 +32,13 @@ public class GuestGui extends AuthenticatedGui {
 	 */
 	public JButton getViewRoomsButton() {
 		return this.viewRoomsButton;
+	}
+	
+	/**Gets the view reservations button
+	 * @return the view reservations button
+	 */
+	public JButton getViewReservationsButton() {
+		return this.viewReservationsButton;
 	}
 	
 	@Override

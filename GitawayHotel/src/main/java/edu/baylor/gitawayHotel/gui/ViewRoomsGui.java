@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -340,7 +341,8 @@ public class ViewRoomsGui implements IGui {
 	 */
 	public void setFilteredRooms(Set<Room> availableRooms) {
 		List<Room> rooms = new ArrayList<>(availableRooms);
-
+		Collections.sort(rooms);
+		
 		model.setRowCount(0);
 		
 		// adds each object in availableRooms to the model 
