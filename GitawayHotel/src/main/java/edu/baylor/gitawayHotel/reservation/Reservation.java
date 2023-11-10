@@ -10,7 +10,7 @@ public class Reservation implements Comparable<Reservation> {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private User guest;
-	private LocalDate dateReservationMade;
+	private LocalDate dateReservationMade = LocalDate.now();
 	private Room room;
 	
 
