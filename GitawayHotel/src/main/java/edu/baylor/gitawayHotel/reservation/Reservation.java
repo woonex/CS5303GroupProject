@@ -10,7 +10,9 @@ public class Reservation implements Comparable<Reservation> {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private User guest;
+	private LocalDate dateReservationMade;
 	private Room room;
+	
 
 	public Reservation(LocalDate startDate, LocalDate endDate, User guest, Room room) {
 		this.startDate = startDate;
@@ -75,6 +77,20 @@ public class Reservation implements Comparable<Reservation> {
 		this.room = room;
 	}
 	
+	/**
+	 * @return the dateReservationMade
+	 */
+	public LocalDate getDateReservationMade() {
+		return dateReservationMade;
+	}
+
+	/**
+	 * @param dateReservationMade the dateReservationMade to set
+	 */
+	public void setDateReservationMade(LocalDate dateReservationMade) {
+		this.dateReservationMade = dateReservationMade;
+	}
+	
 	@Override
 	public String toString() {
 		return "Room " + room.getRoom() + " is reserved by " + guest.getUsername() + " from " + startDate + " to " + endDate;
@@ -100,4 +116,5 @@ public class Reservation implements Comparable<Reservation> {
 	public int compareTo(Reservation o) {
 		return this.startDate.compareTo(o.startDate);
 	}
+
 }

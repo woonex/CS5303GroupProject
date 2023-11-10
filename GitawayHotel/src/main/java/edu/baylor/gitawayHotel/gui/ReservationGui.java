@@ -105,15 +105,19 @@ public class ReservationGui implements IGui {
 	protected void manageModifyAvailable() {
 		int[] selectedRows = table.getSelectedRows();
 		
-		LocalDate startDate = (LocalDate) model.getValueAt(selectedRows[0], 0);
-		
 		boolean state = true;
-		if (selectedRows.length != 1) {
+		if (selectedRows.length == 0) {
 			state = false;
-		} else if (startDate.isBefore(LocalDate.now())) {
-			logger.warn("Start date is before today");
-			state = false;
+		} else {
+			LocalDate startDate = (LocalDate) model.getValueAt(selectedRows[0], 0);
+			if (selectedRows.length != 1) {
+				state = false;
+			} else if (startDate.isBefore(LocalDate.now())) {
+				logger.warn("Start date is before today");
+				state = false;
+			}
 		}
+		
 		modifyButton.setEnabled(state);
 	}
 
@@ -164,6 +168,12 @@ public class ReservationGui implements IGui {
 		
 		
 		Reservation selected = new Reservation(startDate, endDate, user, room);
+		
+		for (Reservation res : resService.getReservations()) {
+			if (res.equals(selected)) {
+				return res;
+			}
+		}
 //		List<Reservation> allRes = resService.getReservationsByUser(user);
 		return selected;
 	}

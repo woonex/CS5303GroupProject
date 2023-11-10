@@ -443,6 +443,7 @@ public class MainController {
 				User user = new User(username);
 				Room room = roomServices.getRoomByNumber(desiredRoomNum);
 				Reservation res = new Reservation(startDate, endDate, user, room);
+				res.setDateReservationMade(LocalDate.now());
 				
 				reservationService.addReservation(res);
 				lastReservation = null;
