@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -156,7 +157,21 @@ public class ReservationService {
 		
 		roomReservations.add(reservation);
 		
-//		this.reservations.get(reservation.getRoom()).add(reservation);
+		saveReservations(getReservations());
+	}
+	
+	public void removeReservation(Reservation reservation) {
+		List<Reservation> roomRes = this.reservations.get(reservation.getRoom());
+		
+		Iterator<Reservation> itr = roomRes.iterator();
+		while (itr.hasNext()) {
+			Reservation current = itr.next();
+			if (current.equals(reservation)) {
+				itr.remove();
+				break;
+			}
+		}
+		
 		saveReservations(getReservations());
 	}
 	
@@ -166,6 +181,11 @@ public class ReservationService {
 				.collect(Collectors.toList());
 	}
 	
+	/**Gets whether a reservation overlaps another reservation
+	 * @param one
+	 * @param two
+	 * @return
+	 */
 	public static boolean reservationOverlaps(Reservation one, Reservation two) {
 		boolean startBeforeEnd = one.getStartDate().isBefore(two.getEndDate());
 		boolean endAfterStart = one.getEndDate().isAfter(two.getStartDate());
@@ -221,11 +241,6 @@ public class ReservationService {
 	 */
 	private void saveReservations(Collection<Reservation> reservations) {
 		saveReservationsToDisk(reservations, diskFile);
-//		try (FileWriter writer = new FileWriter(diskFile)) {
-//			gson.toJson(this.reservations, writer);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
 	}
 
 	/**Saves the rooms to the disk
@@ -308,6 +323,4 @@ public class ReservationService {
 		dir = dir.replace("%20", " ");
 		return dir;
 	}
-
-
 }

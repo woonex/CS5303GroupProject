@@ -1,11 +1,12 @@
 package edu.baylor.gitawayHotel.reservation;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.user.User;
 
-public class Reservation {
+public class Reservation implements Comparable<Reservation> {
 	private LocalDate startDate;
 	private LocalDate endDate;
 	private User guest;
@@ -77,5 +78,26 @@ public class Reservation {
 	@Override
 	public String toString() {
 		return "Room " + room.getRoom() + " is reserved by " + guest.getUsername() + " from " + startDate + " to " + endDate;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(endDate, guest, room, startDate);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof Reservation))
+			return false;
+		Reservation other = (Reservation) obj;
+		return Objects.equals(endDate, other.endDate) && Objects.equals(guest, other.guest)
+				&& Objects.equals(room, other.room) && Objects.equals(startDate, other.startDate);
+	}
+
+	@Override
+	public int compareTo(Reservation o) {
+		return this.startDate.compareTo(o.startDate);
 	}
 }

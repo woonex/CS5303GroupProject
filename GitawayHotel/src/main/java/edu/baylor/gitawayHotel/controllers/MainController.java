@@ -16,14 +16,14 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
-import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
-import edu.baylor.gitawayHotel.reservation.Reservation;
-import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.ReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
+import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.reservation.Reservation;
+import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
@@ -265,6 +265,7 @@ public class MainController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e ) {
+				viewRoomsGui.setBackButtonState(true);
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
@@ -297,6 +298,7 @@ public class MainController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e ) {
+				viewRoomsGui.setBackButtonState(true);
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
@@ -305,6 +307,19 @@ public class MainController {
 		viewReservations.addActionListener(e -> {
 			setupReservationActions();
 			mainFrame.add(reservationGui.getFullPanel());
+		});
+		
+		JButton modifyReservations = reservationGui.getModifyReservationButton();
+		modifyReservations.addActionListener(e -> {
+			setupReservationActions();
+			Reservation reservation = reservationGui.getSelectedReservation();
+			viewRoomsGui.setStartDate(reservation.getStartDate());
+			viewRoomsGui.setEndDate(reservation.getEndDate());
+			reservationService.removeReservation(reservation);
+			viewRoomsGui.setBackButtonState(false);
+			viewRoomsGui.getSearchButton().doClick();
+			
+			mainFrame.add(viewRoomsGui.getFullPanel());
 		});
 	}
 	

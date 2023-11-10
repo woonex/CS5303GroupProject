@@ -24,10 +24,15 @@ import javax.swing.table.DefaultTableModel;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
+import edu.baylor.gitawayHotel.reservation.LocalDateAdapter;
 import edu.baylor.gitawayHotel.user.UserType;
 import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 
+/**A class for viewing rooms or creating reservations for guests
+ *
+ */
 public class ViewRoomsGui implements IGui {
+	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private JPanel datePanel;
 	private JPanel actionPanel;
@@ -313,7 +318,7 @@ public class ViewRoomsGui implements IGui {
 	 * @return the username provided
 	 */
 	public LocalDate getStartDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter formatter = DATE_FORMATTER;
   		String date = this.startDateField.getText();
 		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;
@@ -323,7 +328,7 @@ public class ViewRoomsGui implements IGui {
 	 * @return the password provided
 	 */
 	public LocalDate getEndDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter formatter = DATE_FORMATTER;
   		String date = this.endDateField.getText();
 		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;
@@ -368,6 +373,18 @@ public class ViewRoomsGui implements IGui {
 			scrollPane.repaint();
 		}
 		panel.repaint();
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		startDateField.setText(DATE_FORMATTER.format(startDate));
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		endDateField.setText(DATE_FORMATTER.format(endDate));
+	}
+	
+	public void setBackButtonState(boolean state) {
+		this.backButton.setEnabled(state);
 	}
 
 }
