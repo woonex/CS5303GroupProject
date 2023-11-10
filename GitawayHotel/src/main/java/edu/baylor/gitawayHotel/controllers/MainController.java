@@ -47,6 +47,8 @@ public class MainController {
 	private final ClerkGui clerkGui;
 	private final GuestGui guestGui;
 	private final RoomServices roomServices;
+	
+	private Reservation lastReservation;
 
 	public MainController(
 			MainFrame mainFrame, 
@@ -265,7 +267,6 @@ public class MainController {
 			
 			@Override
 			public void actionPerformed(ActionEvent e ) {
-				viewRoomsGui.setBackButtonState(true);
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
@@ -297,8 +298,9 @@ public class MainController {
 		viewRoomsButton.addActionListener(new ActionListener() {
 			
 			@Override
-			public void actionPerformed(ActionEvent e ) {
-				viewRoomsGui.setBackButtonState(true);
+			public void actionPerformed(ActionEvent e) {
+				viewRoomsGui.setStartDate(null);
+				viewRoomsGui.setEndDate(null);
 				mainFrame.add(viewRoomsGui.getFullPanel());
 			}
 		});
@@ -312,11 +314,13 @@ public class MainController {
 		JButton modifyReservations = reservationGui.getModifyReservationButton();
 		modifyReservations.addActionListener(e -> {
 			setupReservationActions();
+			
+			//save the last reservation and provide it as modification for the user
 			Reservation reservation = reservationGui.getSelectedReservation();
+			lastReservation = reservation;
 			viewRoomsGui.setStartDate(reservation.getStartDate());
 			viewRoomsGui.setEndDate(reservation.getEndDate());
 			reservationService.removeReservation(reservation);
-			viewRoomsGui.setBackButtonState(false);
 			viewRoomsGui.getSearchButton().doClick();
 			
 			mainFrame.add(viewRoomsGui.getFullPanel());
@@ -409,6 +413,10 @@ public class MainController {
 					break;
 				case GUEST:
 					mainFrame.add(guestGui.getFullPanel());
+					if (lastReservation != null) {
+						reservationService.addReservation(lastReservation);
+						lastReservation = null;
+					}
 					break;
 				}
 			}
@@ -437,6 +445,7 @@ public class MainController {
 				Reservation res = new Reservation(startDate, endDate, user, room);
 				
 				reservationService.addReservation(res);
+				lastReservation = null;
 				
 				//go back to the previous screen after this
 				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Reservation Successfully Created", "Reservation Created", JOptionPane.INFORMATION_MESSAGE);

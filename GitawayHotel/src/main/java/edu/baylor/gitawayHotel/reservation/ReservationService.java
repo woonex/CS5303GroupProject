@@ -204,10 +204,11 @@ public class ReservationService {
 	/**Gets all the reservations of the hotel
 	 * @return
 	 */
-	public Collection<Reservation> getReservations() {
+	public List<Reservation> getReservations() {
 		//TODO possibly check each time if the roomServices has removed a room?
 		return this.reservations.values().stream()
 				.flatMap(List::stream)
+				.sorted()
 				.collect(Collectors.toList());
 	}
 

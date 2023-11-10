@@ -290,6 +290,7 @@ public class ViewRoomsGui implements IGui {
 	 */
 	@Override
 	public JPanel getFullPanel() {
+		this.table.clearSelection();
 		return this.panel;
 	}
 
@@ -376,15 +377,23 @@ public class ViewRoomsGui implements IGui {
 	}
 
 	public void setStartDate(LocalDate startDate) {
-		startDateField.setText(DATE_FORMATTER.format(startDate));
+		String text = "";
+		if (startDate != null) {
+			text = DATE_FORMATTER.format(startDate);
+		} 
+		startDateField.setText(text);
 	}
 
 	public void setEndDate(LocalDate endDate) {
-		endDateField.setText(DATE_FORMATTER.format(endDate));
+		String text = "";
+		if (endDate != null) {
+			text = DATE_FORMATTER.format(endDate);
+		}
+		endDateField.setText(text);
 	}
 	
-	public void setBackButtonState(boolean state) {
-		this.backButton.setEnabled(state);
-	}
+//	public void setBackButtonState(boolean state) {
+//		this.backButton.setEnabled(state);
+//	}
 
 }
