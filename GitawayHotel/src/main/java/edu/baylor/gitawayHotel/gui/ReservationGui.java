@@ -14,12 +14,18 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.user.User;
 
 public class ReservationGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(ReservationGui.class);
+	
+	private static final int MIN_DAYS = 2;
 	private JButton backButton;
 	private JPanel fullPanel;
 	private JTable table;
@@ -98,11 +104,17 @@ public class ReservationGui implements IGui {
 	 */
 	protected void manageModifyAvailable() {
 		int[] selectedRows = table.getSelectedRows();
-		if (selectedRows.length == 1) {
-			modifyButton.setEnabled(true);
-		} else {
-			modifyButton.setEnabled(false);
+		
+		LocalDate startDate = (LocalDate) model.getValueAt(selectedRows[0], 0);
+		
+		boolean state = true;
+		if (selectedRows.length != 1) {
+			state = false;
+		} else if (startDate.isBefore(LocalDate.now())) {
+			logger.warn("Start date is before today");
+			state = false;
 		}
+		modifyButton.setEnabled(state);
 	}
 
 	/**Updates the table by querying the reservations and displaying them
