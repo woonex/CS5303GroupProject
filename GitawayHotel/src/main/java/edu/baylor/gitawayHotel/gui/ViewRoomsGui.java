@@ -68,7 +68,7 @@ public class ViewRoomsGui implements IGui {
 		layoutMainArea();
 	}
 
-		/**Internal class to prevent vertically expanding components
+	/**Internal class to prevent vertically expanding components
 	 * @author Nathan
 	 *
 	 */
@@ -79,8 +79,6 @@ public class ViewRoomsGui implements IGui {
 		}
 	}
 	
-	
-
 	/**Performs the layout of the component
 	 * 
 	 */
@@ -142,10 +140,12 @@ public class ViewRoomsGui implements IGui {
 			endDatePrompt = new TextPrompt("Check-out date", endDateField);
 			startDatePrompt.changeAlpha(0.5f);
 			endDatePrompt.changeAlpha(0.5f);
-
+			
+			//add a button to the search listener to detect that the search button is clicked
 			searchButton.addActionListener(e -> {
 				searchClicked = true;
 			});
+			
 			/*define something that listens to the document of the text fields and will flag the search as not clicked
 			 * (requires the user to click the search each time after modifying the date)
 			*/
@@ -170,13 +170,13 @@ public class ViewRoomsGui implements IGui {
 			startDateField.getDocument().addDocumentListener(dateFieldListener);
 			endDateField.getDocument().addDocumentListener(dateFieldListener);
 			
+			//setup date entry portion
 			JPanel topDate = new JPanel(new GridLayout(1, 2));
 			topDate.add(new NonVerticalExpanding(startDateField));
 			topDate.add(new NonVerticalExpanding(endDateField));
 			datePanel.add(topDate, BorderLayout.NORTH);
 			
 			JPanel middleDate = new JPanel(new GridLayout(1, 2));
-			
 			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
 			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
 			datePanel.add(middleDate, BorderLayout.CENTER);
@@ -193,12 +193,13 @@ public class ViewRoomsGui implements IGui {
 			panel.add(scrollPane);
 			panel.add(actionPanel);
 			
-			
 			break;
 		}
-		
 	}
 	
+	/**Sets whether the reserve vutton should be available by checking the gui state
+	 * 
+	 */
 	private void manageReserveButtonAvailable() {
 		boolean validDates = true;
 		try {
@@ -218,18 +219,21 @@ public class ViewRoomsGui implements IGui {
 		}
 	}
 	
+	/**Creates the model for the table
+	 * 
+	 */
 	private void createModel() {
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
 			public boolean isCellEditable(int row, int column) {
 				switch (userType) {
-					case ADMIN:
-					case HOTEL_CLERK:
-						return true;
-					case GUEST:
-						return false;
-					default:
-						return false;
+				case ADMIN:
+				case HOTEL_CLERK:
+					return true;
+				case GUEST:
+					return false;
+				default:
+					return false;
 				}
 			}
 		};
@@ -435,6 +439,9 @@ public class ViewRoomsGui implements IGui {
 		panel.repaint();
 	}
 	
+	/**Gets if the date input by the user for reservation is valid
+	 * @return
+	 */
 	boolean isDateValid() {
 		LocalDate startDate = getStartDate();
 		LocalDate endDate = getEndDate();
@@ -470,9 +477,5 @@ public class ViewRoomsGui implements IGui {
 		}
 		endDateField.setText(text);
 	}
-	
-//	public void setBackButtonState(boolean state) {
-//		this.backButton.setEnabled(state);
-//	}
 
 }
