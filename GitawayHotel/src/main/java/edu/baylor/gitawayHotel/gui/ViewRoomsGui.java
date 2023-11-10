@@ -22,6 +22,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.reservation.LocalDateAdapter;
@@ -32,6 +35,7 @@ import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
  *
  */
 public class ViewRoomsGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(ViewRoomsGui.class);
 	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private JPanel datePanel;
@@ -175,8 +179,10 @@ public class ViewRoomsGui implements IGui {
 			validDates = false;
 		}
 		
+		boolean isAvailable = isDateValid();
+		
 		int[] selectedRows = table.getSelectedRows();
-		if (selectedRows.length == 1 && validDates) {
+		if (selectedRows.length == 1 && validDates && isAvailable) {
 			reserveButton.setEnabled(true);
 		} else {
 			reserveButton.setEnabled(false);
@@ -374,6 +380,24 @@ public class ViewRoomsGui implements IGui {
 			scrollPane.repaint();
 		}
 		panel.repaint();
+	}
+	
+	boolean isDateValid() {
+		LocalDate startDate = getStartDate();
+		LocalDate endDate = getEndDate();
+		
+		if (startDate.isBefore(LocalDate.now())) {
+			logger.warn("Start date is before today's date");
+			return false;
+		} else if (startDate.isAfter(endDate)) {
+			logger.warn("Start date is after end date");
+			return false;
+		} else if (startDate.equals(endDate)) {
+			logger.warn("Start date and end date must not be the same");
+			return false;
+		}
+		
+		return true;
 	}
 
 	public void setStartDate(LocalDate startDate) {
