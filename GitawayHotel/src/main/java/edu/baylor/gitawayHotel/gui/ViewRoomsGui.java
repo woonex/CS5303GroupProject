@@ -1,5 +1,6 @@
 package edu.baylor.gitawayHotel.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -120,7 +121,6 @@ public class ViewRoomsGui implements IGui {
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
-		panel.add(scrollPane);
 		
 		if (userType == null) {
 			return;
@@ -128,6 +128,7 @@ public class ViewRoomsGui implements IGui {
 		switch (userType) {
 		case ADMIN:
 		case HOTEL_CLERK:
+			panel.add(scrollPane);
 			panel.add(roomUpdateField);
 			panel.add(addRoomButton);
 			panel.add(removeRoomButton);
@@ -136,7 +137,7 @@ public class ViewRoomsGui implements IGui {
 			break;
 		case GUEST:
 		default:
-			datePanel = new JPanel(new GridLayout(2, 2));
+			datePanel = new JPanel(new BorderLayout());
 			startDatePrompt = new TextPrompt("Check-in date", startDateField);
 			endDatePrompt = new TextPrompt("Check-out date", endDateField);
 			startDatePrompt.changeAlpha(0.5f);
@@ -169,18 +170,27 @@ public class ViewRoomsGui implements IGui {
 			startDateField.getDocument().addDocumentListener(dateFieldListener);
 			endDateField.getDocument().addDocumentListener(dateFieldListener);
 			
-			datePanel.add(new NonVerticalExpanding(startDateField));
-			datePanel.add(new NonVerticalExpanding(endDateField));
-
-			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			JPanel topDate = new JPanel(new GridLayout(1, 2));
+			topDate.add(new NonVerticalExpanding(startDateField));
+			topDate.add(new NonVerticalExpanding(endDateField));
+			datePanel.add(topDate, BorderLayout.NORTH);
+			
+			JPanel middleDate = new JPanel(new GridLayout(1, 2));
+			
+			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			datePanel.add(middleDate, BorderLayout.CENTER);
+			
+			JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			bottomDate.add(searchButton);
+			datePanel.add(bottomDate, BorderLayout.SOUTH);
 			
 			actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			actionPanel.add(backButton);
-			actionPanel.add(searchButton);
 			actionPanel.add(reserveButton);
 
 			panel.add(datePanel);
+			panel.add(scrollPane);
 			panel.add(actionPanel);
 			
 			
