@@ -1,5 +1,6 @@
 package edu.baylor.gitawayHotel.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -18,16 +19,27 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
+import edu.baylor.gitawayHotel.reservation.LocalDateAdapter;
 import edu.baylor.gitawayHotel.user.UserType;
 import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 
+/**A class for viewing rooms or creating reservations for guests
+ *
+ */
 public class ViewRoomsGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(ViewRoomsGui.class);
+	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private JPanel datePanel;
 	private JPanel actionPanel;
@@ -49,13 +61,14 @@ public class ViewRoomsGui implements IGui {
 
 	private UserType userType;
 	private JButton reserveButton;
+	private boolean searchClicked = false;
 
 	public ViewRoomsGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
 		layoutMainArea();
 	}
 
-		/**Internal class to prevent vertically expanding components
+	/**Internal class to prevent vertically expanding components
 	 * @author Nathan
 	 *
 	 */
@@ -65,26 +78,13 @@ public class ViewRoomsGui implements IGui {
 			add(component);
 		}
 	}
-
+	
 	/**Performs the layout of the component
 	 * 
 	 */
 	public void layoutMainArea() {
 		panel = new JPanel();
-		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
-			@Override
-			public boolean isCellEditable(int row, int column) {
-				switch (userType) {
-					case ADMIN:
-					case HOTEL_CLERK:
-						return true;
-					case GUEST:
-						return false;
-					default:
-						return false;
-				}
-			}
-		};
+		createModel();
 		updateModel();
 		// makes a table with the rooms.json data
 		table = new JTable(model);
@@ -119,7 +119,6 @@ public class ViewRoomsGui implements IGui {
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
-		panel.add(scrollPane);
 		
 		if (userType == null) {
 			return;
@@ -127,6 +126,7 @@ public class ViewRoomsGui implements IGui {
 		switch (userType) {
 		case ADMIN:
 		case HOTEL_CLERK:
+			panel.add(scrollPane);
 			panel.add(roomUpdateField);
 			panel.add(addRoomButton);
 			panel.add(removeRoomButton);
@@ -135,32 +135,71 @@ public class ViewRoomsGui implements IGui {
 			break;
 		case GUEST:
 		default:
-			datePanel = new JPanel(new GridLayout(2, 2));
+			datePanel = new JPanel(new BorderLayout());
 			startDatePrompt = new TextPrompt("Check-in date", startDateField);
 			endDatePrompt = new TextPrompt("Check-out date", endDateField);
 			startDatePrompt.changeAlpha(0.5f);
 			endDatePrompt.changeAlpha(0.5f);
 			
-			datePanel.add(new NonVerticalExpanding(startDateField));
-			datePanel.add(new NonVerticalExpanding(endDateField));
-
-			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			datePanel.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			//add a button to the search listener to detect that the search button is clicked
+			searchButton.addActionListener(e -> {
+				searchClicked = true;
+			});
+			
+			/*define something that listens to the document of the text fields and will flag the search as not clicked
+			 * (requires the user to click the search each time after modifying the date)
+			*/
+			DocumentListener dateFieldListener = new DocumentListener() {
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					changed();
+				}
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					changed();
+				}
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					changed();
+				}
+				private void changed() {
+					searchClicked = false;
+					reserveButton.setEnabled(false);
+				}
+			};
+			startDateField.getDocument().addDocumentListener(dateFieldListener);
+			endDateField.getDocument().addDocumentListener(dateFieldListener);
+			
+			//setup date entry portion
+			JPanel topDate = new JPanel(new GridLayout(1, 2));
+			topDate.add(new NonVerticalExpanding(startDateField));
+			topDate.add(new NonVerticalExpanding(endDateField));
+			datePanel.add(topDate, BorderLayout.NORTH);
+			
+			JPanel middleDate = new JPanel(new GridLayout(1, 2));
+			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+			datePanel.add(middleDate, BorderLayout.CENTER);
+			
+			JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
+			bottomDate.add(searchButton);
+			datePanel.add(bottomDate, BorderLayout.SOUTH);
 			
 			actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 			actionPanel.add(backButton);
-			actionPanel.add(searchButton);
 			actionPanel.add(reserveButton);
 
 			panel.add(datePanel);
+			panel.add(scrollPane);
 			panel.add(actionPanel);
-			
 			
 			break;
 		}
-		
 	}
 	
+	/**Sets whether the reserve vutton should be available by checking the gui state
+	 * 
+	 */
 	private void manageReserveButtonAvailable() {
 		boolean validDates = true;
 		try {
@@ -170,20 +209,41 @@ public class ViewRoomsGui implements IGui {
 			validDates = false;
 		}
 		
+		boolean isAvailable = isDateValid();
+		
 		int[] selectedRows = table.getSelectedRows();
-		if (selectedRows.length == 1 && validDates) {
+		if (selectedRows.length == 1 && validDates && isAvailable && searchClicked) {
 			reserveButton.setEnabled(true);
 		} else {
 			reserveButton.setEnabled(false);
 		}
 	}
+	
+	/**Creates the model for the table
+	 * 
+	 */
+	private void createModel() {
+		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				switch (userType) {
+				case ADMIN:
+				case HOTEL_CLERK:
+					return true;
+				case GUEST:
+					return false;
+				default:
+					return false;
+				}
+			}
+		};
+	}
 
 	public void updateModel() {
 		List<Room> rooms = roomServices.getRooms();
 		
-		for (int i = 0; i < model.getRowCount(); i++) {
-			model.removeRow(i);
-		}
+		model.setRowCount(0);
+		model.fireTableDataChanged();
 		
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
@@ -285,6 +345,9 @@ public class ViewRoomsGui implements IGui {
 	 */
 	@Override
 	public JPanel getFullPanel() {
+		this.table.clearSelection();
+		this.searchClicked = false;
+		updateModel();
 		return this.panel;
 	}
 
@@ -313,8 +376,11 @@ public class ViewRoomsGui implements IGui {
 	 * @return the username provided
 	 */
 	public LocalDate getStartDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter formatter = DATE_FORMATTER;
   		String date = this.startDateField.getText();
+  		if (date == null || "".equals(date)) {
+  			return null;
+  		}
 		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;
 	}
@@ -323,9 +389,12 @@ public class ViewRoomsGui implements IGui {
 	 * @return the password provided
 	 */
 	public LocalDate getEndDate() {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		DateTimeFormatter formatter = DATE_FORMATTER;
   		String date = this.endDateField.getText();
-		LocalDate localDate = LocalDate.parse(date, formatter);
+  		if (date == null || "".equals(date)) {
+  			return null;
+  		}
+  		LocalDate localDate = LocalDate.parse(date, formatter);
 		return localDate;
 	}
 
@@ -368,6 +437,45 @@ public class ViewRoomsGui implements IGui {
 			scrollPane.repaint();
 		}
 		panel.repaint();
+	}
+	
+	/**Gets if the date input by the user for reservation is valid
+	 * @return
+	 */
+	boolean isDateValid() {
+		LocalDate startDate = getStartDate();
+		LocalDate endDate = getEndDate();
+		
+		if (startDate == null || endDate == null) {
+			return false;
+		} else if (startDate.isBefore(LocalDate.now())) {
+			logger.warn("Start date is before today's date");
+			return false;
+		} else if (startDate.isAfter(endDate)) {
+			logger.warn("Start date is after end date");
+			return false;
+		} else if (startDate.equals(endDate)) {
+			logger.warn("Start date and end date must not be the same");
+			return false;
+		}
+		
+		return true;
+	}
+
+	public void setStartDate(LocalDate startDate) {
+		String text = "";
+		if (startDate != null) {
+			text = DATE_FORMATTER.format(startDate);
+		} 
+		startDateField.setText(text);
+	}
+
+	public void setEndDate(LocalDate endDate) {
+		String text = "";
+		if (endDate != null) {
+			text = DATE_FORMATTER.format(endDate);
+		}
+		endDateField.setText(text);
 	}
 
 }

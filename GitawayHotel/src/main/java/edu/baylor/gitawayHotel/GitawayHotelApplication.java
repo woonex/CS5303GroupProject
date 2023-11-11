@@ -33,14 +33,13 @@ public class GitawayHotelApplication {
 			UserServices userServices = new UserServices();
 			RoomServices roomServices = new RoomServices();
 			
-			Map<Room, Integer> uniqueRooms = roomServices.getUniqueRoomTypes();
-			
 			ReservationService reservationServices = new ReservationService(roomServices);
 			
 			try {
-			performTest(reservationServices);
+				performTest(reservationServices, roomServices);
 			} catch (RuntimeException e) {
-				e.printStackTrace();
+				System.out.println("Reservations already exist for test cases");
+//				e.printStackTrace();
 			}
 			
 			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
@@ -56,15 +55,10 @@ public class GitawayHotelApplication {
 	 * TODO extract to Junit test
 	 * @param reservationServices
 	 */
- 	private static void performTest(ReservationService reservationServices) {
+ 	private static void performTest(ReservationService reservationServices, RoomServices roomServices) {
  		User user = new User("Joe");
- 		Room room = new Room();
- 		room.setRoom(100);
- 		room.setBedQty(2);
- 		room.setBedType("queen");
- 		room.setNoSmoking(true);
-		
-		
+ 		
+ 		Room room = roomServices.getRooms().iterator().next();
 		
  		LocalDate now = LocalDate.now();
  		LocalDate startDate= now;
