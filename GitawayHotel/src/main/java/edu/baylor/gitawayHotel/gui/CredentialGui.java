@@ -206,4 +206,12 @@ public class CredentialGui implements IGui {
 	public JPanel getFullPanel() {
 		return this.panel;
 	}
+
+	public void setUsername(String string) {
+		this.usernameField.setText(string);
+	}
+
+	public void setPassword(String string) {
+		this.pwField.setText(string);
+	}
 }

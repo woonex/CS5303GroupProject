@@ -45,4 +45,11 @@ public class MainFrame {
 	public JFrame getFrame() {
 		return frame;
 	}
+
+	/**
+	 * @return the activePanel
+	 */
+	public JPanel getActivePanel() {
+		return activePanel;
+	}
 }

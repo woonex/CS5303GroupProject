@@ -61,6 +61,14 @@ public class AdminGui extends AuthenticatedGui {
 		return UserType.ADMIN;
 	}
 
+	public void setClerkUsername(String string) {
+		this.createGui.setUsername(string);
+	}
+	
+	public void setClerkPassword(String string) {
+		this.createGui.setPassword(string);
+	}
+
 
 	//create hotel clerk account
 	

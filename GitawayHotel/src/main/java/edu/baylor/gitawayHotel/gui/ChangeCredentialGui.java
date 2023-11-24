@@ -226,4 +226,12 @@ public class ChangeCredentialGui implements IGui {
 	public void setUsername(String username) {
 		this.usernameField.setText(username);
 	}
+
+	public void setCurrentPassword(String password) {
+		this.pwField.setText(password);
+	}
+
+	public void setNewPassword(String newPw) {
+		this.newpwField.setText(newPw);
+	}
 }

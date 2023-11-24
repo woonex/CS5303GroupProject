@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 /**Class related to servicing users
  * includes saving users to disk; updating password for the user
@@ -30,6 +31,11 @@ public class UserServices {
 	private static final Logger logger = LogManager.getLogger(UserServices.class);
 	private static final String FILENAME = "users.json";
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+	private static final List<User> defaultUsers = List.of(
+			new User("admin", "password", UserType.ADMIN),
+			new User("clerk", "password", UserType.HOTEL_CLERK),
+			new User("guest", "password", UserType.GUEST)
+			);
 	
 	private File diskFile;
 	private Map<String, User> users;
@@ -159,6 +165,16 @@ public class UserServices {
 		return user.getUserType();
 	}
 	
+	/**Gets the user on disk
+	 * @param username
+	 * @return
+	 */
+	public User getUser(String username) {
+		logger.trace("UserServices getUser() invoked");
+		User user = users.get(username);
+		return user;
+	}
+	
 	/**Gets the map of users by username that are present in the file
 	 * @return map of users or blank map for file error
 	 */
@@ -208,7 +224,7 @@ public class UserServices {
 		if (!exists) {
 			try {
 				tmp.createNewFile();
-				writeEmptyListJson(tmp);
+				writeDefaultJson(tmp);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -219,9 +235,11 @@ public class UserServices {
 	/**Writes an empty json object to the file
 	 * @param f file to write to
 	 */
-	private static void writeEmptyListJson(File f) {
+	private static void writeDefaultJson(File f) {
+		
 		logger.trace("UserServices writeEmptyJson() invoked");
 		try (FileWriter writer = new FileWriter(f)) {
+			gson.toJson(defaultUsers, writer);
             writer.write("[\n]\n");
         } catch (IOException e) {
             e.printStackTrace();
@@ -246,5 +264,14 @@ public class UserServices {
 		String dir = new File(url.getPath()).getParent();
 		dir = dir.replace("%20", " ");
 		return dir;
+	}
+
+	/**Removes the user from the directory
+	 * @param user
+	 */
+	public void removeUserByUsername(String username) {
+		users.remove(username);
+		
+		saveUsersToDisk(users.values(), diskFile);
 	}
 }
