@@ -34,6 +34,9 @@ import edu.baylor.gitawayHotel.user.UserType;
  *
  */
 public class MainController {
+	static final String GUEST_CREATED = "Guest user account successfully created with username: ";
+	static final String INVALID_CREDENTIALS_NOTIFICATION = "Invalid credentials. Please try again.";
+	static final String USERNAME_EXISTS = "Username already exists.\nPlease choose another username";
 	private final SplashScreen splashScreen;
 	private final CredentialGui loginGui;
 	private final MainFrame mainFrame;
@@ -49,7 +52,20 @@ public class MainController {
 	private final RoomServices roomServices;
 	
 	private Reservation lastReservation;
-
+	
+	public MainController(RoomServices roomServices) {
+		this(
+				new MainFrame(),
+				new SplashScreen(), 
+				new CredentialGui(), 
+				new UserServices(), 
+				roomServices, 
+				new ChangeCredentialGui(), 
+				new ViewRoomsGui(roomServices),
+				new ReservationService(roomServices)
+				);
+	}
+	
 	public MainController(
 			MainFrame mainFrame, 
 			SplashScreen splashScreen, 
@@ -104,14 +120,9 @@ public class MainController {
 	private void setupSplashscreenActions() {
 		//when the user is on the main screen and clicks next
 		JButton mainNext = splashScreen.getNextButton();
-		mainNext.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//splash screen redirects to the login gui
-				mainFrame.add(loginGui.getFullPanel());	
-			}
-			
+		mainNext.addActionListener(e -> {
+			//splash screen redirects to the login gui
+			mainFrame.add(loginGui.getFullPanel());	
 		});
 	}
 	
@@ -121,73 +132,70 @@ public class MainController {
 	private void setupLoginActions() {
 		//when the user is on the login screen and clicks login
 		JButton loginNext = loginGui.getLoginButton();
-		loginNext.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//get the credentials from the gui
-				String username = loginGui.getUsername();
-				String password = loginGui.getPassword();
-				boolean authenticated = userServices.isSuccessfulLogin(username, password);
-				
-				if (!authenticated) {
-					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Invalid credentials. Please try again.", "Authentication Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				
-				UserType userType = userServices.getUserType(username);
-				
-				//construct guis for the user
-				adminGui.setUsername(username);
-				clerkGui.setUsername(username);
-				guestGui.setUsername(username);
-				viewRoomsGui.setUserType(userType);
-				
-				//login redirects to the specific user pages
-				switch (userType) {
-					case ADMIN:
-						setupAdminActions();
-						mainFrame.add(adminGui.getFullPanel());
-						break;
-					case HOTEL_CLERK:
-						setupClerkActions();
-						mainFrame.add(clerkGui.getFullPanel());
-						break;
-					case GUEST:
-						setupGuestActions();
-						reservationGui.setUser(new User(username));
-						mainFrame.add(guestGui.getFullPanel());
-						break;
-				}
-				setupRoomsActions();
-				
+		loginNext.addActionListener(e -> {
+			//get the credentials from the gui
+			String username = loginGui.getUsername();
+			String password = loginGui.getPassword();
+			boolean authenticated = userServices.isSuccessfulLogin(username, password);
+			
+			if (!authenticated) {
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), INVALID_CREDENTIALS_NOTIFICATION, "Authentication Error", JOptionPane.ERROR_MESSAGE);
+				return;
 			}
 			
+			UserType userType = userServices.getUserType(username);
+			
+			//construct guis for the user
+			adminGui.setUsername(username);
+			clerkGui.setUsername(username);
+			guestGui.setUsername(username);
+			viewRoomsGui.setUserType(userType);
+			
+			//login redirects to the specific user pages
+			switch (userType) {
+				case ADMIN:
+					setupAdminActions();
+					mainFrame.add(adminGui.getFullPanel());
+					break;
+				case HOTEL_CLERK:
+					setupClerkActions();
+					mainFrame.add(clerkGui.getFullPanel());
+					break;
+				case GUEST:
+					setupGuestActions();
+					reservationGui.setUser(new User(username));
+					mainFrame.add(guestGui.getFullPanel());
+					break;
+			}
+			setupRoomsActions();
 		});
 		
 		//When the user is on the login screen and clicks Create Guest Account
 		JButton createGuest = loginGui.getCreateGuestButton();
-		createGuest.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String username = loginGui.getUsername();
-				String password = loginGui.getPassword();
-				
-				boolean usernameAvailable = userServices.isUsernameAvailable(username);
-				if (!usernameAvailable) {
-					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Username already exists.\nPlease choose another username", "Creation Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				
-				try {
-					userServices.addUser(username, password, UserType.GUEST);
-				} catch (InstanceAlreadyExistsException e1) {
-					e1.printStackTrace();
-				}
-				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Guest user account " + username + " successfully created", "Successful Account Creation", JOptionPane.INFORMATION_MESSAGE);
-			}
+		createGuest.addActionListener(e -> {
+			createGuestAccount();
 		});
+	}
+	
+	/**Creates a clerk from the admin
+	 * 
+	 */
+	private void createGuestAccount() {
+		String username = loginGui.getUsername();
+		String password = loginGui.getPassword();
+		
+		boolean usernameAvailable = userServices.isUsernameAvailable(username);
+		if (!usernameAvailable) {
+			JOptionPane.showMessageDialog(mainFrame.getFrame(), USERNAME_EXISTS, "Creation Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		try {
+			userServices.addUser(username, password, UserType.GUEST);
+		} catch (InstanceAlreadyExistsException e1) {
+			e1.printStackTrace();
+		}
+		JOptionPane.showMessageDialog(mainFrame.getFrame(), GUEST_CREATED + username, "Successful Account Creation", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	/**Sets up the admin action event handling
@@ -195,47 +203,39 @@ public class MainController {
 	 */
 	private void setupAdminActions() {
 		JButton adminAddClerk = adminGui.getCreateUserButton();
-		adminAddClerk.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String username = adminGui.getUsername();
-				String password = adminGui.getPassword();
-				
-				boolean usernameAvailable = userServices.isUsernameAvailable(username);
-				if (!usernameAvailable) {
-					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Username already exists.\nPlease choose another username", "Creation Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				
-				try {
-					userServices.addUser(username, password, UserType.HOTEL_CLERK);
-				} catch (InstanceAlreadyExistsException e1) {
-					e1.printStackTrace();
-				}
-			}
-			
+		adminAddClerk.addActionListener(e -> {
+			createClerk();
 		});
 		
 		JButton adminLogout = adminGui.getLogoutButton();
-		adminLogout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				logoutUser(adminGui);
-			}
-			
+		adminLogout.addActionListener(e -> {
+			logoutUser(adminGui);	
 		});
 		
 		JButton adminModify = adminGui.getModifyButton();
-		adminModify.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				modifyCredentials(adminGui);
-			}
-			
+		adminModify.addActionListener(e -> {
+			modifyCredentials(adminGui);
 		});
+	}
+	
+	/**Creates a clerk
+	 * 
+	 */
+	private void createClerk() {
+		String username = adminGui.getUsername();
+		String password = adminGui.getPassword();
+		
+		boolean usernameAvailable = userServices.isUsernameAvailable(username);
+		if (!usernameAvailable) {
+			JOptionPane.showMessageDialog(mainFrame.getFrame(), USERNAME_EXISTS, "Creation Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		try {
+			userServices.addUser(username, password, UserType.HOTEL_CLERK);
+		} catch (InstanceAlreadyExistsException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
 	/**Sets up the clerk actions
@@ -243,32 +243,18 @@ public class MainController {
 	 */
 	private void setupClerkActions() {
 		JButton clerkLogout = clerkGui.getLogoutButton();
-		clerkLogout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				logoutUser(clerkGui);
-			}
-			
+		clerkLogout.addActionListener(e -> {
+			logoutUser(clerkGui);
 		});
 		
 		JButton clerkModify = clerkGui.getModifyButton();
-		clerkModify.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				modifyCredentials(clerkGui);
-			}
-			
+		clerkModify.addActionListener(e -> {
+			modifyCredentials(clerkGui);
 		});
 
 		JButton viewRoomsButton = clerkGui.getViewRoomsButton();
-		viewRoomsButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e ) {
-				mainFrame.add(viewRoomsGui.getFullPanel());
-			}
+		viewRoomsButton.addActionListener(e -> {
+			mainFrame.add(viewRoomsGui.getFullPanel());
 		});
 	}
 	
@@ -277,32 +263,20 @@ public class MainController {
 	 */
 	private void setupGuestActions() {
 		JButton guestLogout = guestGui.getLogoutButton();
-		guestLogout.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				logoutUser(guestGui);
-			}
+		guestLogout.addActionListener(e -> {
+			logoutUser(guestGui);
 		});
 		
 		JButton guestModify = guestGui.getModifyButton();
-		guestModify.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				modifyCredentials(guestGui);
-			}
+		guestModify.addActionListener(e -> {
+			modifyCredentials(guestGui);
 		});
 
 		JButton viewRoomsButton = guestGui.getViewRoomsButton();
-		viewRoomsButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				viewRoomsGui.setStartDate(null);
-				viewRoomsGui.setEndDate(null);
-				mainFrame.add(viewRoomsGui.getFullPanel());
-			}
+		viewRoomsButton.addActionListener(e -> {
+			viewRoomsGui.setStartDate(null);
+			viewRoomsGui.setEndDate(null);
+			mainFrame.add(viewRoomsGui.getFullPanel());
 		});
 		
 		JButton viewReservations = guestGui.getViewReservationsButton();
@@ -344,41 +318,37 @@ public class MainController {
 	
 	private void setupModificationActions() {
 		JButton changePassword = changeCredentialGui.getLoginButton();
-		changePassword.addActionListener(new ActionListener() {
+		changePassword.addActionListener(e -> {
+			String username = changeCredentialGui.getUsername();
+			String password = changeCredentialGui.getPassword();
+			String newPassword = changeCredentialGui.getNewPassword();
+			boolean authenticated = userServices.isSuccessfulLogin(username, password);
 			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String username = changeCredentialGui.getUsername();
-				String password = changeCredentialGui.getPassword();
-				String newPassword = changeCredentialGui.getNewPassword();
-				boolean authenticated = userServices.isSuccessfulLogin(username, password);
-				
-				if (!authenticated) {
-					JOptionPane.showMessageDialog(mainFrame.getFrame(), "Invalid credentials. Please try again.", "Authentication Error", JOptionPane.ERROR_MESSAGE);
-					return;
-				}
-				
-				userServices.updateUser(username, newPassword);
-				
-				UserType userType = userServices.getUserType(username);
-				
-				//construct guis for the user
-				adminGui.setUsername(username);
-				clerkGui.setUsername(username);
-				guestGui.setUsername(username);
-						
-				//login redirects to the specific user pages
-				switch (userType) {
-				case ADMIN:
-					mainFrame.add(adminGui.getFullPanel());
-					break;
-				case HOTEL_CLERK:
-					mainFrame.add(clerkGui.getFullPanel());
-					break;
-				case GUEST:
-					mainFrame.add(guestGui.getFullPanel());
-					break;
-				}
+			if (!authenticated) {
+				JOptionPane.showMessageDialog(mainFrame.getFrame(), INVALID_CREDENTIALS_NOTIFICATION, "Authentication Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+			userServices.updateUser(username, newPassword);
+			
+			UserType userType = userServices.getUserType(username);
+			
+			//construct guis for the user
+			adminGui.setUsername(username);
+			clerkGui.setUsername(username);
+			guestGui.setUsername(username);
+					
+			//login redirects to the specific user pages
+			switch (userType) {
+			case ADMIN:
+				mainFrame.add(adminGui.getFullPanel());
+				break;
+			case HOTEL_CLERK:
+				mainFrame.add(clerkGui.getFullPanel());
+				break;
+			case GUEST:
+				mainFrame.add(guestGui.getFullPanel());
+				break;
 			}
 		});
 	}
@@ -388,99 +358,118 @@ public class MainController {
 	 */
 	private void setupRoomsActions() {
 		JButton saveRoomsButton = viewRoomsGui.getSaveRoomsButton();
-		saveRoomsButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				roomServices.saveRooms(viewRoomsGui.getRoomsInTable());
-			} 
-			
+		saveRoomsButton.addActionListener(e -> {
+			saveRooms();
 		});
 		
 		JButton backButton = viewRoomsGui.getBackButton();
-		backButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				UserType userType = viewRoomsGui.getUserType();
-				// back button redirects to the specific user pages
-				switch (userType) {
-				case ADMIN:
-					mainFrame.add(adminGui.getFullPanel());
-					break;
-				case HOTEL_CLERK:
-					mainFrame.add(clerkGui.getFullPanel());
-					break;
-				case GUEST:
-					mainFrame.add(guestGui.getFullPanel());
-					if (lastReservation != null) {
-						reservationService.addReservation(lastReservation);
-						lastReservation = null;
-					}
-					break;
-				}
-			}
+		backButton.addActionListener(e -> {
+			backFromRoomGui();
 		});
 
 		JButton searchButton = viewRoomsGui.getSearchButton();
-		searchButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Set<Room> availableRooms = reservationService.getAvailableRooms(viewRoomsGui.getStartDate(), viewRoomsGui.getEndDate());
-				viewRoomsGui.setFilteredRooms(availableRooms);
-			}
+		searchButton.addActionListener(e -> {
+			handleSearch();
 		});
 		
 		JButton reserveButton = viewRoomsGui.getReserveRoomButton();
-		reserveButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int desiredRoomNum = viewRoomsGui.getDesiredRoomReservation();
-				LocalDate startDate = viewRoomsGui.getStartDate();
-				LocalDate endDate = viewRoomsGui.getEndDate();
-				
-				String username = loginGui.getUsername();
-				User user = new User(username);
-				Room room = roomServices.getRoomByNumber(desiredRoomNum);
-				Reservation res = new Reservation(startDate, endDate, user, room);
-				res.setDateReservationMade(LocalDate.now());
-				
-				reservationService.addReservation(res);
-				lastReservation = null;
-				
-				//go back to the previous screen after this
-				JOptionPane.showMessageDialog(mainFrame.getFrame(), "Reservation Successfully Created", "Reservation Created", JOptionPane.INFORMATION_MESSAGE);
-				backButton.doClick();
-			}
+		reserveButton.addActionListener(e -> {
+			handleReservationRequest();
 		});
 		
-		JTextField field = viewRoomsGui.getRoomUpdateField();
-		
 		JButton remove = viewRoomsGui.getRemoveRoomButton();
-		remove.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				roomServices.removeRoom(Integer.parseInt(field.getText()));
-				viewRoomsGui.updateModel();
-			}
-			
+		remove.addActionListener(e -> {
+			handleRemoveRoom();
 		});
 		
 		JButton add = viewRoomsGui.getAddRoomButton();
-		add.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Room defaultRoom = new Room();
-				defaultRoom.setBedQty(1);
-				defaultRoom.setBedType("queen");
-				defaultRoom.setNoSmoking(true);
-				defaultRoom.setRoom(Integer.parseInt(field.getText()));
-				roomServices.addRoom(defaultRoom);
-				viewRoomsGui.updateModel();
-			}
+		add.addActionListener(e -> {
+			handleAddRoom();
 		});
+	}
+	
+	/**saves the rooms
+	 * 
+	 */
+	private void saveRooms() {
+		roomServices.saveRooms(viewRoomsGui.getRoomsInTable());
+	}
+	
+	/**handles the back from rooms gui screen
+	 * 
+	 */
+	private void backFromRoomGui() {
+		UserType userType = viewRoomsGui.getUserType();
+		// back button redirects to the specific user pages
+		switch (userType) {
+		case ADMIN:
+			mainFrame.add(adminGui.getFullPanel());
+			break;
+		case HOTEL_CLERK:
+			mainFrame.add(clerkGui.getFullPanel());
+			break;
+		case GUEST:
+			mainFrame.add(guestGui.getFullPanel());
+			if (lastReservation != null) {
+				reservationService.addReservation(lastReservation);
+				lastReservation = null;
+			}
+			break;
+		}
+	}
+	
+	/**Handles the search by refreshing the table
+	 * 
+	 */
+	private void handleSearch() {
+		Set<Room> availableRooms = reservationService.getAvailableRooms(viewRoomsGui.getStartDate(), viewRoomsGui.getEndDate());
+		viewRoomsGui.setFilteredRooms(availableRooms);
+	}
+	
+	/**Handles the request to create a reservation
+	 * 
+	 */
+	private void handleReservationRequest() {
+		int desiredRoomNum = viewRoomsGui.getDesiredRoomReservation();
+		LocalDate startDate = viewRoomsGui.getStartDate();
+		LocalDate endDate = viewRoomsGui.getEndDate();
+		
+		String username = loginGui.getUsername();
+		User user = new User(username);
+		Room room = roomServices.getRoomByNumber(desiredRoomNum);
+		Reservation res = new Reservation(startDate, endDate, user, room);
+		res.setDateReservationMade(LocalDate.now());
+		
+		reservationService.addReservation(res);
+		lastReservation = null;
+		
+		//go back to the previous screen after this
+		JOptionPane.showMessageDialog(mainFrame.getFrame(), "Reservation Successfully Created", "Reservation Created", JOptionPane.INFORMATION_MESSAGE);
+		JButton backButton = viewRoomsGui.getBackButton();
+		backButton.doClick();
+	}
+	
+	/**Handles the room removal request by the clerk
+	 * 
+	 */
+	private void handleRemoveRoom() {
+		JTextField field = viewRoomsGui.getRoomUpdateField();
+		roomServices.removeRoom(Integer.parseInt(field.getText()));
+		viewRoomsGui.updateModel();
+	}
+	
+	/**Handles the room add request by the clerk
+	 * 
+	 */
+	private void handleAddRoom() {
+		JTextField field = viewRoomsGui.getRoomUpdateField();
+		Room defaultRoom = new Room();
+		defaultRoom.setBedQty(1);
+		defaultRoom.setBedType("queen");
+		defaultRoom.setNoSmoking(true);
+		defaultRoom.setRoom(Integer.parseInt(field.getText()));
+		roomServices.addRoom(defaultRoom);
+		viewRoomsGui.updateModel();
 	}
 	
 	private void setupReservationActions() {
@@ -489,4 +478,90 @@ public class MainController {
 			mainFrame.add(guestGui.getFullPanel());
 		});
 	}
+
+	/**
+	 * @return the splashScreen
+	 */
+	SplashScreen getSplashScreen() {
+		return splashScreen;
+	}
+
+	/**
+	 * @return the loginGui
+	 */
+	CredentialGui getLoginGui() {
+		return loginGui;
+	}
+
+	/**
+	 * @return the mainFrame
+	 */
+	MainFrame getMainFrame() {
+		return mainFrame;
+	}
+
+	/**
+	 * @return the userServices
+	 */
+	UserServices getUserServices() {
+		return userServices;
+	}
+
+	/**
+	 * @return the changeCredentialGui
+	 */
+	ChangeCredentialGui getChangeCredentialGui() {
+		return changeCredentialGui;
+	}
+
+	/**
+	 * @return the viewRoomsGui
+	 */
+	ViewRoomsGui getViewRoomsGui() {
+		return viewRoomsGui;
+	}
+
+	/**
+	 * @return the reservationService
+	 */
+	ReservationService getReservationService() {
+		return reservationService;
+	}
+
+	/**
+	 * @return the reservationGui
+	 */
+	ReservationGui getReservationGui() {
+		return reservationGui;
+	}
+
+	/**
+	 * @return the adminGui
+	 */
+	AdminGui getAdminGui() {
+		return adminGui;
+	}
+
+	/**
+	 * @return the clerkGui
+	 */
+	ClerkGui getClerkGui() {
+		return clerkGui;
+	}
+
+	/**
+	 * @return the guestGui
+	 */
+	GuestGui getGuestGui() {
+		return guestGui;
+	}
+
+	/**
+	 * @return the lastReservation
+	 */
+	Reservation getLastReservation() {
+		return lastReservation;
+	}
+
+	
 }

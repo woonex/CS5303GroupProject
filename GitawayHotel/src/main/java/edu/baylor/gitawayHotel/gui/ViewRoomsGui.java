@@ -477,5 +477,28 @@ public class ViewRoomsGui implements IGui {
 		}
 		endDateField.setText(text);
 	}
+	
+	public void setRoomField(int newRoomNum) {
+		this.roomUpdateField.setText(String.valueOf(newRoomNum));
+	}
+	
+	public void selectTableRowByRoomNum(int roomNum) {
+		table.clearSelection();
+		
+		for (int i = 0; i < table.getRowCount(); i++) {
+            int roomNumberInTable = (int) table.getValueAt(i, 0);
+            if (roomNumberInTable == roomNum) {
+                // Select the row if the room number matches
+                table.setRowSelectionInterval(i, i);
+                break; // Stop iterating once the row is found
+            }
+        }
+	}
 
+	public void setTableDataInSelectedRow(Room newRoom) {
+		int rowNum = table.getSelectedRow();
+		model.setValueAt(newRoom.getBedQty(), rowNum, 1);
+		model.setValueAt(newRoom.getBedType(), rowNum, 2);
+		model.setValueAt(newRoom.getNoSmoking(), rowNum, 3);
+	}
 }

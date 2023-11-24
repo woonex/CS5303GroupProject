@@ -13,6 +13,8 @@ public class User {
 		
 	}
 	
+	
+	
 	public User(String username) {
 		this.username = username;
 	}
@@ -21,6 +23,12 @@ public class User {
 		this.username = jsonObject.get("username").getAsString();
     	this.password = jsonObject.get("password").getAsString();
 		this.userType = UserType.valueOf(jsonObject.get("userType").getAsString().toUpperCase());
+	}
+	
+	public User(String username, String password, UserType userType) {
+		this.username = username;
+		this.password = password;
+		this.userType = userType;
 	}
 
 	public String getUsername() {
@@ -31,7 +39,7 @@ public class User {
 		this.username = username;
 	}
 
-	protected String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 
