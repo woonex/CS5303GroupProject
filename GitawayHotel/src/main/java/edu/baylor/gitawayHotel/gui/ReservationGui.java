@@ -159,6 +159,11 @@ public class ReservationGui implements IGui {
 		return fullPanel;
 	}
 
+	public void selectTableRowByIndex(int index) {
+		table.clearSelection();
+		table.setRowSelectionInterval(index, index);
+	}
+
 	public Reservation getSelectedReservation() {
 		int row = table.getSelectedRow();
 		Room room = (Room) model.getValueAt(row, 2);
