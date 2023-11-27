@@ -13,10 +13,14 @@ import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.MethodOrderer;
 
 import javax.management.InstanceAlreadyExistsException;
 import javax.swing.*;
@@ -26,6 +30,7 @@ import java.util.Set;
 import java.time.LocalDate;
 
 //@Execution(ExecutionMode.CONCURRENT) //disabled to allow the passwords to be modified
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class MakeReservationTest {
 	private static final String DEFAULT_PW = "password";
 	private static RoomServices roomServices = new RoomServices();
@@ -92,6 +97,7 @@ public class MakeReservationTest {
 	}
 
 	@Test
+	@Order(1)
 	void testGuestMakeReservation() {
 		MainController mainController = new MainController(roomServices);
 		mainController.getSplashScreen().getNextButton().doClick();
@@ -128,6 +134,7 @@ public class MakeReservationTest {
 	}
 
 	@Test
+	@Order(2)
 	void testGuestChangeReservation() {
 		MainController mainController = new MainController(roomServices);
 		mainController.getSplashScreen().getNextButton().doClick();
