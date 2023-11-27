@@ -29,7 +29,6 @@ import java.time.LocalDate;
 public class MakeReservationTest {
 	private static final String DEFAULT_PW = "password";
 	private static RoomServices roomServices = new RoomServices();
-	private static ReservationService reservationService = new ReservationService(roomServices);
 	private static User ADMIN = new User("admin", DEFAULT_PW, UserType.ADMIN);
 	private static User CLERK = new User("clerk", DEFAULT_PW, UserType.HOTEL_CLERK);
 	private static User GUEST = new User("Guest", DEFAULT_PW, UserType.GUEST);
@@ -113,10 +112,10 @@ public class MakeReservationTest {
 				viewRoomsGui.getSearchButton().doClick();
 				viewRoomsGui.selectTableRowByIndex(0);
 				viewRoomsGui.getReserveRoomButton().doClick();
-
+			
 				mainController.getMainFrame().getFrame().dispose();
 
-				Reservation newReservation = reservationService.getReservationsByUser(GUEST).get(0);
+				Reservation newReservation = mainController.getReservationService().getReservationsByUser(GUEST).get(0);
 				Assertions.assertNotNull(newReservation);
 			});
 
@@ -157,7 +156,7 @@ public class MakeReservationTest {
 
 				mainController.getMainFrame().getFrame().dispose();
 
-				Reservation newReservation = reservationService.getReservationsByUser(GUEST).get(0);
+				Reservation newReservation = mainController.getReservationService().getReservationsByUser(GUEST).get(0);
 				Assertions.assertNotNull(newReservation);
 			});
 
