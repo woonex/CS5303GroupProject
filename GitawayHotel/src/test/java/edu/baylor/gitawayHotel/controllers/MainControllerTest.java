@@ -70,6 +70,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -99,6 +100,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -117,6 +119,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -137,6 +140,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -163,6 +167,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 	}
 	
@@ -191,6 +196,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -220,6 +226,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -238,6 +245,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -258,6 +266,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -283,6 +292,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -312,6 +322,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -371,6 +382,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -406,6 +418,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -423,6 +436,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);
@@ -442,6 +456,7 @@ public class MainControllerTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 		
 		closeApp(mainController);

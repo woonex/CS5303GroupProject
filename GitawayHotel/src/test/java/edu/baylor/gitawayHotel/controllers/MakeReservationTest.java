@@ -86,6 +86,7 @@ public class MakeReservationTest {
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 
 		closeApp(mainController);
@@ -121,6 +122,7 @@ public class MakeReservationTest {
 
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 
 		closeApp(mainController);
@@ -161,6 +163,7 @@ public class MakeReservationTest {
 
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
 		}
 
 
