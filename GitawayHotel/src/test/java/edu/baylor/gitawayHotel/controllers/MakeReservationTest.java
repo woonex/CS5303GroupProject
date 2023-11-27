@@ -15,8 +15,10 @@ import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.management.InstanceAlreadyExistsException;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
@@ -33,6 +35,22 @@ public class MakeReservationTest {
 	private static User GUEST = new User("Guest", DEFAULT_PW, UserType.GUEST);
 	LocalDate today = LocalDate.now();
 
+	private static final Set<User> TEST_USERS= Set.of(ADMIN, CLERK, GUEST);
+	
+	@BeforeAll
+	static void addUsersIfNotPresent() {
+		UserServices userServices = new UserServices();
+		for (User user : TEST_USERS) {
+			if (!userServices.isUsernameValid(user.getUsername())) {
+				try {
+					userServices.addUser(user.getUsername(), user.getPassword(), user.getUserType());
+				} catch (InstanceAlreadyExistsException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	@Test
 	void testMainConstructor() {
 		MainController mainController = new MainController(roomServices);
