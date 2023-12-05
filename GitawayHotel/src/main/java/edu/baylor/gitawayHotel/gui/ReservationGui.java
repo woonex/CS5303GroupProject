@@ -35,6 +35,7 @@ public class ReservationGui implements IGui {
 	private User user;
 	private JScrollPane tableScroller;
 	private JButton modifyButton;
+	private JButton cancelButton;
 	
 	public ReservationGui(ReservationService resService) {
 		this.resService = resService;
@@ -55,8 +56,12 @@ public class ReservationGui implements IGui {
 		JLabel label = new JLabel("View your reservations below");
 		
 		backButton = new JButton("Back");
+		
 		modifyButton = new JButton("Modify");
 		modifyButton.setEnabled(false);
+		
+		cancelButton = new JButton("Cancel Reservation");
+		cancelButton.setEnabled(false);
 		
 		setupTable();
 		
@@ -67,6 +72,7 @@ public class ReservationGui implements IGui {
 		
 		buttonPanel.add(backButton);
 		buttonPanel.add(modifyButton);
+		buttonPanel.add(cancelButton);
 		fullPanel.add(buttonPanel, BorderLayout.SOUTH);
 		return fullPanel;
 	}
@@ -90,7 +96,7 @@ public class ReservationGui implements IGui {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                	manageModifyAvailable();
+                	manageButtonsAvailable();
                 }
             }
         };
@@ -102,7 +108,7 @@ public class ReservationGui implements IGui {
 	/**Internal to manage whether the modification button is available or not
 	 * 
 	 */
-	protected void manageModifyAvailable() {
+	protected void manageButtonsAvailable() {
 		int[] selectedRows = table.getSelectedRows();
 		
 		boolean state = true;
@@ -119,6 +125,7 @@ public class ReservationGui implements IGui {
 		}
 		
 		modifyButton.setEnabled(state);
+		cancelButton.setEnabled(state);
 	}
 
 	/**Updates the table by querying the reservations and displaying them
@@ -181,6 +188,10 @@ public class ReservationGui implements IGui {
 		}
 //		List<Reservation> allRes = resService.getReservationsByUser(user);
 		return selected;
+	}
+
+	public JButton getCancelReservationButton() {
+		return this.cancelButton;
 	}
 
 }

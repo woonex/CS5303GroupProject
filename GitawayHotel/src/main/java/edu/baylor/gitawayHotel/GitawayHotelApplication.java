@@ -35,13 +35,6 @@ public class GitawayHotelApplication {
 			
 			ReservationService reservationServices = new ReservationService(roomServices);
 			
-			try {
-				performTest(reservationServices, roomServices);
-			} catch (RuntimeException e) {
-				System.out.println("Reservations already exist for test cases");
-//				e.printStackTrace();
-			}
-			
 			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
 			
 			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui, reservationServices);
