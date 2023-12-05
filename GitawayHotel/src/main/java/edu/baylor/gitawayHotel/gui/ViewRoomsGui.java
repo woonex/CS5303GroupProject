@@ -495,6 +495,11 @@ public class ViewRoomsGui implements IGui {
         }
 	}
 
+	public void selectTableRowByIndex(int index) {
+		table.clearSelection();
+		table.setRowSelectionInterval(index, index);
+	}
+
 	public void setTableDataInSelectedRow(Room newRoom) {
 		int rowNum = table.getSelectedRow();
 		model.setValueAt(newRoom.getBedQty(), rowNum, 1);
