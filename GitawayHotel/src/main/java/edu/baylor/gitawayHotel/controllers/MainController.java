@@ -38,7 +38,7 @@ public class MainController {
 	static final String INVALID_CREDENTIALS_NOTIFICATION = "Invalid credentials. Please try again.";
 	static final String USERNAME_EXISTS = "Username already exists.\nPlease choose another username";
 	static final int RESERVATION_GRACE_DAYS = 2;
-	static final String FEE_TO_CANCEL = "The reservation was created more than " + RESERVATION_GRACE_DAYS + " days ago and will incure a fee for cancellation. Please click yes to accept the charge and finalize your cancellation.";
+	static final String FEE_TO_CANCEL = "The reservation was created more than " + RESERVATION_GRACE_DAYS + " days ago and will incure a fee for cancellation.\nPlease click yes to accept the charge and finalize your cancellation.";
 	private final SplashScreen splashScreen;
 	private final CredentialGui loginGui;
 	private final MainFrame mainFrame;
@@ -305,11 +305,9 @@ public class MainController {
 		JButton cancelReservation = reservationGui.getCancelReservationButton();
 		cancelReservation.addActionListener(e -> {
 			setupReservationActions();
-			System.out.println("TODO handle the canceling of reservation including notifying of cost if it has elapsed time since creation");
 			
 			Reservation reservation = reservationGui.getSelectedReservation();
 			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
-				System.out.println("TODO notify user of cost to cancel");
 				int selected = JOptionPane.showConfirmDialog(mainFrame.getFrame(), FEE_TO_CANCEL, "Cancellation Warning", JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION);
 				if (!(JOptionPane.OK_OPTION == selected)) {
 					return;

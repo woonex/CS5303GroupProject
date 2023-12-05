@@ -26,6 +26,8 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.time.LocalDate;
 
@@ -173,6 +175,47 @@ public class MakeReservationTest {
 		}
 
 
+		closeApp(mainController);
+	}
+	
+	@Test
+	@Order(3)
+	void testGuestRemoveReservation() {
+		MainController mainController = new MainController(roomServices);
+		mainController.getSplashScreen().getNextButton().doClick();
+		login(mainController, GUEST);
+
+		mainController.getGuestGui().getViewReservationsButton().doClick();
+		ReservationGui reservationGui = mainController.getReservationGui();
+
+		NotificationWindowLaunch listener = new NotificationWindowLaunch();
+		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
+		
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+				reservationGui.selectTableRowByIndex(0);
+				
+				Reservation selectedRes = reservationGui.getSelectedReservation();
+				Assertions.assertNotNull(selectedRes);
+				
+				reservationGui.getCancelReservationButton().doClick();
+				ReservationService resService = mainController.getReservationService();
+				List<Reservation> reservations = resService.getReservations();
+				
+				boolean foundReservation = false;
+				for (Reservation res : reservations) {
+					if (Objects.equals(res, selectedRes)) {
+						foundReservation = true;
+					}
+				}
+				
+				Assertions.assertFalse(foundReservation);
+			});
+
+		} catch (InvocationTargetException | InterruptedException e) {
+			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
+		}
 		closeApp(mainController);
 	}
 
