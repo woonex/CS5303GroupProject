@@ -2,6 +2,7 @@ package edu.baylor.gitawayHotel.gui;
 
 import java.awt.BorderLayout;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -16,6 +17,7 @@ import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
+import edu.baylor.gitawayHotel.user.User;
 
 public class ViewRoomStateGui implements IGui {
 	private JPanel panel;
@@ -56,13 +58,17 @@ public class ViewRoomStateGui implements IGui {
 		this.checkInButton = new JButton("Check In Guest");
 		checkInButton.addActionListener(l -> {
 			Reservation res = this.getSelectedReservation();
+			resService.removeReservation(res);
 			res.setCheckinStatus(true);
+			resService.addReservation(res);
 			updateModel();
 		});
 		this.checkoutButton = new JButton("Check Out Guest");
 		checkoutButton.addActionListener(l -> {
 			Reservation res = this.getSelectedReservation();
+			resService.removeReservation(res);
 			res.setCheckinStatus(false);
+			resService.addReservation(res);
 			updateModel();
 		});
 		
@@ -108,30 +114,40 @@ public class ViewRoomStateGui implements IGui {
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
 			List<Reservation> reservations = resService.getReservationsForRoom(room);
-			Reservation res = getReservationForToday(reservations);
-			boolean isReserved = res != null;
-			String guestName;
+			List<Reservation> current = getReservationsForToday(reservations);
+			boolean isReserved = !current.isEmpty();
+			
+			User guestName;
 			String checkoutDate;
 			String checkinStatus;
+			
 			if (isReserved) {
-				guestName = res.getGuest().getUsername();
-				checkoutDate = res.getEndDate().toString();
-				checkinStatus = res.getCheckinStatus() ? "Checked In" : "Not Checked In";
-				
+				for (Reservation res : current) {
+					guestName = res.getGuest();
+					checkoutDate = res.getEndDate().toString();
+					checkinStatus = res.getCheckinStatus() ? "Checked In" : "Not Checked In";
+					Object[] row = { 
+							room.getRoom(), 
+							isReserved,
+							guestName,
+							checkoutDate,
+							checkinStatus
+							};
+					model.addRow(row);
+				}
 			} else {
-				guestName = "Not Reserved";
+				guestName = new User("Not Reserved");
 				checkoutDate = "Not Reserved";
 				checkinStatus = "Not Reserved";
+				Object[] row = { 
+						room.getRoom(), 
+						isReserved,
+						guestName,
+						checkoutDate,
+						checkinStatus
+						};
+				model.addRow(row);
 			}
-			
-			Object[] row = { 
-					room.getRoom(), 
-					isReserved,
-					guestName,
-					checkoutDate,
-					checkinStatus
-					};
-			model.addRow(row);
 		}
 		
 		model.fireTableDataChanged();
@@ -149,18 +165,19 @@ public class ViewRoomStateGui implements IGui {
 	 * @param reservations
 	 * @return
 	 */
-	private static Reservation getReservationForToday(List<Reservation> reservations) {
+	private static List<Reservation> getReservationsForToday(List<Reservation> reservations) {
 		LocalDate now = LocalDate.now();
+		List<Reservation> found = new ArrayList<Reservation>();
 		for (Reservation current : reservations) {
 			LocalDate startDate = current.getStartDate();
 			LocalDate endDate = current.getEndDate();
 			//get the current reservation
-			if ((startDate.isAfter(now) || startDate.equals(now))
+			if ((startDate.isBefore(now) || startDate.equals(now))
 					&& (now.equals(endDate) || now.isBefore(endDate))) {
-				return current;
+				found.add(current);
 			}
 		}
-		return null;
+		return found;
 	}
 	
 	/**Gets the selected reservation
@@ -171,9 +188,21 @@ public class ViewRoomStateGui implements IGui {
 		
 		Integer roomNum = (Integer) model.getValueAt(row, 0);
 		Room room = roomServices.getRoomByNumber(roomNum);
-		
-		Reservation res = getReservationForToday(resService.getReservationsForRoom(room));
-		return res;
+		List<Reservation> reservations = getReservationsForToday(resService.getReservationsForRoom(room));
+		if (reservations.size() == 1) {
+			return reservations.get(0);
+		} else if (reservations.isEmpty()) {
+			return null;
+		} else {
+			for (Reservation res : reservations) {
+				String checkoutDate = (String) model.getValueAt(row, 3);
+				if (res.getEndDate().equals(LocalDate.parse(checkoutDate))) {
+					return res;
+				}
+			}
+			System.out.println("This should never be reached");
+			return null;
+		}
 	}
 	
 	public void selectTableRowByRoomNum(int roomNum) {
