@@ -45,7 +45,7 @@ public class MainController {
 	static final String USERNAME_EXISTS = "Username already exists.\nPlease choose another username";
 	static final int RESERVATION_GRACE_DAYS = 2;
 	static final String FEE_TO_CANCEL = "The reservation was created more than " + RESERVATION_GRACE_DAYS
-			+ " days ago and will incure a fee for cancellation.\nPlease click yes to accept the charge and finalize your cancellation.";
+			+ " days ago and will incure a fee for cancellation.\nPlease click yes to accept the charge and finalize cancellation.";
 	private final SplashScreen splashScreen;
 	private final CredentialGui loginGui;
 	private final MainFrame mainFrame;
@@ -297,6 +297,23 @@ public class MainController {
 		back.addActionListener(l -> {
 			mainFrame.add(clerkGui.getFullPanel());
 		});
+		
+		JButton cancelReservation = reservationGui.getCancelReservationButton();
+		for (ActionListener l : cancelReservation.getActionListeners()) {
+			cancelReservation.removeActionListener(l);
+		}
+		cancelReservation.addActionListener(e -> {
+			Reservation reservation = reservationGui.getSelectedReservation();
+			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
+				int selected = JOptionPane.showConfirmDialog(mainFrame.getFrame(), FEE_TO_CANCEL,
+						"Cancellation Warning", JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION);
+				if (!(JOptionPane.OK_OPTION == selected)) {
+					return;
+				}
+			}
+			reservationService.removeReservation(reservation);
+			mainFrame.add(reservationGui.getFullPanel());
+		});
 	}
 
 	/**
@@ -341,6 +358,9 @@ public class MainController {
 		});
 
 		JButton cancelReservation = reservationGui.getCancelReservationButton();
+		for (ActionListener l : cancelReservation.getActionListeners()) {
+			cancelReservation.removeActionListener(l);
+		}
 		cancelReservation.addActionListener(e -> {
 
 			Reservation reservation = reservationGui.getSelectedReservation();

@@ -236,8 +236,13 @@ public class ViewReservationGui implements IGui {
 		LocalDate startDate = (LocalDate) model.getValueAt(row, 0);//LocalDate.parse(start, LocalDateAdapter.DATE_FORMATTER);
 		LocalDate endDate = (LocalDate) model.getValueAt(row, 1); //LocalDate.parse(end, LocalDateAdapter.DATE_FORMATTER);
 		
-		
-		Reservation selected = new Reservation(startDate, endDate, user, room);
+		User reservedUser;
+		if (UserType.HOTEL_CLERK.equals(user.getUserType())) {
+			reservedUser = (User) model.getValueAt(row, 3);
+		} else {
+			reservedUser = user;
+		}
+		Reservation selected = new Reservation(startDate, endDate, reservedUser, room);
 		
 		for (Reservation res : resService.getReservations()) {
 			if (res.equals(selected)) {
