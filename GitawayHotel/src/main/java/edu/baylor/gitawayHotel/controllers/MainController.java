@@ -13,6 +13,7 @@ import javax.swing.JTextField;
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
+import edu.baylor.gitawayHotel.gui.AuthenticatedGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
@@ -21,6 +22,7 @@ import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
 import edu.baylor.gitawayHotel.gui.ReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
+import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
@@ -54,6 +56,7 @@ public class MainController {
 	private final RoomServices roomServices;
 	
 	private Reservation lastReservation;
+	private ViewRoomStateGui viewRoomStateGui;
 	
 	public MainController(RoomServices roomServices) {
 		this(
@@ -92,6 +95,7 @@ public class MainController {
 		
 		this.userServices = userServices;
 		this.roomServices = roomServices;
+		this.viewRoomStateGui = new ViewRoomStateGui(roomServices, reservationService);
 		
 		mainFrame.add(splashScreen.getPanel());
 		
@@ -254,9 +258,17 @@ public class MainController {
 			modifyCredentials(clerkGui);
 		});
 
-		JButton viewRoomsButton = clerkGui.getViewRoomsButton();
+		JButton viewRoomsButton = clerkGui.getModifyRoomsButton();
 		viewRoomsButton.addActionListener(e -> {
 			mainFrame.add(viewRoomsGui.getFullPanel());
+		});
+		
+		clerkGui.getViewRoomStatusButton().addActionListener(e -> {
+			mainFrame.add(viewRoomStateGui.getFullPanel());
+		});
+		
+		viewRoomStateGui.getBackButton().addActionListener(e -> {
+			mainFrame.add(clerkGui.getFullPanel());
 		});
 	}
 	

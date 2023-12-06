@@ -15,7 +15,7 @@ import edu.baylor.gitawayHotel.user.UserType;
  *
  */
 public class ClerkGui extends AuthenticatedGui {
-	private JButton viewRoomsButton;
+	private JButton modifyRoomsButton;
 	
 
 	public ClerkGui() {
@@ -23,12 +23,20 @@ public class ClerkGui extends AuthenticatedGui {
 	}
 
 	private JPanel panel;
+	private JButton viewRoomStatusButton;
+	private JButton viewReservationsButton;
+	
 
 	@Override
 	protected JPanel layoutMainArea() {
 		panel = new JPanel();
-		viewRoomsButton = new JButton("View Rooms");
-		panel.add(viewRoomsButton, BorderLayout.CENTER);
+		modifyRoomsButton = new JButton("Modify Room Information");
+		viewRoomStatusButton = new JButton("View Room Status");
+//		viewReservationsButton = new JButton("View Reservations");
+		
+		panel.add(modifyRoomsButton);//, BorderLayout.CENTER);
+		panel.add(viewRoomStatusButton);
+//		panel.add(viewReservationsButton);
 
 		return panel;
 	}
@@ -36,9 +44,17 @@ public class ClerkGui extends AuthenticatedGui {
 	/**Gets the view rooms button 
 	 * @return the view rooms button
 	 */
-	public JButton getViewRoomsButton() {
-		return this.viewRoomsButton;
+	public JButton getModifyRoomsButton() {
+		return this.modifyRoomsButton;
 	}
+	
+	public JButton getViewRoomStatusButton() {
+		return this.viewRoomStatusButton;
+	}
+	
+//	public JButton getViewReservationsButton() {
+//		return this.viewReservationsButton;
+//	}
 
 	@Override
 	protected UserType getUserType() {

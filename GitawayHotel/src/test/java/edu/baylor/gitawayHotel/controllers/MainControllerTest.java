@@ -278,7 +278,7 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
 		try {
 			SwingUtilities.invokeAndWait(() -> {
 				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
@@ -304,7 +304,7 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
 		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 9001;
@@ -334,7 +334,7 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
 		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 505050;
