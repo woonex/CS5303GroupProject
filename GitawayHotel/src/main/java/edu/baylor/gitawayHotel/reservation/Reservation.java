@@ -12,6 +12,7 @@ public class Reservation implements Comparable<Reservation> {
 	private User guest;
 	private LocalDate dateReservationMade = LocalDate.now();
 	private Room room;
+	private boolean isCheckedIn = false;
 	
 
 	public Reservation(LocalDate startDate, LocalDate endDate, User guest, Room room) {
@@ -19,6 +20,20 @@ public class Reservation implements Comparable<Reservation> {
 		this.endDate = endDate;
 		this.guest = guest;
 		this.room = room;
+	}
+	
+	/**Marks the reservation as having been checked into the hotel
+	 * @return
+	 */
+	public void setCheckinStatus(boolean checkInStatus) {
+		this.isCheckedIn = checkInStatus;
+	}
+	
+	/**Gets if the guest is checked in or out
+	 * @return true if the guest is checked in and false if they are not
+	 */
+	public boolean getCheckinStatus() {
+		return this.isCheckedIn;
 	}
 
 	/**
