@@ -170,7 +170,22 @@ public class ReservationGui implements IGui {
 		table.clearSelection();
 		table.setRowSelectionInterval(index, index);
 	}
-
+	
+	public void selectTableRowByRoomNum(int roomNum) {
+		table.clearSelection();
+		
+		for (int i = 0; i < table.getRowCount(); i++) {
+            Room roomInTable = (Room) table.getValueAt(i, 2);
+			int roomNumberInTable = roomInTable.getRoom();
+            if (roomNumberInTable == roomNum) {
+                // Select the row if the room number matches
+                table.setRowSelectionInterval(i, i);
+                break; // Stop iterating once the row is found
+            }
+        }
+	}
+	
+	
 	public Reservation getSelectedReservation() {
 		int row = table.getSelectedRow();
 		Room room = (Room) model.getValueAt(row, 2);

@@ -594,5 +594,9 @@ public class MainController {
 		return lastReservation;
 	}
 
+	ViewRoomStateGui getViewRoomStateGui() {
+		return viewRoomStateGui;
+	}
+
 	
 }

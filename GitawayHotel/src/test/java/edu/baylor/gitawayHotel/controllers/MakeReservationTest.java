@@ -6,8 +6,10 @@ import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
+import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.ReservationGui;
+import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.user.User;
@@ -37,9 +39,10 @@ public class MakeReservationTest {
 	private static final String DEFAULT_PW = "password";
 	private static RoomServices roomServices = new RoomServices();
 	private static User ADMIN = new User("admin", DEFAULT_PW, UserType.ADMIN);
-	private static User CLERK = new User("clerk", DEFAULT_PW, UserType.HOTEL_CLERK);
+	private static User CLERK = new User("testclerk", DEFAULT_PW, UserType.HOTEL_CLERK);
 	private static User GUEST = new User("Guest", DEFAULT_PW, UserType.GUEST);
 	LocalDate today = LocalDate.now();
+	private static Room TEST_ROOM = new Room();
 
 	private static final Set<User> TEST_USERS= Set.of(ADMIN, CLERK, GUEST);
 	
@@ -55,6 +58,12 @@ public class MakeReservationTest {
 				}
 			}
 		}
+		
+		TEST_ROOM.setRoom(999);
+		TEST_ROOM.setBedQty(1);
+		TEST_ROOM.setBedType("Queen");
+		TEST_ROOM.setNoSmoking(true);
+		roomServices.addRoom(TEST_ROOM);
 	}
 	
 	@Test
@@ -119,6 +128,7 @@ public class MakeReservationTest {
 				viewRoomsGui.setEndDate(today.plusDays(2));
 				viewRoomsGui.getSearchButton().doClick();
 				viewRoomsGui.selectTableRowByIndex(0);
+				viewRoomsGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				viewRoomsGui.getReserveRoomButton().doClick();
 			
 				mainController.getMainFrame().getFrame().dispose();
@@ -152,7 +162,7 @@ public class MakeReservationTest {
 			SwingUtilities.invokeAndWait(() -> {
 				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
 
-				reservationGui.selectTableRowByIndex(0);
+				reservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				reservationGui.getModifyReservationButton().doClick();
 
 				ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
@@ -160,7 +170,7 @@ public class MakeReservationTest {
 				viewRoomsGui.setStartDate(today.plusDays(1));
 				viewRoomsGui.setEndDate(today.plusDays(2));
 				viewRoomsGui.getSearchButton().doClick();
-				viewRoomsGui.selectTableRowByIndex(0);
+				viewRoomsGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				viewRoomsGui.getReserveRoomButton().doClick();
 
 				mainController.getMainFrame().getFrame().dispose();
@@ -180,6 +190,38 @@ public class MakeReservationTest {
 	
 	@Test
 	@Order(3)
+	void testClerkCheckinReservation() {
+		MainController mainController = new MainController(roomServices);
+		mainController.getSplashScreen().getNextButton().doClick();
+		login(mainController, CLERK);
+
+		List<Reservation> reservations = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
+		Reservation expected = new Reservation(today.plusDays(1), today.plusDays(2), GUEST, TEST_ROOM);
+		
+		Assertions.assertIterableEquals(List.of(expected), reservations);
+		Assertions.assertFalse(reservations.get(0).getCheckinStatus());
+		
+		ClerkGui clerkGui = mainController.getClerkGui();
+		clerkGui.getViewRoomStatusButton().doClick();
+		
+		ViewRoomStateGui stateGui = mainController.getViewRoomStateGui();
+		//check in
+		stateGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
+		stateGui.getCheckInButton().doClick();
+		reservations = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
+		Assertions.assertTrue(reservations.get(0).getCheckinStatus());
+		
+		//check out
+		stateGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
+		stateGui.getCheckOutButton().doClick();
+		reservations = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
+		Assertions.assertFalse(reservations.get(0).getCheckinStatus());
+		
+		closeApp(mainController);
+	}
+	
+	@Test
+	@Order(4)
 	void testGuestRemoveReservation() {
 		MainController mainController = new MainController(roomServices);
 		mainController.getSplashScreen().getNextButton().doClick();
@@ -193,7 +235,7 @@ public class MakeReservationTest {
 		
 		try {
 			SwingUtilities.invokeAndWait(() -> {
-				reservationGui.selectTableRowByIndex(0);
+				reservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				
 				Reservation selectedRes = reservationGui.getSelectedReservation();
 				Assertions.assertNotNull(selectedRes);
@@ -258,6 +300,8 @@ public class MakeReservationTest {
 		for (Reservation reservation : reservationService.getReservationsByUser(GUEST)) {
 			reservationService.removeReservation(reservation);
 		}
+		
+		roomServices.removeRoom(TEST_ROOM.getRoom());
 	}
 	
 }

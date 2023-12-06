@@ -176,6 +176,19 @@ public class ViewRoomStateGui implements IGui {
 		return res;
 	}
 	
+	public void selectTableRowByRoomNum(int roomNum) {
+		table.clearSelection();
+		
+		for (int i = 0; i < table.getRowCount(); i++) {
+            int roomNumberInTable = (int) table.getValueAt(i, 0);
+            if (roomNumberInTable == roomNum) {
+                // Select the row if the room number matches
+                table.setRowSelectionInterval(i, i);
+                break; // Stop iterating once the row is found
+            }
+        }
+	}
+	
 	/**manages whether the buttons should be available for the user to ineract with
 	 * 
 	 */
@@ -197,6 +210,14 @@ public class ViewRoomStateGui implements IGui {
 	
 	public JButton getBackButton() {
 		return this.backButton;
+	}
+	
+	public JButton getCheckInButton() {
+		return this.checkInButton;
+	}
+	
+	public JButton getCheckOutButton() {
+		return this.checkoutButton;
 	}
 	
 	@Override
