@@ -29,9 +29,9 @@ public class MainControllerTest {
 	private static final String DEFAULT_PW = "password";
 	
 	private static RoomServices roomServices = new RoomServices();
-	private static User ADMIN = new User("admin", DEFAULT_PW, UserType.ADMIN);
-	private static User CLERK = new User("clerk", DEFAULT_PW, UserType.HOTEL_CLERK);
-	private static User GUEST = new User("guest", DEFAULT_PW, UserType.GUEST);
+	private static User ADMIN = new User("TestAdmin", DEFAULT_PW, UserType.ADMIN);
+	private static User CLERK = new User("TestClerk", DEFAULT_PW, UserType.HOTEL_CLERK);
+	private static User GUEST = new User("TestGuest", DEFAULT_PW, UserType.GUEST);
 	private static final Set<User> TEST_USERS= Set.of(ADMIN, CLERK, GUEST);
 	
 	@BeforeAll
