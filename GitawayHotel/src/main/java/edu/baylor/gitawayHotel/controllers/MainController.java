@@ -21,7 +21,7 @@ import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
-import edu.baylor.gitawayHotel.gui.ReservationGui;
+import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
@@ -49,7 +49,7 @@ public class MainController {
 	private final ChangeCredentialGui changeCredentialGui;
 	private final ViewRoomsGui viewRoomsGui;
 	private final ReservationService reservationService;
-	private final ReservationGui reservationGui;
+	private final ViewReservationGui reservationGui;
 	
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -92,7 +92,7 @@ public class MainController {
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
 		this.guestGui = new GuestGui();
-		this.reservationGui = new ReservationGui(reservationService);
+		this.reservationGui = new ViewReservationGui(reservationService);
 		
 		this.userServices = userServices;
 		this.roomServices = roomServices;
@@ -276,6 +276,10 @@ public class MainController {
 		
 		viewRoomStateGui.getBackButton().addActionListener(e -> {
 			mainFrame.add(clerkGui.getFullPanel());
+		});
+		
+		clerkGui.getViewReservationsButton().addActionListener(l -> {
+//			mainFrame.add(clerkReservationGui.getFullPanel());
 		});
 	}
 	
@@ -569,7 +573,7 @@ public class MainController {
 	/**
 	 * @return the reservationGui
 	 */
-	ReservationGui getReservationGui() {
+	ViewReservationGui getReservationGui() {
 		return reservationGui;
 	}
 

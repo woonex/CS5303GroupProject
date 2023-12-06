@@ -8,7 +8,7 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
-import edu.baylor.gitawayHotel.gui.ReservationGui;
+import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
@@ -153,7 +153,7 @@ public class MakeReservationTest {
 		login(mainController, GUEST);
 
 		mainController.getGuestGui().getViewReservationsButton().doClick();
-		ReservationGui reservationGui = mainController.getReservationGui();
+		ViewReservationGui reservationGui = mainController.getReservationGui();
 
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
@@ -228,7 +228,7 @@ public class MakeReservationTest {
 		login(mainController, GUEST);
 
 		mainController.getGuestGui().getViewReservationsButton().doClick();
-		ReservationGui reservationGui = mainController.getReservationGui();
+		ViewReservationGui reservationGui = mainController.getReservationGui();
 
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
