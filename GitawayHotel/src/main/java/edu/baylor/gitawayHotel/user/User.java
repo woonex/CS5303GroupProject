@@ -59,6 +59,11 @@ public class User {
 	public int hashCode() {
 		return Objects.hash(username);
 	}
+	
+	@Override
+	public String toString() {
+		return this.username;
+	}
 
 	/**A user is defined as unique by the username alone 
 	 * their password is really a transient field that can change

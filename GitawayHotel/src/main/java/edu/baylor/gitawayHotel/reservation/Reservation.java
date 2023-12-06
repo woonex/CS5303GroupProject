@@ -131,5 +131,14 @@ public class Reservation implements Comparable<Reservation> {
 	public int compareTo(Reservation o) {
 		return this.startDate.compareTo(o.startDate);
 	}
+	
+	public boolean isCurrentlyActive() {
+		LocalDate now = LocalDate.now();
+		boolean reservationIsOverTodayDate = 
+				((startDate.isAfter(now) || startDate.equals(now))
+				&& (now.equals(endDate) || now.isBefore(endDate)));
+
+		return reservationIsOverTodayDate && isCheckedIn;
+	}
 
 }

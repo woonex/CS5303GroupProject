@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -21,9 +22,10 @@ import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.user.User;
+import edu.baylor.gitawayHotel.user.UserType;
 
-public class ViewReservationGui implements IGui {
-	private static final Logger logger = LogManager.getLogger(ViewReservationGui.class);
+public class GuestViewReservationGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(GuestViewReservationGui.class);
 	
 	private static final int MIN_DAYS = 2;
 	private JButton backButton;
@@ -37,13 +39,19 @@ public class ViewReservationGui implements IGui {
 	private JButton modifyButton;
 	private JButton cancelButton;
 	
-	public ViewReservationGui(ReservationService resService) {
+	public GuestViewReservationGui(ReservationService resService) {
 		this.resService = resService;
 		layoutMainArea();
 	}
 	
 	public void setUser(User user) {
 		this.user = user;
+		
+		if (UserType.HOTEL_CLERK == user.getUserType()) {
+			columnNames = new String[] {"Check in Date", "Check out Date", "Room", "Guest"};
+		} else {
+			columnNames = new String[] {"Check in Date", "Check out Date", "Room"};
+		}
 		updateModel();
 	}
 
@@ -132,6 +140,37 @@ public class ViewReservationGui implements IGui {
 	 * 
 	 */
 	private void updateModel() {
+		if (user == null) {
+			return;
+		}
+		model.setColumnIdentifiers(columnNames);
+		if (UserType.HOTEL_CLERK == user.getUserType()) {
+			updateModelAsClerk();
+		} else {
+			updateModelAsGuest();
+		}
+	}
+	
+	private void updateModelAsClerk() {
+		List<Reservation> reservations = resService.getReservations();
+		reservations = reservations.stream()
+				.filter(res -> {
+					LocalDate startDate = res.getStartDate();
+					return res.isCurrentlyActive() || startDate == LocalDate.now() || startDate.isAfter(LocalDate.now());
+				})
+				.collect(Collectors.toList());
+		Collections.sort(reservations);
+		
+		model.setRowCount(0);
+		for (Reservation res : reservations) {
+			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getGuest()};
+			model.addRow(row);
+		}
+		
+		redrawTable();
+	}
+
+	private void updateModelAsGuest() {
 		List<Reservation> reservations = resService.getReservationsByUser(user);
 		Collections.sort(reservations);
 		model.setRowCount(0);
@@ -140,13 +179,17 @@ public class ViewReservationGui implements IGui {
 			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom()};
 			model.addRow(row);
 		}
-		
+		redrawTable();
+	}
+	
+	private void redrawTable() {
 		model.fireTableDataChanged();
 		
 		if (table != null) {
 			table.repaint();
 		}
 		if (tableScroller != null) {
+			tableScroller.revalidate();
 			tableScroller.repaint();
 		}
 		fullPanel.repaint();

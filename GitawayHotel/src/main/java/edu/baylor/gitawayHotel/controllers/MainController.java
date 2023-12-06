@@ -22,7 +22,7 @@ import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.GuestMakeReservationGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
-import edu.baylor.gitawayHotel.gui.ViewReservationGui;
+import edu.baylor.gitawayHotel.gui.GuestViewReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
@@ -53,7 +53,7 @@ public class MainController {
 	private final ChangeCredentialGui changeCredentialGui;
 
 	private final ReservationService reservationService;
-	private final ViewReservationGui reservationGui;
+	private final GuestViewReservationGui reservationGui;
 
 	private final AdminGui adminGui;
 	private final ClerkGui clerkGui;
@@ -65,6 +65,7 @@ public class MainController {
 
 	private final ClerkChangeRoomsGui clerkChangeRoomsGui;
 	private GuestMakeReservationGui guestMakeReservationGui;
+	private User user;
 
 	public MainController(RoomServices roomServices) {
 		this(new MainFrame(), new SplashScreen(), new CredentialGui(), new UserServices(), roomServices,
@@ -84,7 +85,7 @@ public class MainController {
 		this.adminGui = new AdminGui();
 		this.clerkGui = new ClerkGui();
 		this.guestGui = new GuestGui();
-		this.reservationGui = new ViewReservationGui(reservationService);
+		this.reservationGui = new GuestViewReservationGui(reservationService);
 
 		this.userServices = userServices;
 		this.roomServices = roomServices;
@@ -154,15 +155,15 @@ public class MainController {
 						"Authentication Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-
+			
 			UserType userType = userServices.getUserType(username);
-
+			
 			// construct guis for the user
 			adminGui.setUsername(username);
 			clerkGui.setUsername(username);
 			guestGui.setUsername(username);
 			guestMakeReservationGui.setUserType(userType);
-
+			
 			// login redirects to the specific user pages
 			switch (userType) {
 			case ADMIN:
@@ -172,6 +173,7 @@ public class MainController {
 			case HOTEL_CLERK:
 				setupClerkActions();
 				mainFrame.add(clerkGui.getFullPanel());
+				reservationGui.setUser(userServices.getUser(username));
 				break;
 			case GUEST:
 				setupGuestActions();
@@ -285,7 +287,15 @@ public class MainController {
 		});
 
 		clerkGui.getViewReservationsButton().addActionListener(l -> {
-//			mainFrame.add(clerkReservationGui.getFullPanel());
+			mainFrame.add(reservationGui.getFullPanel());
+		});
+		
+		JButton back = reservationGui.getBackButton();
+		for (ActionListener listener : back.getActionListeners()) {
+			back.removeActionListener(listener);
+		}
+		back.addActionListener(l -> {
+			mainFrame.add(clerkGui.getFullPanel());
 		});
 	}
 
@@ -313,13 +323,11 @@ public class MainController {
 
 		JButton viewReservations = guestGui.getViewReservationsButton();
 		viewReservations.addActionListener(e -> {
-			setupReservationActions();
 			mainFrame.add(reservationGui.getFullPanel());
 		});
 
 		JButton modifyReservations = reservationGui.getModifyReservationButton();
 		modifyReservations.addActionListener(e -> {
-			setupReservationActions();
 
 			// save the last reservation and provide it as modification for the user
 			Reservation reservation = reservationGui.getSelectedReservation();
@@ -334,7 +342,6 @@ public class MainController {
 
 		JButton cancelReservation = reservationGui.getCancelReservationButton();
 		cancelReservation.addActionListener(e -> {
-			setupReservationActions();
 
 			Reservation reservation = reservationGui.getSelectedReservation();
 			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
@@ -347,6 +354,14 @@ public class MainController {
 			reservationService.removeReservation(reservation);
 			mainFrame.add(reservationGui.getFullPanel());
 		});
+		
+		JButton back = reservationGui.getBackButton();
+		for (ActionListener listener : back.getActionListeners()) {
+			back.removeActionListener(listener);
+		}
+		back.addActionListener(l -> {
+			mainFrame.add(guestGui.getFullPanel());
+		});
 	}
 
 	/**
@@ -357,6 +372,7 @@ public class MainController {
 	private void logoutUser(IGui iGui) {
 		// logout redirects to the login screen
 		mainFrame.add(loginGui.getFullPanel());
+		user = null;
 	}
 
 	// Redirects to ChangeCredentialsGui.java
@@ -537,15 +553,6 @@ public class MainController {
 		clerkChangeRoomsGui.updateModel();
 	}
 
-	private void setupReservationActions() {
-		JButton reservationViewBack = reservationGui.getBackButton();
-		reservationViewBack.addActionListener(e -> {
-			mainFrame.add(guestGui.getFullPanel());
-		});
-
-//		JButton reservation
-	}
-
 	/**
 	 * @return the splashScreen
 	 */
@@ -598,7 +605,7 @@ public class MainController {
 	/**
 	 * @return the reservationGui
 	 */
-	ViewReservationGui getReservationGui() {
+	GuestViewReservationGui getReservationGui() {
 		return reservationGui;
 	}
 
