@@ -24,8 +24,8 @@ import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserType;
 
-public class GuestViewReservationGui implements IGui {
-	private static final Logger logger = LogManager.getLogger(GuestViewReservationGui.class);
+public class ViewReservationGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(ViewReservationGui.class);
 	
 	private static final int MIN_DAYS = 2;
 	private JButton backButton;
@@ -39,7 +39,7 @@ public class GuestViewReservationGui implements IGui {
 	private JButton modifyButton;
 	private JButton cancelButton;
 	
-	public GuestViewReservationGui(ReservationService resService) {
+	public ViewReservationGui(ReservationService resService) {
 		this.resService = resService;
 		layoutMainArea();
 	}

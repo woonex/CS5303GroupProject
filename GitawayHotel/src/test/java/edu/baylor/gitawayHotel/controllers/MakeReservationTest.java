@@ -9,7 +9,7 @@ import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.GuestMakeReservationGui;
-import edu.baylor.gitawayHotel.gui.GuestViewReservationGui;
+import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
 import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
@@ -91,7 +91,7 @@ public class MakeReservationTest {
 		mainController.getGuestGui().getViewRoomsButton().doClick();
 		try {
 			SwingUtilities.invokeAndWait(() -> {
-				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
+				JPanel activePanel = mainController.getGuestMakeReservationGui().getFullPanel();
 				Assertions.assertEquals(activePanel, mainController.getMainFrame().getActivePanel());
 				mainController.getViewRoomsGui().getBackButton().doClick();
 			});
@@ -123,9 +123,7 @@ public class MakeReservationTest {
 
 		try {
 			SwingUtilities.invokeAndWait(() -> {
-				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
-
-				makeReservationGui.setStartDate(today.plusDays(1));
+				makeReservationGui.setStartDate(today);
 				makeReservationGui.setEndDate(today.plusDays(2));
 				makeReservationGui.getSearchButton().doClick();
 				makeReservationGui.selectTableRowByIndex(0);
@@ -154,22 +152,20 @@ public class MakeReservationTest {
 		login(mainController, GUEST);
 
 		mainController.getGuestGui().getViewReservationsButton().doClick();
-		GuestViewReservationGui reservationGui = mainController.getReservationGui();
+		ViewReservationGui reservationGui = mainController.getReservationGui();
 
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
 
 		try {
 			SwingUtilities.invokeAndWait(() -> {
-				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
-
 				reservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				reservationGui.getModifyReservationButton().doClick();
 
 				GuestMakeReservationGui makeReservationGui = mainController.getGuestMakeReservationGui();
 
 
-				makeReservationGui.setStartDate(today.plusDays(1));
+				makeReservationGui.setStartDate(today);
 				makeReservationGui.setEndDate(today.plusDays(2));
 				makeReservationGui.getSearchButton().doClick();
 				makeReservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
@@ -198,7 +194,7 @@ public class MakeReservationTest {
 		login(mainController, CLERK);
 
 		List<Reservation> reservations = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
-		Reservation expected = new Reservation(today.plusDays(1), today.plusDays(2), GUEST, TEST_ROOM);
+		Reservation expected = new Reservation(today, today.plusDays(2), GUEST, TEST_ROOM);
 		
 		Assertions.assertIterableEquals(List.of(expected), reservations);
 		Assertions.assertFalse(reservations.get(0).getCheckinStatus());
@@ -230,7 +226,7 @@ public class MakeReservationTest {
 		login(mainController, GUEST);
 
 		mainController.getGuestGui().getViewReservationsButton().doClick();
-		GuestViewReservationGui reservationGui = mainController.getReservationGui();
+		ViewReservationGui reservationGui = mainController.getReservationGui();
 
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);

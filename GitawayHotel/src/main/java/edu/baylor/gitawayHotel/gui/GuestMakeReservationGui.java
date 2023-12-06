@@ -45,12 +45,12 @@ public class GuestMakeReservationGui implements IGui {
 	private JPanel actionPanel;
 	private DefaultTableModel model;
 	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
-	private JButton saveRoomsButton;
+//	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
-	private JTextField roomUpdateField;
-	private JButton removeRoomButton;
-	private JButton addRoomButton;
+//	private JTextField roomUpdateField;
+//	private JButton removeRoomButton;
+//	private JButton addRoomButton;
 	private JButton searchButton;
 	private JTextField startDateField;
 	private TextPrompt startDatePrompt;
@@ -103,12 +103,6 @@ public class GuestMakeReservationGui implements IGui {
 		
 
 		scrollPane = new JScrollPane(table);
-		
-		// clerk/admin actions
-		saveRoomsButton = new JButton("Save Rooms");
-		addRoomButton = new JButton("Add Room");
-		removeRoomButton = new JButton("Remove Room");
-		roomUpdateField = new JTextField(20);
 
 		// guest actions
 		startDateField = new JTextField(10);
@@ -126,12 +120,6 @@ public class GuestMakeReservationGui implements IGui {
 		switch (userType) {
 		case ADMIN:
 		case HOTEL_CLERK:
-			panel.add(scrollPane);
-			panel.add(roomUpdateField);
-			panel.add(addRoomButton);
-			panel.add(removeRoomButton);
-			panel.add(saveRoomsButton);
-			panel.add(backButton);
 			break;
 		case GUEST:
 		default:
@@ -316,13 +304,6 @@ public class GuestMakeReservationGui implements IGui {
 		}
 		return -1;
 	}
-	
-	/**Gets the save rooms button
-	 * @return
-	 */
-	public JButton getSaveRoomsButton() {
-		return this.saveRoomsButton;
-	}
 
 	/**Gets the back button
 	 * @return
@@ -349,18 +330,6 @@ public class GuestMakeReservationGui implements IGui {
 		this.searchClicked = false;
 		updateModel();
 		return this.panel;
-	}
-
-	public JTextField getRoomUpdateField() {
-		return roomUpdateField;
-	}
-
-	public JButton getRemoveRoomButton() {
-		return removeRoomButton;
-	}
-
-	public JButton getAddRoomButton() {
-		return addRoomButton;
 	}
 	
 	public JButton getReserveRoomButton() {
@@ -476,10 +445,6 @@ public class GuestMakeReservationGui implements IGui {
 			text = DATE_FORMATTER.format(endDate);
 		}
 		endDateField.setText(text);
-	}
-	
-	public void setRoomField(int newRoomNum) {
-		this.roomUpdateField.setText(String.valueOf(newRoomNum));
 	}
 	
 	public void selectTableRowByRoomNum(int roomNum) {
