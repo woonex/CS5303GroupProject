@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 /**A class that lays out the login gui section the user interacts with
  * @author Nathan
@@ -204,6 +205,7 @@ public class CredentialGui implements IGui {
 	 */
 	@Override
 	public JPanel getFullPanel() {
+		
 		return this.panel;
 	}
 
@@ -213,5 +215,12 @@ public class CredentialGui implements IGui {
 
 	public void setPassword(String string) {
 		this.pwField.setText(string);
+	}
+
+	public void setTextFieldFocused() {
+		SwingUtilities.invokeLater(() -> {
+			this.usernameField.requestFocusInWindow();
+			this.usernameField.requestFocus();
+		});
 	}
 }

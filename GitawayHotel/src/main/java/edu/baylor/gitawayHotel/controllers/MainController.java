@@ -9,6 +9,7 @@ import javax.management.InstanceAlreadyExistsException;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
@@ -98,6 +99,9 @@ public class MainController {
 		this.viewRoomStateGui = new ViewRoomStateGui(roomServices, reservationService);
 		
 		mainFrame.add(splashScreen.getPanel());
+		SwingUtilities.invokeLater(() -> {
+			splashScreen.getNextButton().requestFocus();
+		});
 		
 		setupLoginPaging();
 		
@@ -129,6 +133,9 @@ public class MainController {
 		mainNext.addActionListener(e -> {
 			//splash screen redirects to the login gui
 			mainFrame.add(loginGui.getFullPanel());	
+			SwingUtilities.invokeLater(() -> {
+				loginGui.setTextFieldFocused();
+			});
 		});
 	}
 	
