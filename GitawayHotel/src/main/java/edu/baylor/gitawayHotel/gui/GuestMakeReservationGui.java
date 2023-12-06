@@ -37,8 +37,8 @@ import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 /**A class for viewing rooms or creating reservations for guests
  *
  */
-public class ViewRoomsGui implements IGui {
-	private static final Logger logger = LogManager.getLogger(ViewRoomsGui.class);
+public class GuestMakeReservationGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(GuestMakeReservationGui.class);
 	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private JPanel datePanel;
@@ -63,7 +63,7 @@ public class ViewRoomsGui implements IGui {
 	private JButton reserveButton;
 	private boolean searchClicked = false;
 
-	public ViewRoomsGui(RoomServices roomServices) {
+	public GuestMakeReservationGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
 		layoutMainArea();
 	}

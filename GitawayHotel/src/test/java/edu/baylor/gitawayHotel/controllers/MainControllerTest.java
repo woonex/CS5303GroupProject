@@ -19,7 +19,7 @@ import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
-import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
@@ -305,7 +305,7 @@ public class MainControllerTest {
 		login(mainController, CLERK);
 		
 		mainController.getClerkGui().getModifyRoomsButton().doClick();
-		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+		ClerkChangeRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 9001;
 		viewRoomsGui.setRoomField(newRoomNum);
@@ -335,7 +335,7 @@ public class MainControllerTest {
 		login(mainController, CLERK);
 		
 		mainController.getClerkGui().getModifyRoomsButton().doClick();
-		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+		ClerkChangeRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 505050;
 		viewRoomsGui.setRoomField(newRoomNum);

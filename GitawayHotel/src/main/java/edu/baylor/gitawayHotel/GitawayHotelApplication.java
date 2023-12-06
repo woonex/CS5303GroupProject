@@ -11,7 +11,7 @@ import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.controllers.MainController;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
-import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.gui.MainFrame;
@@ -35,7 +35,7 @@ public class GitawayHotelApplication {
 			
 			ReservationService reservationServices = new ReservationService(roomServices);
 			
-			ViewRoomsGui viewRoomsGui = new ViewRoomsGui(roomServices);
+			ClerkChangeRoomsGui viewRoomsGui = new ClerkChangeRoomsGui(roomServices);
 			
 			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui, reservationServices);
 		});

@@ -8,9 +8,10 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
+import edu.baylor.gitawayHotel.gui.GuestMakeReservationGui;
 import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
-import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
@@ -115,7 +116,7 @@ public class MakeReservationTest {
 		login(mainController, GUEST);
 
 		mainController.getGuestGui().getViewRoomsButton().doClick();
-		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+		GuestMakeReservationGui makeReservationGui = mainController.getGuestMakeReservationGui();
 
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
@@ -124,12 +125,12 @@ public class MakeReservationTest {
 			SwingUtilities.invokeAndWait(() -> {
 				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
 
-				viewRoomsGui.setStartDate(today.plusDays(1));
-				viewRoomsGui.setEndDate(today.plusDays(2));
-				viewRoomsGui.getSearchButton().doClick();
-				viewRoomsGui.selectTableRowByIndex(0);
-				viewRoomsGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
-				viewRoomsGui.getReserveRoomButton().doClick();
+				makeReservationGui.setStartDate(today.plusDays(1));
+				makeReservationGui.setEndDate(today.plusDays(2));
+				makeReservationGui.getSearchButton().doClick();
+				makeReservationGui.selectTableRowByIndex(0);
+				makeReservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
+				makeReservationGui.getReserveRoomButton().doClick();
 			
 				mainController.getMainFrame().getFrame().dispose();
 
@@ -165,13 +166,14 @@ public class MakeReservationTest {
 				reservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
 				reservationGui.getModifyReservationButton().doClick();
 
-				ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+				GuestMakeReservationGui makeReservationGui = mainController.getGuestMakeReservationGui();
 
-				viewRoomsGui.setStartDate(today.plusDays(1));
-				viewRoomsGui.setEndDate(today.plusDays(2));
-				viewRoomsGui.getSearchButton().doClick();
-				viewRoomsGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
-				viewRoomsGui.getReserveRoomButton().doClick();
+
+				makeReservationGui.setStartDate(today.plusDays(1));
+				makeReservationGui.setEndDate(today.plusDays(2));
+				makeReservationGui.getSearchButton().doClick();
+				makeReservationGui.selectTableRowByRoomNum(TEST_ROOM.getRoom());
+				makeReservationGui.getReserveRoomButton().doClick();
 
 				mainController.getMainFrame().getFrame().dispose();
 
