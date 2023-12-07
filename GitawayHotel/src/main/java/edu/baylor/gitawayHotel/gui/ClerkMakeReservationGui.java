@@ -110,4 +110,14 @@ public class ClerkMakeReservationGui implements IGui {
 		return (User) userChoose.getSelectedItem();
 	}
 
+	public void selectGuest(User guest) {
+		for (int i = 0; i < userChoose.getItemCount(); i++) {
+			User user = userChoose.getItemAt(i);
+			if (user.getUsername().equals(guest.getUsername())) {
+				userChoose.setSelectedItem(user);
+				break;
+			}
+		}
+	}
+
 }

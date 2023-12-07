@@ -283,6 +283,48 @@ public class MakeReservationTest {
 		}
 		closeApp(mainController);
 	}
+	
+	@Test
+	void testClerkReserveForGuest() {
+		MainController mainController = new MainController(roomServices);
+		mainController.getSplashScreen().getNextButton().doClick();
+		login(mainController, CLERK);
+		
+		mainController.getClerkGui().getMakeReservationButton().doClick();
+		
+		mainController.getClerkMakeReservationGui().selectGuest(GUEST);
+		try {
+			SwingUtilities.invokeLater(() -> {
+				mainController.getClerkMakeReservationGui().getSelectButton().doClick();
+
+				GuestMakeReservationGui gui = mainController.getGuestMakeReservationGui();
+				Reservation res = new Reservation(today.plusMonths(1), today.plusMonths(2), GUEST, TEST_ROOM);
+				gui.setStartDate(res.getStartDate());
+				gui.setEndDate(res.getEndDate());
+				gui.getSearchButton().doClick();
+				gui.selectTableRowByRoomNum(res.getRoom().getRoom());
+
+				NotificationWindowLaunch listener = new NotificationWindowLaunch();
+				Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
+
+				gui.getReserveRoomButton().doClick();
+
+				List<Reservation> reservations = mainController.getReservationService().getReservationsByUser(GUEST);
+				boolean foundReservation = false;
+				for (Reservation current : reservations) {
+					if (current.equals(res)) {
+						foundReservation = true;
+						break;
+					}
+				}
+				Assertions.assertTrue(foundReservation);
+			});
+		}catch (Exception e) {
+			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
+		}
+		closeApp(mainController);
+	}
 
 
 	private static void closeApp(MainController main) {

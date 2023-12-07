@@ -65,7 +65,9 @@ public class MainController {
 	private final ClerkChangeRoomsGui clerkChangeRoomsGui;
 	private GuestMakeReservationGui guestMakeReservationGui;
 	private User user;
+	
 	private ClerkMakeReservationGui clerkMakeReservationGui;
+	private User proxyGuest;
 
 	public MainController(RoomServices roomServices) {
 		this(new MainFrame(), new SplashScreen(), new CredentialGui(), new UserServices(), roomServices,
@@ -338,6 +340,11 @@ public class MainController {
 		clerkMakeReservationGui.getBackButton().addActionListener(l -> {
 			mainFrame.add(clerkGui.getFullPanel());
 		});
+		
+		clerkMakeReservationGui.getSelectButton().addActionListener(l -> {
+			proxyGuest = clerkMakeReservationGui.getSelectedUser();
+			mainFrame.add(guestMakeReservationGui.getFullPanel());
+		});
 	}
 
 	/**
@@ -417,6 +424,7 @@ public class MainController {
 		// logout redirects to the login screen
 		mainFrame.add(loginGui.getFullPanel());
 		user = null;
+		proxyGuest = null;
 	}
 
 	// Redirects to ChangeCredentialsGui.java
@@ -558,7 +566,12 @@ public class MainController {
 
 		User roomUser;
 		if (UserType.HOTEL_CLERK.equals(user.getUserType())) {
-			roomUser = this.lastReservation.getGuest();
+			if (proxyGuest != null) {
+				roomUser = proxyGuest;
+				proxyGuest = null;
+			} else {
+				roomUser = this.lastReservation.getGuest();
+			}
 		} else {
 			roomUser = user;
 		}
