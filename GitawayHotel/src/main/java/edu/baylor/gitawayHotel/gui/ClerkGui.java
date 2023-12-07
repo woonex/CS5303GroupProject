@@ -1,5 +1,6 @@
 package edu.baylor.gitawayHotel.gui;
 
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -24,6 +25,7 @@ public class ClerkGui extends AuthenticatedGui {
 	private JButton viewRoomStatusButton;
 	private JButton viewReservationsButton;
 	private JButton makeReservationButton;
+	private JButton generateBillingButton;
 	
 
 	@Override
@@ -33,11 +35,13 @@ public class ClerkGui extends AuthenticatedGui {
 		viewRoomStatusButton = new JButton("View Room Status / Manage Check In");
 		viewReservationsButton = new JButton("View Reservations");
 		makeReservationButton = new JButton("Make Reservations");
+		generateBillingButton = new JButton("Generate Billing");
 		
 		panel.add(modifyRoomsButton);//, BorderLayout.CENTER);
 		panel.add(viewRoomStatusButton);
 		panel.add(viewReservationsButton);
 		panel.add(makeReservationButton);
+		panel.add(generateBillingButton);
 
 		return panel;
 	}
@@ -64,6 +68,10 @@ public class ClerkGui extends AuthenticatedGui {
 	@Override
 	protected UserType getUserType() {
 		return UserType.HOTEL_CLERK;
+	}
+
+	public JButton getGenerateBillingButton() {
+		return this.generateBillingButton;
 	}
 
 }

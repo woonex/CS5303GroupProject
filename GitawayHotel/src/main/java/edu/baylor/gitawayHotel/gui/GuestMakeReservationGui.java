@@ -231,61 +231,6 @@ public class GuestMakeReservationGui implements IGui {
 		}
 		panel.repaint();
 	}
-	
-	/**Gets the rooms in the table that the user has entered
-	 * @return list of rooms
-	 */
-	public List<Room> getRoomsInTable() {
-		List<Room> rooms = new ArrayList<Room>();
-		
-		for (int i = 0; i < this.model.getRowCount(); i++) {
-			Room room = new Room();
-			for (int j = 0; j < columnNames.length; j++) {
-				Object currentVal = model.getValueAt(i, j);
-				if (j == 0) {
-					room.setRoom(handleIntConversion(currentVal));
-				} else if (j == 1) {
-					room.setBedQty(handleIntConversion(currentVal));
-				} else if (j == 2) {
-					room.setBedType((String) currentVal);
-				} else if (j == 3) {
-					room.setNoSmoking(handleBoolConversion(currentVal));
-				}
-			}
-			rooms.add(room);
-		}
-		return rooms;
-	}
-	
-	/**Handles boolean coversion of generic object
-	 * TODO add error handling and defaulting
-	 * @param value
-	 * @return
-	 */
-	private static Boolean handleBoolConversion(Object value) {
-		if (value instanceof Boolean) {
-			return (Boolean) value;
-		} else if (value instanceof String) {
-			String val = (String) value;
-			return Boolean.parseBoolean(val);
-		}
-		return false;
-	}
-	
-	/**Handles integer conversion of generic object
-	 * TODO add error handling and defaulting
-	 * @param value
-	 * @return
-	 */
-	private static Integer handleIntConversion(Object value) {
-		if (value instanceof Integer) {
-			return (Integer) value;
-		} else if (value instanceof String) {
-			String val = (String) value;
-			return Integer.parseInt(val);
-		}
-		return -1;
-	}
 
 	/**Gets the back button
 	 * @return

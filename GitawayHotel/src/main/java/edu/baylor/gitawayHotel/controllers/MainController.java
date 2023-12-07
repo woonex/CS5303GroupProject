@@ -14,6 +14,8 @@ import javax.swing.SwingUtilities;
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
+import edu.baylor.gitawayHotel.gui.AuthenticatedGui;
+import edu.baylor.gitawayHotel.gui.BillingGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
@@ -74,6 +76,7 @@ public class MainController {
 	private User proxyGuest;
 	
 	private CreateClerkGui createClerkGui;
+	private BillingGui billingGui;
 
 	public MainController(RoomServices roomServices) {
 		this(new MainFrame(), new SplashScreen(), new CredentialGui(), new UserServices(), roomServices,
@@ -102,6 +105,7 @@ public class MainController {
 		this.guestMakeReservationGui = new GuestMakeReservationGui(roomServices);
 		this.selectUserGui = new SelectUserGui(userServices);
 		this.createClerkGui = new CreateClerkGui();
+		this.billingGui = new BillingGui();
 		
 		mainFrame.add(splashScreen.getPanel());
 		SwingUtilities.invokeLater(() -> {
@@ -344,6 +348,8 @@ public class MainController {
 				}
 			}
 			reservationService.removeReservation(reservation);
+			reservation.setRoom(Room.CANCELED_ROOM);
+			reservationService.addReservation(reservation);
 			mainFrame.add(reservationGui.getFullPanel());
 		});
 		
@@ -365,6 +371,29 @@ public class MainController {
 			selectUserGui.setTopText("Choose a Guest to make a reservation for");
 			selectUserGui.setUserFilterList(List.of(UserType.GUEST));
 			mainFrame.add(selectUserGui.getFullPanel());
+			
+			JButton selectUser = selectUserGui.getSelectButton();
+			removeListenersFromButton(selectUser);
+			selectUser.addActionListener(l2 -> {
+				proxyGuest = selectUserGui.getSelectedUser();
+				mainFrame.add(guestMakeReservationGui.getFullPanel());
+			});
+		});
+		
+		clerkGui.getGenerateBillingButton().addActionListener(l -> {
+			selectUserGui.setTopText("Choose a Guest to generate a billing report for");
+			selectUserGui.setUserFilterList(List.of(UserType.GUEST));
+			
+			JButton selectUser = selectUserGui.getSelectButton();
+			removeListenersFromButton(selectUser);
+			mainFrame.add(selectUserGui.getFullPanel());
+			
+			selectUser.addActionListener(l2 -> {
+				User tmp = selectUserGui.getSelectedUser();
+				List<Reservation> reservations = reservationService.getReservationsByUser(tmp);
+				billingGui.setDisplay(tmp, reservations);
+				mainFrame.add(billingGui.getFullPanel());
+			});
 		});
 		
 		JButton backSelect = selectUserGui.getBackButton();
@@ -373,11 +402,8 @@ public class MainController {
 			mainFrame.add(clerkGui.getFullPanel());
 		});
 		
-		JButton selectUser = selectUserGui.getSelectButton();
-		removeListenersFromButton(selectUser);
-		selectUser.addActionListener(l -> {
-			proxyGuest = selectUserGui.getSelectedUser();
-			mainFrame.add(guestMakeReservationGui.getFullPanel());
+		billingGui.getBackButton().addActionListener(l -> {
+			mainFrame.add(clerkGui.getFullPanel());
 		});
 	}
 	
