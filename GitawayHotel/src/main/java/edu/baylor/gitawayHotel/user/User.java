@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.google.gson.JsonObject;
 
-public class User {
+public class User implements Comparable<User> {
 	private String username;
 	private String password;
 	private UserType userType;
@@ -77,6 +77,13 @@ public class User {
 			return false;
 		User other = (User) obj;
 		return Objects.equals(username, other.username);
+	}
+
+
+
+	@Override
+	public int compareTo(User o) {
+		return this.getUsername().compareTo(o.getUsername());
 	}
 	
 	

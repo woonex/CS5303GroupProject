@@ -23,6 +23,7 @@ public class ClerkGui extends AuthenticatedGui {
 	private JPanel panel;
 	private JButton viewRoomStatusButton;
 	private JButton viewReservationsButton;
+	private JButton makeReservationButton;
 	
 
 	@Override
@@ -31,10 +32,12 @@ public class ClerkGui extends AuthenticatedGui {
 		modifyRoomsButton = new JButton("Modify Room Information");
 		viewRoomStatusButton = new JButton("View Room Status / Manage Check In");
 		viewReservationsButton = new JButton("View Reservations");
+		makeReservationButton = new JButton("Make Reservations");
 		
 		panel.add(modifyRoomsButton);//, BorderLayout.CENTER);
 		panel.add(viewRoomStatusButton);
 		panel.add(viewReservationsButton);
+		panel.add(makeReservationButton);
 
 		return panel;
 	}
@@ -52,6 +55,10 @@ public class ClerkGui extends AuthenticatedGui {
 	
 	public JButton getViewReservationsButton() {
 		return this.viewReservationsButton;
+	}
+	
+	public JButton getMakeReservationButton() {
+		return this.makeReservationButton;
 	}
 
 	@Override

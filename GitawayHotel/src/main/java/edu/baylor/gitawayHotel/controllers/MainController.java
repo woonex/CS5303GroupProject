@@ -1,6 +1,5 @@
 package edu.baylor.gitawayHotel.controllers;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.Set;
@@ -14,18 +13,18 @@ import javax.swing.SwingUtilities;
 import edu.baylor.gitawayHotel.Room.Room;
 import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
-import edu.baylor.gitawayHotel.gui.AuthenticatedGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
+import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
+import edu.baylor.gitawayHotel.gui.ClerkMakeReservationGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.GuestMakeReservationGui;
 import edu.baylor.gitawayHotel.gui.IGui;
 import edu.baylor.gitawayHotel.gui.MainFrame;
-import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.SplashScreen;
+import edu.baylor.gitawayHotel.gui.ViewReservationGui;
 import edu.baylor.gitawayHotel.gui.ViewRoomStateGui;
-import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.reservation.Reservation;
 import edu.baylor.gitawayHotel.reservation.ReservationService;
 import edu.baylor.gitawayHotel.user.User;
@@ -66,6 +65,7 @@ public class MainController {
 	private final ClerkChangeRoomsGui clerkChangeRoomsGui;
 	private GuestMakeReservationGui guestMakeReservationGui;
 	private User user;
+	private ClerkMakeReservationGui clerkMakeReservationGui;
 
 	public MainController(RoomServices roomServices) {
 		this(new MainFrame(), new SplashScreen(), new CredentialGui(), new UserServices(), roomServices,
@@ -92,7 +92,7 @@ public class MainController {
 		this.viewRoomStateGui = new ViewRoomStateGui(roomServices, reservationService);
 
 		this.guestMakeReservationGui = new GuestMakeReservationGui(roomServices);
-
+		this.clerkMakeReservationGui = new ClerkMakeReservationGui(userServices);
 		mainFrame.add(splashScreen.getPanel());
 		SwingUtilities.invokeLater(() -> {
 			splashScreen.getNextButton().requestFocus();
@@ -329,6 +329,14 @@ public class MainController {
 			guestMakeReservationGui.getSearchButton().doClick();
 
 			mainFrame.add(guestMakeReservationGui.getFullPanel());
+		});
+		
+		clerkGui.getMakeReservationButton().addActionListener(l -> {
+			mainFrame.add(clerkMakeReservationGui.getFullPanel());
+		});
+		
+		clerkMakeReservationGui.getBackButton().addActionListener(l -> {
+			mainFrame.add(clerkGui.getFullPanel());
 		});
 	}
 
@@ -687,5 +695,12 @@ public class MainController {
 
 	GuestMakeReservationGui getGuestMakeReservationGui() {
 		return guestMakeReservationGui;
+	}
+
+	/**
+	 * @return the clerkMakeReservationGui
+	 */
+	public ClerkMakeReservationGui getClerkMakeReservationGui() {
+		return clerkMakeReservationGui;
 	}
 }
