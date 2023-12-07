@@ -348,8 +348,6 @@ public class MainController {
 				}
 			}
 			reservationService.removeReservation(reservation);
-			reservation.setRoom(Room.CANCELED_ROOM);
-			reservationService.addReservation(reservation);
 			mainFrame.add(reservationGui.getFullPanel());
 		});
 		
