@@ -156,7 +156,7 @@ public class ViewReservationGui implements IGui {
 		reservations = reservations.stream()
 				.filter(res -> {
 					LocalDate startDate = res.getStartDate();
-					return res.isCurrentlyActive() || startDate == LocalDate.now() || startDate.isAfter(LocalDate.now());
+					return res.isCurrentlyActive() || startDate.equals(LocalDate.now()) || startDate.isAfter(LocalDate.now());
 				})
 				.collect(Collectors.toList());
 		Collections.sort(reservations);

@@ -220,6 +220,31 @@ public class MakeReservationTest {
 	
 	@Test
 	@Order(4)
+	void testClerkModifyGuestReservation() {
+		MainController mainController = new MainController(roomServices);
+		mainController.getSplashScreen().getNextButton().doClick();
+		login(mainController, CLERK);
+		
+		List<Reservation> reservations = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
+		
+		
+		mainController.getClerkGui().getViewReservationsButton().doClick();
+		
+		mainController.getReservationGui().selectTableRowByRoomNum(TEST_ROOM.getRoom());
+		mainController.getReservationGui().getModifyReservationButton().doClick();
+		
+		mainController.getGuestViewRoomsGui().getSearchButton().doClick();
+		mainController.getGuestViewRoomsGui().selectTableRowByRoomNum(TEST_ROOM.getRoom());
+		mainController.getGuestViewRoomsGui().getReserveRoomButton().doClick();
+		
+		List<Reservation> afterChanges = mainController.getReservationService().getReservationsForRoom(TEST_ROOM);
+		
+		Assertions.assertIterableEquals(reservations, afterChanges);
+		closeApp(mainController);
+	}
+	
+	@Test
+	@Order(5)
 	void testGuestRemoveReservation() {
 		MainController mainController = new MainController(roomServices);
 		mainController.getSplashScreen().getNextButton().doClick();
@@ -286,6 +311,8 @@ public class MakeReservationTest {
 				e.printStackTrace();
 			} 
 		}
+		
+		closeApp(mainController);
 	}
 
 	@AfterAll
@@ -300,6 +327,8 @@ public class MakeReservationTest {
 		}
 		
 		roomServices.removeRoom(TEST_ROOM.getRoom());
+		
+		closeApp(mainController);
 	}
 	
 }

@@ -169,6 +169,8 @@ public class MainControllerTest {
 			e.printStackTrace();
 			Assertions.fail("Exception thrown during execution");
 		}
+		
+		closeApp(mainController);
 	}
 	
 	@Test
