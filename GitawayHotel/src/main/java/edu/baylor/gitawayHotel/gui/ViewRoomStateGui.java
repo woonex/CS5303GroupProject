@@ -31,7 +31,7 @@ public class ViewRoomStateGui implements IGui {
 	private JButton checkoutButton;
 	
 	private String[] columnNames = {
-			"Room Number", "Reserved?", "Guest", "Check Out Date", "Check In Status"
+			"Room Number", "Guest", "Check In Date", "Check Out Date", "Check In Status"
 	};
 	private JButton backButton;
 
@@ -118,18 +118,20 @@ public class ViewRoomStateGui implements IGui {
 			boolean isReserved = !current.isEmpty();
 			
 			User guestName;
+			String checkinDate;
 			String checkoutDate;
 			String checkinStatus;
 			
 			if (isReserved) {
 				for (Reservation res : current) {
 					guestName = res.getGuest();
+					checkinDate = res.getStartDate().toString();
 					checkoutDate = res.getEndDate().toString();
 					checkinStatus = res.getCheckinStatus() ? "Checked In" : "Not Checked In";
 					Object[] row = { 
 							room.getRoom(), 
-							isReserved,
 							guestName,
+							checkinDate,
 							checkoutDate,
 							checkinStatus
 							};
@@ -137,12 +139,13 @@ public class ViewRoomStateGui implements IGui {
 				}
 			} else {
 				guestName = new User("Not Reserved");
+				checkinDate = "Not Reserved";
 				checkoutDate = "Not Reserved";
 				checkinStatus = "Not Reserved";
 				Object[] row = { 
 						room.getRoom(), 
-						isReserved,
 						guestName,
+						checkinDate,
 						checkoutDate,
 						checkinStatus
 						};

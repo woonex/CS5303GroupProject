@@ -113,76 +113,66 @@ public class GuestMakeReservationGui implements IGui {
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
-		
-		if (userType == null) {
-			return;
-		}
-		switch (userType) {
-		case ADMIN:
-		case HOTEL_CLERK:
-			break;
-		case GUEST:
-		default:
-			datePanel = new JPanel(new BorderLayout());
-			startDatePrompt = new TextPrompt("Check-in date", startDateField);
-			endDatePrompt = new TextPrompt("Check-out date", endDateField);
-			startDatePrompt.changeAlpha(0.5f);
-			endDatePrompt.changeAlpha(0.5f);
-			
-			//add a button to the search listener to detect that the search button is clicked
-			searchButton.addActionListener(e -> {
-				searchClicked = true;
-			});
-			
-			/*define something that listens to the document of the text fields and will flag the search as not clicked
-			 * (requires the user to click the search each time after modifying the date)
-			*/
-			DocumentListener dateFieldListener = new DocumentListener() {
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					changed();
-				}
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					changed();
-				}
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					changed();
-				}
-				private void changed() {
-					searchClicked = false;
-					reserveButton.setEnabled(false);
-				}
-			};
-			startDateField.getDocument().addDocumentListener(dateFieldListener);
-			endDateField.getDocument().addDocumentListener(dateFieldListener);
-			
-			//setup date entry portion
-			JPanel topDate = new JPanel(new GridLayout(1, 2));
-			topDate.add(new NonVerticalExpanding(startDateField));
-			topDate.add(new NonVerticalExpanding(endDateField));
-			datePanel.add(topDate, BorderLayout.NORTH);
-			
-			JPanel middleDate = new JPanel(new GridLayout(1, 2));
-			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			datePanel.add(middleDate, BorderLayout.CENTER);
-			
-			JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			bottomDate.add(searchButton);
-			datePanel.add(bottomDate, BorderLayout.SOUTH);
-			
-			actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			actionPanel.add(backButton);
-			actionPanel.add(reserveButton);
 
-			panel.add(datePanel);
-			panel.add(scrollPane);
-			panel.add(actionPanel);
-			
-			break;
-		}
+
+		datePanel = new JPanel(new BorderLayout());
+		startDatePrompt = new TextPrompt("Check-in date", startDateField);
+		endDatePrompt = new TextPrompt("Check-out date", endDateField);
+		startDatePrompt.changeAlpha(0.5f);
+		endDatePrompt.changeAlpha(0.5f);
+
+		//add a button to the search listener to detect that the search button is clicked
+		searchButton.addActionListener(e -> {
+			searchClicked = true;
+		});
+
+		/*define something that listens to the document of the text fields and will flag the search as not clicked
+		 * (requires the user to click the search each time after modifying the date)
+		 */
+		DocumentListener dateFieldListener = new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				changed();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				changed();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				changed();
+			}
+			private void changed() {
+				searchClicked = false;
+				reserveButton.setEnabled(false);
+			}
+		};
+		startDateField.getDocument().addDocumentListener(dateFieldListener);
+		endDateField.getDocument().addDocumentListener(dateFieldListener);
+
+		//setup date entry portion
+		JPanel topDate = new JPanel(new GridLayout(1, 2));
+		topDate.add(new NonVerticalExpanding(startDateField));
+		topDate.add(new NonVerticalExpanding(endDateField));
+		datePanel.add(topDate, BorderLayout.NORTH);
+
+		JPanel middleDate = new JPanel(new GridLayout(1, 2));
+		middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+		middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+		datePanel.add(middleDate, BorderLayout.CENTER);
+
+		JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomDate.add(searchButton);
+		datePanel.add(bottomDate, BorderLayout.SOUTH);
+
+		actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		actionPanel.add(backButton);
+		actionPanel.add(reserveButton);
+
+		panel.add(datePanel);
+		panel.add(scrollPane);
+		panel.add(actionPanel);
+
 	}
 	
 	/**Sets whether the reserve vutton should be available by checking the gui state
@@ -214,15 +204,7 @@ public class GuestMakeReservationGui implements IGui {
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				switch (userType) {
-				case ADMIN:
-				case HOTEL_CLERK:
-					return true;
-				case GUEST:
-					return false;
-				default:
-					return false;
-				}
+				return false;
 			}
 		};
 	}

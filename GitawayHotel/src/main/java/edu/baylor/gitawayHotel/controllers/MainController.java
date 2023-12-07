@@ -157,7 +157,7 @@ public class MainController {
 			}
 			
 			UserType userType = userServices.getUserType(username);
-			
+			user = userServices.getUser(username);
 			// construct guis for the user
 			adminGui.setUsername(username);
 			clerkGui.setUsername(username);
@@ -313,6 +313,22 @@ public class MainController {
 			}
 			reservationService.removeReservation(reservation);
 			mainFrame.add(reservationGui.getFullPanel());
+		});
+		
+		JButton modify = reservationGui.getModifyReservationButton();
+		for (ActionListener l : cancelReservation.getActionListeners()) {
+			modify.removeActionListener(l);
+		}
+		modify.addActionListener(l -> {
+			// save the last reservation and provide it as modification for the user
+			Reservation reservation = reservationGui.getSelectedReservation();
+			lastReservation = reservation;
+			guestMakeReservationGui.setStartDate(reservation.getStartDate());
+			guestMakeReservationGui.setEndDate(reservation.getEndDate());
+			reservationService.removeReservation(reservation);
+			guestMakeReservationGui.getSearchButton().doClick();
+
+			mainFrame.add(guestMakeReservationGui.getFullPanel());
 		});
 	}
 
@@ -505,11 +521,11 @@ public class MainController {
 			break;
 		case GUEST:
 			mainFrame.add(guestGui.getFullPanel());
-			if (lastReservation != null) {
-				reservationService.addReservation(lastReservation);
-				lastReservation = null;
-			}
 			break;
+		}
+		if (lastReservation != null) {
+			reservationService.addReservation(lastReservation);
+			lastReservation = null;
 		}
 	}
 
@@ -532,10 +548,14 @@ public class MainController {
 		LocalDate startDate = guestMakeReservationGui.getStartDate();
 		LocalDate endDate = guestMakeReservationGui.getEndDate();
 
-		String username = loginGui.getUsername();
-		User user = new User(username);
+		User roomUser;
+		if (UserType.HOTEL_CLERK.equals(user.getUserType())) {
+			roomUser = this.lastReservation.getGuest();
+		} else {
+			roomUser = user;
+		}
 		Room room = roomServices.getRoomByNumber(desiredRoomNum);
-		Reservation res = new Reservation(startDate, endDate, user, room);
+		Reservation res = new Reservation(startDate, endDate, roomUser, room);
 		res.setDateReservationMade(LocalDate.now());
 
 		reservationService.addReservation(res);

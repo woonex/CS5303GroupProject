@@ -39,58 +39,5 @@ public class GitawayHotelApplication {
 			
 			MainController mainController = new MainController(mainFrame, splash, loginGui, userServices, roomServices, changeCredentialGui, viewRoomsGui, reservationServices);
 		});
-		
-		
-		
 	}
-	
-	/**performs some requests to ensure that reservation correctly works
-	 * TODO extract to Junit test
-	 * @param reservationServices
-	 */
- 	private static void performTest(ReservationService reservationServices, RoomServices roomServices) {
- 		User user = new User("Joe");
- 		
- 		Room room = roomServices.getRooms().iterator().next();
-		
- 		LocalDate now = LocalDate.now();
- 		LocalDate startDate= now;
- 		LocalDate endDate = now.plusDays(1);
-		
- 		Set<Room> available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
-		
- 		Reservation currentRes = new Reservation(startDate, endDate, user, room);
- 		reservationServices.addReservation(currentRes);
-
- 		available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
-		
- 		startDate = now.plusDays(3);
- 		endDate= now.plusDays(4);
-		
- 		available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
-		
- 		currentRes = new Reservation(startDate, endDate, user, room);
- 		reservationServices.addReservation(currentRes);
- 		available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
-		
- 		startDate = now.plusDays(2);
- 		endDate = now.plusDays(3);
- 		available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
-		
- 		currentRes = new Reservation(startDate, endDate, user, room);
- 		reservationServices.addReservation(currentRes);
- 		available = reservationServices.getAvailableRooms(startDate, endDate);
- 		available.stream().forEach(r -> System.out.print(r.getRoom() + " "));
- 		System.out.println();
- 	}
 }
