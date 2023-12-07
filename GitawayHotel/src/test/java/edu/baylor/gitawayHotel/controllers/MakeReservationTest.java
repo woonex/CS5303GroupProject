@@ -39,9 +39,9 @@ import java.time.LocalDate;
 public class MakeReservationTest {
 	private static final String DEFAULT_PW = "password";
 	private static RoomServices roomServices = new RoomServices();
-	private static User ADMIN = new User("admin", DEFAULT_PW, UserType.ADMIN);
-	private static User CLERK = new User("testclerk", DEFAULT_PW, UserType.HOTEL_CLERK);
-	private static User GUEST = new User("Guest", DEFAULT_PW, UserType.GUEST);
+	private static User ADMIN = new User("TestAdmin", DEFAULT_PW, UserType.ADMIN);
+	private static User CLERK = new User("TestClerk", DEFAULT_PW, UserType.HOTEL_CLERK);
+	private static User GUEST = new User("TestGuest", DEFAULT_PW, UserType.GUEST);
 	LocalDate today = LocalDate.now();
 	private static Room TEST_ROOM = new Room();
 
@@ -292,10 +292,10 @@ public class MakeReservationTest {
 		
 		mainController.getClerkGui().getMakeReservationButton().doClick();
 		
-		mainController.getClerkMakeReservationGui().selectGuest(GUEST);
+		mainController.getSelectUserGui().selectUser(GUEST);
 		try {
 			SwingUtilities.invokeLater(() -> {
-				mainController.getClerkMakeReservationGui().getSelectButton().doClick();
+				mainController.getSelectUserGui().getSelectButton().doClick();
 
 				GuestMakeReservationGui gui = mainController.getGuestMakeReservationGui();
 				Reservation res = new Reservation(today.plusMonths(1), today.plusMonths(2), GUEST, TEST_ROOM);
@@ -332,32 +332,6 @@ public class MakeReservationTest {
 	}
 	
 	@AfterAll
-	static void resetPasswords() {
-		MainController mainController = new MainController(roomServices);
-		UserServices userServices = mainController.getUserServices();
-		
-		ChangeCredentialGui credentialGui = mainController.getChangeCredentialGui();
-		Set<User> users = Set.of(ADMIN, CLERK, GUEST);
-		
-		for (User user : users) {
-			credentialGui.setUsername(user.getUsername());
-			credentialGui.setCurrentPassword(user.getPassword());
-			credentialGui.setNewPassword(DEFAULT_PW);
-			try {
-				SwingUtilities.invokeAndWait(() -> {
-					credentialGui.getLoginButton().doClick();
-					User diskuser = userServices.getUser(user.getUsername());
-					Assertions.assertEquals(DEFAULT_PW, diskuser.getPassword());
-				});
-			} catch (InvocationTargetException | InterruptedException e) {
-				e.printStackTrace();
-			} 
-		}
-		
-		closeApp(mainController);
-	}
-
-	@AfterAll
 	static void resetReservations() {
 		MainController mainController = new MainController(roomServices);
 		UserServices userServices = mainController.getUserServices();
@@ -369,6 +343,17 @@ public class MakeReservationTest {
 		}
 		
 		roomServices.removeRoom(TEST_ROOM.getRoom());
+		
+		closeApp(mainController);
+	}
+	
+	@AfterAll
+	static void removeTestUsers() {
+		MainController mainController = new MainController(roomServices);
+		Set<User> users = Set.of(ADMIN, CLERK, GUEST);
+		for (User user : users) {
+			mainController.getUserServices().removeUserByUsername(user.getUsername());
+		}
 		
 		closeApp(mainController);
 	}

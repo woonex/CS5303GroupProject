@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -13,12 +14,13 @@ import javax.swing.JPanel;
 
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
+import edu.baylor.gitawayHotel.user.UserType;
 
-/**Allows a clerk to select a guest to create a reservation in behalf of
+/**Allows a user to select other users
  * @author nwoolley
  *
  */
-public class ClerkMakeReservationGui implements IGui {
+public class SelectUserGui implements IGui {
 	private static final User SELECT_USER = new User("--Select User--");
 	private JPanel panel;
 	private UserServices userServices;
@@ -26,10 +28,20 @@ public class ClerkMakeReservationGui implements IGui {
 	private JButton selectButton;
 	private JButton backButton;
 	private JComboBox<User> userChoose;
+	private JLabel topLabel;
+	private List<UserType> userTypes = List.of();
 	
-	public ClerkMakeReservationGui(UserServices userServices) {
+	public SelectUserGui(UserServices userServices) {
 		this.userServices = userServices;
 		doLayout();
+	}
+	
+	public void setTopText(String topText) {
+		this.topLabel.setText(topText);
+	}
+	
+	public void setUserFilterList(List<UserType> userTypes) {
+		this.userTypes = userTypes;
 	}
 	
 	/**Performs the layout of the components on the panel
@@ -38,7 +50,7 @@ public class ClerkMakeReservationGui implements IGui {
 	private void doLayout() {
 		panel = new JPanel(new BorderLayout());
 		
-		JLabel topLabel = new JLabel("Choose a Guest to make a reservation for");
+		topLabel = new JLabel("Choose a Guest to make a reservation for");
 		
 		selectButton = new JButton("Select User");
 		backButton = new JButton("Back to Previous");
@@ -77,7 +89,10 @@ public class ClerkMakeReservationGui implements IGui {
 	 * 
 	 */
 	private void refreshUsers() {
-		Set<User> rawUsers = userServices.getAllGuests();
+		Set<User> rawUsers = userServices.getAllUsers();
+		rawUsers = rawUsers.stream()
+				.filter(user -> userTypes.contains(user.getUserType()))
+				.collect(Collectors.toSet());
 		List<User> users = new ArrayList<User>(rawUsers);
 		
 		Collections.sort(users);
@@ -110,11 +125,11 @@ public class ClerkMakeReservationGui implements IGui {
 		return (User) userChoose.getSelectedItem();
 	}
 
-	public void selectGuest(User guest) {
+	public void selectUser(User user) {
 		for (int i = 0; i < userChoose.getItemCount(); i++) {
-			User user = userChoose.getItemAt(i);
-			if (user.getUsername().equals(guest.getUsername())) {
-				userChoose.setSelectedItem(user);
+			User current = userChoose.getItemAt(i);
+			if (current.getUsername().equals(user.getUsername())) {
+				userChoose.setSelectedItem(current);
 				break;
 			}
 		}

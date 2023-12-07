@@ -281,4 +281,9 @@ public class UserServices {
 				.filter(user -> UserType.GUEST.equals(user.getUserType()))
 				.collect(Collectors.toSet());
 	}
+	
+	public Set<User> getAllUsers() {
+		return users.values().stream()
+				.collect(Collectors.toSet());
+	}
 }

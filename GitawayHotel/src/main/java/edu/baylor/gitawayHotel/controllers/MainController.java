@@ -2,6 +2,7 @@ package edu.baylor.gitawayHotel.controllers;
 
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -16,7 +17,8 @@ import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
 import edu.baylor.gitawayHotel.gui.ClerkGui;
-import edu.baylor.gitawayHotel.gui.ClerkMakeReservationGui;
+import edu.baylor.gitawayHotel.gui.CreateClerkGui;
+import edu.baylor.gitawayHotel.gui.SelectUserGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
 import edu.baylor.gitawayHotel.gui.GuestGui;
 import edu.baylor.gitawayHotel.gui.GuestMakeReservationGui;
@@ -45,6 +47,8 @@ public class MainController {
 	static final int RESERVATION_GRACE_DAYS = 2;
 	static final String FEE_TO_CANCEL = "The reservation was created more than " + RESERVATION_GRACE_DAYS
 			+ " days ago and will incure a fee for cancellation.\nPlease click yes to accept the charge and finalize cancellation.";
+	private static final String DEFAULT_PASSWORD = "password";
+	private static final String PASSWORD_RESET = "The password for the user account has been reset to the default password\n\"" + DEFAULT_PASSWORD + "\"";
 	private final SplashScreen splashScreen;
 	private final CredentialGui loginGui;
 	private final MainFrame mainFrame;
@@ -66,8 +70,10 @@ public class MainController {
 	private GuestMakeReservationGui guestMakeReservationGui;
 	private User user;
 	
-	private ClerkMakeReservationGui clerkMakeReservationGui;
+	private SelectUserGui selectUserGui;
 	private User proxyGuest;
+	
+	private CreateClerkGui createClerkGui;
 
 	public MainController(RoomServices roomServices) {
 		this(new MainFrame(), new SplashScreen(), new CredentialGui(), new UserServices(), roomServices,
@@ -94,7 +100,9 @@ public class MainController {
 		this.viewRoomStateGui = new ViewRoomStateGui(roomServices, reservationService);
 
 		this.guestMakeReservationGui = new GuestMakeReservationGui(roomServices);
-		this.clerkMakeReservationGui = new ClerkMakeReservationGui(userServices);
+		this.selectUserGui = new SelectUserGui(userServices);
+		this.createClerkGui = new CreateClerkGui();
+		
 		mainFrame.add(splashScreen.getPanel());
 		SwingUtilities.invokeLater(() -> {
 			splashScreen.getNextButton().requestFocus();
@@ -222,19 +230,45 @@ public class MainController {
 	 * 
 	 */
 	private void setupAdminActions() {
-		JButton adminAddClerk = adminGui.getCreateUserButton();
-		adminAddClerk.addActionListener(e -> {
-			createClerk();
-		});
-
-		JButton adminLogout = adminGui.getLogoutButton();
-		adminLogout.addActionListener(e -> {
+		adminGui.getLogoutButton().addActionListener(e -> {
 			logoutUser(adminGui);
 		});
 
-		JButton adminModify = adminGui.getModifyButton();
-		adminModify.addActionListener(e -> {
+		adminGui.getModifyButton().addActionListener(e -> {
 			modifyCredentials(adminGui);
+		});
+
+		adminGui.getCreateClerkButton().addActionListener(e -> {
+			mainFrame.add(createClerkGui.getFullPanel());
+		});
+		
+		adminGui.getResetUserPasswordButton().addActionListener(e -> {
+			selectUserGui.setTopText("Select the account to reset password for");
+			selectUserGui.setUserFilterList(List.of(UserType.HOTEL_CLERK, UserType.GUEST));
+			mainFrame.add(selectUserGui.getFullPanel());
+		});
+		
+		createClerkGui.getCreateUserButton().addActionListener(l -> {
+			createClerk();
+		});
+		
+		createClerkGui.getBackButton().addActionListener(l -> {
+			mainFrame.add(adminGui.getFullPanel());
+		});
+		
+		JButton back = selectUserGui.getBackButton();
+		removeListenersFromButton(back);
+		back.addActionListener(l -> {
+			mainFrame.add(adminGui.getFullPanel());
+		});
+		
+		JButton select = selectUserGui.getSelectButton();
+		select.addActionListener(l -> {
+			JOptionPane.showMessageDialog(mainFrame.getFrame(), PASSWORD_RESET, "Password Successfully Reset",
+					JOptionPane.INFORMATION_MESSAGE);
+			User user = selectUserGui.getSelectedUser();
+			userServices.updateUser(user.getUsername(), DEFAULT_PASSWORD);
+			mainFrame.add(selectUserGui.getFullPanel());
 		});
 	}
 
@@ -243,8 +277,8 @@ public class MainController {
 	 * 
 	 */
 	private void createClerk() {
-		String username = adminGui.getUsername();
-		String password = adminGui.getPassword();
+		String username = createClerkGui.getUsername();
+		String password = createClerkGui.getPassword();
 
 		boolean usernameAvailable = userServices.isUsernameAvailable(username);
 		if (!usernameAvailable) {
@@ -293,17 +327,13 @@ public class MainController {
 		});
 		
 		JButton back = reservationGui.getBackButton();
-		for (ActionListener listener : back.getActionListeners()) {
-			back.removeActionListener(listener);
-		}
+		removeListenersFromButton(back);
 		back.addActionListener(l -> {
 			mainFrame.add(clerkGui.getFullPanel());
 		});
 		
 		JButton cancelReservation = reservationGui.getCancelReservationButton();
-		for (ActionListener l : cancelReservation.getActionListeners()) {
-			cancelReservation.removeActionListener(l);
-		}
+		removeListenersFromButton(cancelReservation);
 		cancelReservation.addActionListener(e -> {
 			Reservation reservation = reservationGui.getSelectedReservation();
 			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
@@ -318,9 +348,7 @@ public class MainController {
 		});
 		
 		JButton modify = reservationGui.getModifyReservationButton();
-		for (ActionListener l : cancelReservation.getActionListeners()) {
-			modify.removeActionListener(l);
-		}
+		removeListenersFromButton(modify);
 		modify.addActionListener(l -> {
 			// save the last reservation and provide it as modification for the user
 			Reservation reservation = reservationGui.getSelectedReservation();
@@ -334,17 +362,32 @@ public class MainController {
 		});
 		
 		clerkGui.getMakeReservationButton().addActionListener(l -> {
-			mainFrame.add(clerkMakeReservationGui.getFullPanel());
+			selectUserGui.setTopText("Choose a Guest to make a reservation for");
+			selectUserGui.setUserFilterList(List.of(UserType.GUEST));
+			mainFrame.add(selectUserGui.getFullPanel());
 		});
 		
-		clerkMakeReservationGui.getBackButton().addActionListener(l -> {
+		JButton backSelect = selectUserGui.getBackButton();
+		removeListenersFromButton(backSelect);
+		backSelect.addActionListener(l -> {
 			mainFrame.add(clerkGui.getFullPanel());
 		});
 		
-		clerkMakeReservationGui.getSelectButton().addActionListener(l -> {
-			proxyGuest = clerkMakeReservationGui.getSelectedUser();
+		JButton selectUser = selectUserGui.getSelectButton();
+		removeListenersFromButton(selectUser);
+		selectUser.addActionListener(l -> {
+			proxyGuest = selectUserGui.getSelectedUser();
 			mainFrame.add(guestMakeReservationGui.getFullPanel());
 		});
+	}
+	
+	/**Removes all listeners from button
+	 * @param button the button to remove listners from
+	 */
+	private static void removeListenersFromButton(JButton button) {
+		for (ActionListener l : button.getActionListeners()) {
+			button.removeActionListener(l);
+		}
 	}
 
 	/**
@@ -389,9 +432,7 @@ public class MainController {
 		});
 
 		JButton cancelReservation = reservationGui.getCancelReservationButton();
-		for (ActionListener l : cancelReservation.getActionListeners()) {
-			cancelReservation.removeActionListener(l);
-		}
+		removeListenersFromButton(cancelReservation);
 		cancelReservation.addActionListener(e -> {
 
 			Reservation reservation = reservationGui.getSelectedReservation();
@@ -407,9 +448,7 @@ public class MainController {
 		});
 		
 		JButton back = reservationGui.getBackButton();
-		for (ActionListener listener : back.getActionListeners()) {
-			back.removeActionListener(listener);
-		}
+		removeListenersFromButton(back);
 		back.addActionListener(l -> {
 			mainFrame.add(guestGui.getFullPanel());
 		});
@@ -713,7 +752,11 @@ public class MainController {
 	/**
 	 * @return the clerkMakeReservationGui
 	 */
-	public ClerkMakeReservationGui getClerkMakeReservationGui() {
-		return clerkMakeReservationGui;
+	SelectUserGui getSelectUserGui() {
+		return selectUserGui;
+	}
+
+	CreateClerkGui getCreateClerkGui() {
+		return this.createClerkGui;
 	}
 }
