@@ -64,6 +64,7 @@ public class MakeReservationTest {
 		TEST_ROOM.setBedQty(1);
 		TEST_ROOM.setBedType("Queen");
 		TEST_ROOM.setNoSmoking(true);
+		TEST_ROOM.setDailyCost(50.0);
 		roomServices.addRoom(TEST_ROOM);
 	}
 	
