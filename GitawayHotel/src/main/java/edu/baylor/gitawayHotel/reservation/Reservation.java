@@ -13,6 +13,8 @@ public class Reservation implements Comparable<Reservation> {
 	private LocalDate dateReservationMade = LocalDate.now();
 	private Room room;
 	private boolean isCheckedIn = false;
+	private boolean cancelled = false;
+	public static final int RESERVATION_GRACE_DAYS = 2;
 	
 
 	public Reservation(LocalDate startDate, LocalDate endDate, User guest, Room room) {
@@ -139,6 +141,18 @@ public class Reservation implements Comparable<Reservation> {
 				&& (now.equals(endDate) || now.isBefore(endDate)));
 
 		return reservationIsOverTodayDate && isCheckedIn;
+	}
+	
+	public boolean willIncurCancellationFee() {
+		return LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(getDateReservationMade());
+	}
+	
+	public void setCancelled() {
+		this.cancelled = true;
+	}
+
+	public boolean wasCancelled() {
+		return this.cancelled;
 	}
 
 }

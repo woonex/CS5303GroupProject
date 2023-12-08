@@ -45,7 +45,7 @@ public class BillingGui implements IGui {
 
 	public void setDisplay(User user, List<Reservation> reservations) {
 		StringBuilder sb = new StringBuilder();
-		int dayCost = 50;
+		double dayCost = 50;
 		sb.append("User: ");
 		sb.append(user.getUsername() + "\n\n");
 		
@@ -56,19 +56,39 @@ public class BillingGui implements IGui {
 			sb.append(TAB);
 			sb.append("Start date: ");
 			sb.append(res.getStartDate());
-			sb.append(" End Date: ");
+			sb.append(TAB + "End Date: ");
 			sb.append(res.getEndDate());
 			sb.append("\n");
+			
 			sb.append(TAB);
 			sb.append("Days: ");
-			sb.append(qtyDays);
-			sb.append(" * Day Cost $");
-			sb.append(dayCost);
 			sb.append(TAB);
-			sb.append("= Total Day Cost $");
-			sb.append(dayCost * qtyDays);
+			sb.append("*" + TAB + "Day Cost");
+			sb.append(TAB);
+			sb.append("*" + TAB + "Modifier");
+			sb.append(TAB);
+			sb.append("=" + TAB + "Total Reservation Cost");
+			sb.append("\n");
+			
+			sb.append(TAB.repeat(2));
+			sb.append(qtyDays);
+			sb.append(TAB.repeat(3));
+			sb.append("$ " + String.format("%.2f", dayCost));
+			sb.append(TAB.repeat(3));
+			
+			double resCost;
+			if (res.wasCancelled()) {
+				sb.append("80%");
+				resCost = dayCost * qtyDays * .8;
+			} else {
+				sb.append("100%");
+				resCost = dayCost * qtyDays;
+			}
+			
+			sb.append(TAB.repeat(2) + "=");
+			sb.append(TAB.repeat(2) + "$" + String.format("%.2f", resCost));
 			sb.append("\n\n");			
-			totalCost += dayCost * qtyDays;
+			totalCost += resCost;
 		}
 		
 		sb.append("TOTAL COST: $");

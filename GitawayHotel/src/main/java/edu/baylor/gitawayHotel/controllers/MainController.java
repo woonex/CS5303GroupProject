@@ -46,8 +46,7 @@ public class MainController {
 	static final String GUEST_CREATED = "Guest user account successfully created with username: ";
 	static final String INVALID_CREDENTIALS_NOTIFICATION = "Invalid credentials. Please try again.";
 	static final String USERNAME_EXISTS = "Username already exists.\nPlease choose another username";
-	static final int RESERVATION_GRACE_DAYS = 2;
-	static final String FEE_TO_CANCEL = "The reservation was created more than " + RESERVATION_GRACE_DAYS
+	static final String FEE_TO_CANCEL = "The reservation was created more than " + Reservation.RESERVATION_GRACE_DAYS
 			+ " days ago and will incure a fee for cancellation.\nPlease click yes to accept the charge and finalize cancellation.";
 	private static final String DEFAULT_PASSWORD = "password";
 	private static final String PASSWORD_RESET = "The password for the user account has been reset to the default password\n\"" + DEFAULT_PASSWORD + "\"";
@@ -340,7 +339,7 @@ public class MainController {
 		removeListenersFromButton(cancelReservation);
 		cancelReservation.addActionListener(e -> {
 			Reservation reservation = reservationGui.getSelectedReservation();
-			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
+			if (reservation.willIncurCancellationFee()) {
 				int selected = JOptionPane.showConfirmDialog(mainFrame.getFrame(), FEE_TO_CANCEL,
 						"Cancellation Warning", JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION);
 				if (!(JOptionPane.OK_OPTION == selected)) {
@@ -388,7 +387,7 @@ public class MainController {
 			
 			selectUser.addActionListener(l2 -> {
 				User tmp = selectUserGui.getSelectedUser();
-				List<Reservation> reservations = reservationService.getReservationsByUser(tmp);
+				List<Reservation> reservations = reservationService.getReservationsByUser(tmp, true);
 				billingGui.setDisplay(tmp, reservations);
 				mainFrame.add(billingGui.getFullPanel());
 			});
@@ -460,7 +459,7 @@ public class MainController {
 		cancelReservation.addActionListener(e -> {
 
 			Reservation reservation = reservationGui.getSelectedReservation();
-			if (LocalDate.now().minusDays(RESERVATION_GRACE_DAYS).isAfter(reservation.getDateReservationMade())) {
+			if (reservation.willIncurCancellationFee()) {
 				int selected = JOptionPane.showConfirmDialog(mainFrame.getFrame(), FEE_TO_CANCEL,
 						"Cancellation Warning", JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION);
 				if (!(JOptionPane.OK_OPTION == selected)) {

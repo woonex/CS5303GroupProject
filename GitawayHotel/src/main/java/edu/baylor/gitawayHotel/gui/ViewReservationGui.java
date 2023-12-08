@@ -38,6 +38,8 @@ public class ViewReservationGui implements IGui {
 	private JScrollPane tableScroller;
 	private JButton modifyButton;
 	private JButton cancelButton;
+
+	private JLabel label;
 	
 	public ViewReservationGui(ReservationService resService) {
 		this.resService = resService;
@@ -49,8 +51,10 @@ public class ViewReservationGui implements IGui {
 		
 		if (UserType.HOTEL_CLERK == user.getUserType()) {
 			columnNames = new String[] {"Check in Date", "Check out Date", "Room", "Guest"};
+			label.setText("View all upcoming reservations below");
 		} else {
 			columnNames = new String[] {"Check in Date", "Check out Date", "Room"};
+			label.setText("View your reservations below");
 		}
 		updateModel();
 	}
@@ -61,7 +65,7 @@ public class ViewReservationGui implements IGui {
 	protected JPanel layoutMainArea() {
 		fullPanel = new JPanel(new BorderLayout());
 		
-		JLabel label = new JLabel("View your reservations below");
+		label = new JLabel("");
 		
 		backButton = new JButton("Back");
 		

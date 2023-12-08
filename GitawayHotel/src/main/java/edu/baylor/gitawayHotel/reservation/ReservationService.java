@@ -38,9 +38,11 @@ import edu.baylor.gitawayHotel.user.User;
 public class ReservationService {
 	private static final Logger logger = LogManager.getLogger(ReservationService.class);
 	private static final String FILENAME = "reservations.json";
+	
 
 	private File diskFile;
 	private Map<Room, List<Reservation>> reservations;
+	private List<Reservation> canceled = new ArrayList<Reservation>();
 	private RoomServices roomServices;
 
 	private static final Gson gson = new GsonBuilder()
@@ -157,7 +159,7 @@ public class ReservationService {
 		
 		roomReservations.add(reservation);
 		
-		saveReservations(getReservations());
+		saveReservations(getAllReservations());
 	}
 	
 	public void removeReservation(Reservation reservation) {
@@ -172,11 +174,26 @@ public class ReservationService {
 			}
 		}
 		
-		saveReservations(getReservations());
+		if (reservation.willIncurCancellationFee()) {
+			reservation.setCancelled();
+			this.canceled.add(reservation);
+		}
+		
+		saveReservations(getAllReservations());
 	}
 	
 	public List<Reservation> getReservationsByUser(User user) {
-		return getReservations().stream()
+		return getReservationsByUser(user, false);
+	}
+	
+	public List<Reservation> getReservationsByUser(User user, boolean includeCancelled) {
+		List<Reservation> base;
+		if (includeCancelled) {
+			base = getAllReservations();
+		} else {
+			base = getReservations();
+		}
+		return base.stream()
 				.filter(res -> res.getGuest().equals(user))
 				.collect(Collectors.toList());
 	}
@@ -211,11 +228,21 @@ public class ReservationService {
 				.sorted()
 				.collect(Collectors.toList());
 	}
+	
+	private List<Reservation> getAllReservations() {
+		List<Reservation> all = new ArrayList<>(getReservations());
+		all.addAll(getCanceledReservations());
+		return all;
+	}
+	
+	public List<Reservation> getCanceledReservations() {
+		return this.canceled;
+	}
 
 	/**Gets the map of rooms by room number that are present in the file
 	 * @return map of rooms or blank map for file error
 	 */
-	private static Map<Room, List<Reservation>> loadReservations(File file, List<Room> rooms) {
+	private Map<Room, List<Reservation>> loadReservations(File file, List<Room> rooms) {
 		logger.trace("ReservationService loadReservations() invoked");
 		try (FileReader reader = new FileReader(file)) {
 			Reservation[] aReservations = gson.fromJson(reader, Reservation[].class);
@@ -228,7 +255,11 @@ public class ReservationService {
 							));
 
 			for (Reservation res : reservations) {
-				items.get(res.getRoom()).add(res);
+				if (res.wasCancelled()) {
+					canceled.add(res);
+				} else {
+					items.get(res.getRoom()).add(res);
+				}
 			}
 			return items;
 		} catch (IOException e) {
