@@ -167,7 +167,7 @@ public class ViewReservationGui implements IGui {
 		
 		model.setRowCount(0);
 		for (Reservation res : reservations) {
-			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getFullCost(), res.getGuest()};
+			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), String.format("%.2f", res.getFullCost()), res.getGuest()};
 			model.addRow(row);
 		}
 		
@@ -180,7 +180,7 @@ public class ViewReservationGui implements IGui {
 		model.setRowCount(0);
 		
 		for (Reservation res : reservations) {
-			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getFullCost()};
+			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), String.format("%.2f", res.getFullCost())};
 			model.addRow(row);
 		}
 		redrawTable();
@@ -242,7 +242,7 @@ public class ViewReservationGui implements IGui {
 		
 		User reservedUser;
 		if (UserType.HOTEL_CLERK.equals(user.getUserType())) {
-			reservedUser = (User) model.getValueAt(row, 3);
+			reservedUser = (User) model.getValueAt(row, 4);
 		} else {
 			reservedUser = user;
 		}

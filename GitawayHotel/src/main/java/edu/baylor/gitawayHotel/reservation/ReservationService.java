@@ -95,6 +95,9 @@ public class ReservationService {
 		Set<Room> available = new HashSet<Room>();
 		for (Entry<Room, List<Reservation>> entry : reservations.entrySet()) {
 			Room room = entry.getKey();
+			if (roomServices.getRoomByNumber(room.getRoom()) == null) {
+				continue;
+			}
 			List<Reservation> curReses = entry.getValue();
 			boolean roomAvailable = true;
 			for (Reservation res : curReses) {
@@ -163,6 +166,10 @@ public class ReservationService {
 	}
 	
 	public void removeReservation(Reservation reservation) {
+		removeReservation(reservation, false);	
+	}
+	
+	public void removeReservation(Reservation reservation, boolean bypassFee) {
 		List<Reservation> roomRes = this.reservations.get(reservation.getRoom());
 		
 		Iterator<Reservation> itr = roomRes.iterator();
@@ -174,9 +181,11 @@ public class ReservationService {
 			}
 		}
 		
-		if (reservation.willIncurCancellationFee()) {
-			reservation.setCancelled();
-			this.canceled.add(reservation);
+		if (!bypassFee) {
+			if (reservation.willIncurCancellationFee()) {
+				reservation.setCancelled();
+				this.canceled.add(reservation);
+			}
 		}
 		
 		saveReservations(getAllReservations());
@@ -258,7 +267,12 @@ public class ReservationService {
 				if (res.wasCancelled()) {
 					canceled.add(res);
 				} else {
-					items.get(res.getRoom()).add(res);
+					List<Reservation> tmp = items.get(res.getRoom());
+					if (tmp == null) {
+						tmp = new ArrayList<Reservation>();
+						items.put(res.getRoom(), tmp);
+					}
+					tmp.add(res);
 				}
 			}
 			return items;
@@ -354,5 +368,9 @@ public class ReservationService {
 		String dir = new File(url.getPath()).getParent();
 		dir = dir.replace("%20", " ");
 		return dir;
+	}
+
+	public void addNewRoom(Room room) {
+		this.reservations.put(room, new ArrayList<Reservation>());
 	}
 }

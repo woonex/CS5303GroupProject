@@ -125,6 +125,11 @@ public class RoomServices {
 	 * @param rooms
 	 */
 	public void saveRooms(Collection<Room> rooms) {
+		this.rooms = rooms.stream()
+				.collect(Collectors.toMap(
+						room -> room.getRoom(), 
+						room -> room
+					));
 		saveRoomsToDisk(rooms, diskFile);
 	}
 	

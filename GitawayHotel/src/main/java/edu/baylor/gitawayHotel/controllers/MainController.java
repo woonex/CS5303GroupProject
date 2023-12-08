@@ -358,7 +358,7 @@ public class MainController {
 			lastReservation = reservation;
 			guestMakeReservationGui.setStartDate(reservation.getStartDate());
 			guestMakeReservationGui.setEndDate(reservation.getEndDate());
-			reservationService.removeReservation(reservation);
+			reservationService.removeReservation(reservation, true);
 			guestMakeReservationGui.getSearchButton().doClick();
 
 			mainFrame.add(guestMakeReservationGui.getFullPanel());
@@ -441,14 +441,14 @@ public class MainController {
 		});
 
 		JButton modifyReservations = reservationGui.getModifyReservationButton();
+		removeListenersFromButton(modifyReservations);
 		modifyReservations.addActionListener(e -> {
-
 			// save the last reservation and provide it as modification for the user
 			Reservation reservation = reservationGui.getSelectedReservation();
 			lastReservation = reservation;
 			guestMakeReservationGui.setStartDate(reservation.getStartDate());
 			guestMakeReservationGui.setEndDate(reservation.getEndDate());
-			reservationService.removeReservation(reservation);
+			reservationService.removeReservation(reservation, true);
 			guestMakeReservationGui.getSearchButton().doClick();
 
 			mainFrame.add(guestMakeReservationGui.getFullPanel());
@@ -656,6 +656,9 @@ public class MainController {
 	 */
 	private void handleRemoveRoom() {
 		JTextField field = clerkChangeRoomsGui.getRoomUpdateField();
+		if ("".equals(field.getText())) {
+			return;
+		}
 		roomServices.removeRoom(Integer.parseInt(field.getText()));
 		clerkChangeRoomsGui.setRoomField(null);
 		clerkChangeRoomsGui.updateModel();
@@ -667,6 +670,9 @@ public class MainController {
 	 */
 	private void handleAddRoom() {
 		JTextField field = clerkChangeRoomsGui.getRoomUpdateField();
+		if ("".equals(field.getText())) {
+			return;
+		}
 		Room defaultRoom = new Room();
 		defaultRoom.setBedQty(1);
 		defaultRoom.setBedType("queen");
@@ -674,6 +680,7 @@ public class MainController {
 		defaultRoom.setRoom(Integer.parseInt(field.getText()));
 		defaultRoom.setDailyCost(50.00);
 		roomServices.addRoom(defaultRoom);
+		reservationService.addNewRoom(defaultRoom);
 		clerkChangeRoomsGui.setRoomField(null);
 		clerkChangeRoomsGui.updateModel();
 	}

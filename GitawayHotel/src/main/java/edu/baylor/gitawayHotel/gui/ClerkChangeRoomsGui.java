@@ -4,8 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -25,6 +28,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -76,6 +80,7 @@ public class ClerkChangeRoomsGui implements IGui {
 	 * 
 	 */
 	public void layoutMainArea() {
+		saveRoomsButton = new JButton("Save Rooms");
 		panel = new JPanel();
 		createModel();
 		updateModel();
@@ -88,31 +93,30 @@ public class ClerkChangeRoomsGui implements IGui {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
-                	//do something if needed
+//                	System.out.println("Hello");
                 }
             }
         };
         table.getSelectionModel().addListSelectionListener(selectionListener);
-		
 
 		scrollPane = new JScrollPane(table);
 		
 		// clerk/admin actions
-		saveRoomsButton = new JButton("Save Rooms");
+		
 		addRoomButton = new JButton("Add Room");
 		addRoomButton.setEnabled(false);
 		removeRoomButton = new JButton("Remove Room");
 		removeRoomButton.setEnabled(false);
 		roomUpdateField = new JTextField(20);
 		
-		ActionListener l = new ActionListener() {
+		ActionListener l2 = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				updateModel();
 			}
 		};
-		addRoomButton.addActionListener(l);
-		removeRoomButton.addActionListener(l);
+		addRoomButton.addActionListener(l2);
+		removeRoomButton.addActionListener(l2);
 		
 		DocumentListener roomFieldListener  = new DocumentListener() {
 			@Override
@@ -169,9 +173,14 @@ public class ClerkChangeRoomsGui implements IGui {
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
 			public boolean isCellEditable(int row, int column) {
+				if (column == 0) {
+					return false;
+				}
 				return true;
 			}
 		};
+		
+		
 		
 		model.addTableModelListener(new TableModelListener() {
 			@Override
@@ -211,6 +220,7 @@ public class ClerkChangeRoomsGui implements IGui {
 
 	public void updateModel() {
 		List<Room> rooms = roomServices.getRooms();
+		saveRoomsButton.setEnabled(false);
 		
 		model.setRowCount(0);
 		model.fireTableDataChanged();
