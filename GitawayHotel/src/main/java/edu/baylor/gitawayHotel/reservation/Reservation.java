@@ -23,6 +23,7 @@ public class Reservation implements Comparable<Reservation> {
 		this.endDate = endDate;
 		this.guest = guest;
 		this.room = room;
+		setDateReservationMade(LocalDate.now());
 	}
 	
 	/**Marks the reservation as having been checked into the hotel
@@ -105,7 +106,7 @@ public class Reservation implements Comparable<Reservation> {
 	/**
 	 * @param dateReservationMade the dateReservationMade to set
 	 */
-	public void setDateReservationMade(LocalDate dateReservationMade) {
+	void setDateReservationMade(LocalDate dateReservationMade) {
 		this.dateReservationMade = dateReservationMade;
 	}
 	
@@ -171,7 +172,7 @@ public class Reservation implements Comparable<Reservation> {
 	private static final String HALFTAB = " ".repeat(3);
 	
 	private double getDayCost() {
-		return 50;
+		return room.getDailyCost();
 	}
 	
 	public String getFormattedCost() {

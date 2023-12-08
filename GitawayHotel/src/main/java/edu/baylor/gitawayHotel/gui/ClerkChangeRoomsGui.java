@@ -23,6 +23,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,7 +44,7 @@ public class ClerkChangeRoomsGui implements IGui {
 	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private DefaultTableModel model;
-	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
+	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" , "Daily Cost"};
 	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
@@ -159,6 +161,41 @@ public class ClerkChangeRoomsGui implements IGui {
 				return true;
 			}
 		};
+		
+		model.addTableModelListener(new TableModelListener() {
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				//handles the availability of the save button
+				if (e.getType() == TableModelEvent.UPDATE) {
+					int row = e.getFirstRow();
+					int column = e.getColumn();
+					if (row >= 0 && column >= 0) {
+						Object currentVal = table.getValueAt(row, column);
+						
+						boolean state = true;
+						
+						if (column == 2) {
+							if ("".equals((String) currentVal)) {
+								state = false;
+							}
+						} else {
+							try {
+								if (column == 0 || column == 1) {
+									handleIntConversion(currentVal);
+								} else if (column == 3) {
+									handleBoolConversion(currentVal);
+								} else if (column == 4) {
+									handleDoubleConversion(currentVal);
+								}
+							} catch (Exception ex) {
+								state = false;
+							}
+						}
+						saveRoomsButton.setEnabled(state);
+					}
+				}
+			}
+		});
 	}
 
 	public void updateModel() {
@@ -169,7 +206,7 @@ public class ClerkChangeRoomsGui implements IGui {
 		
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() , room.getDailyCost()};
 			model.addRow(row);
 		}
 		
@@ -202,6 +239,8 @@ public class ClerkChangeRoomsGui implements IGui {
 					room.setBedType((String) currentVal);
 				} else if (j == 3) {
 					room.setNoSmoking(handleBoolConversion(currentVal));
+				} else if (j == 4) {
+					room.setDailyCost(handleDoubleConversion(currentVal));
 				}
 			}
 			rooms.add(room);
@@ -219,9 +258,15 @@ public class ClerkChangeRoomsGui implements IGui {
 			return (Boolean) value;
 		} else if (value instanceof String) {
 			String val = (String) value;
-			return Boolean.parseBoolean(val);
+			if ("true".equalsIgnoreCase(val)) {
+				return true;
+			} else if ("false".equalsIgnoreCase(val)) {
+				return false;
+			} else {
+				throw new UnsupportedOperationException("Value " + val + " is not a boolean value");
+			}
 		}
-		return false;
+		throw new UnsupportedOperationException("Value " + value.getClass() + " boolean conversion not implemented");
 	}
 	
 	/**Handles integer conversion of generic object
@@ -237,6 +282,16 @@ public class ClerkChangeRoomsGui implements IGui {
 			return Integer.parseInt(val);
 		}
 		return -1;
+	}
+	
+	private static Double handleDoubleConversion(Object value) {
+		if (value instanceof Double) {
+			return (Double) value;
+		} else if (value instanceof String) {
+			String val = (String) value;
+			return Double.parseDouble(val);
+		}
+		return -1.0;
 	}
 	
 	/**Gets the save rooms button

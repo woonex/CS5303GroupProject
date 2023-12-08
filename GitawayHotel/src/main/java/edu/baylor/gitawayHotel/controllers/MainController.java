@@ -639,7 +639,6 @@ public class MainController {
 		}
 		Room room = roomServices.getRoomByNumber(desiredRoomNum);
 		Reservation res = new Reservation(startDate, endDate, roomUser, room);
-		res.setDateReservationMade(LocalDate.now());
 
 		reservationService.addReservation(res);
 		lastReservation = null;
