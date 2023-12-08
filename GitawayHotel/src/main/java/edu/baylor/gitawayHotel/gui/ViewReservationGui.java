@@ -50,10 +50,10 @@ public class ViewReservationGui implements IGui {
 		this.user = user;
 		
 		if (UserType.HOTEL_CLERK == user.getUserType()) {
-			columnNames = new String[] {"Check in Date", "Check out Date", "Room", "Guest"};
+			columnNames = new String[] {"Check in Date", "Check out Date", "Room", "Total Cost", "Guest"};
 			label.setText("View all upcoming reservations below");
 		} else {
-			columnNames = new String[] {"Check in Date", "Check out Date", "Room"};
+			columnNames = new String[] {"Check in Date", "Check out Date", "Room", "Total Cost"};
 			label.setText("View your reservations below");
 		}
 		updateModel();
@@ -167,7 +167,7 @@ public class ViewReservationGui implements IGui {
 		
 		model.setRowCount(0);
 		for (Reservation res : reservations) {
-			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getGuest()};
+			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getFullCost(), res.getGuest()};
 			model.addRow(row);
 		}
 		
@@ -180,7 +180,7 @@ public class ViewReservationGui implements IGui {
 		model.setRowCount(0);
 		
 		for (Reservation res : reservations) {
-			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom()};
+			Object[] row = {res.getStartDate(), res.getEndDate(), res.getRoom(), res.getFullCost()};
 			model.addRow(row);
 		}
 		redrawTable();

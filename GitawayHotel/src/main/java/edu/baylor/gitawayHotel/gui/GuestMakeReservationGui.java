@@ -44,7 +44,7 @@ public class GuestMakeReservationGui implements IGui {
 	private JPanel datePanel;
 	private JPanel actionPanel;
 	private DefaultTableModel model;
-	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
+	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" , "Daily Cost"};
 //	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
@@ -217,7 +217,7 @@ public class GuestMakeReservationGui implements IGui {
 		
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking(), room.getDailyCost()};
 			model.addRow(row);
 		}
 		
@@ -320,7 +320,7 @@ public class GuestMakeReservationGui implements IGui {
 		
 		// adds each object in availableRooms to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking(), room.getDailyCost() };
 			model.addRow(row);
 		}
 		
