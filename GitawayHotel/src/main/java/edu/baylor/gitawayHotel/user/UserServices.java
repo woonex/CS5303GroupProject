@@ -241,7 +241,6 @@ public class UserServices {
 		logger.trace("UserServices writeEmptyJson() invoked");
 		try (FileWriter writer = new FileWriter(f)) {
 			gson.toJson(defaultUsers, writer);
-            writer.write("[\n]\n");
         } catch (IOException e) {
             e.printStackTrace();
         }

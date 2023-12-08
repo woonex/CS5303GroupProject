@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -102,6 +104,15 @@ public class ClerkChangeRoomsGui implements IGui {
 		removeRoomButton = new JButton("Remove Room");
 		removeRoomButton.setEnabled(false);
 		roomUpdateField = new JTextField(20);
+		
+		ActionListener l = new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				updateModel();
+			}
+		};
+		addRoomButton.addActionListener(l);
+		removeRoomButton.addActionListener(l);
 		
 		DocumentListener roomFieldListener  = new DocumentListener() {
 			@Override
@@ -213,11 +224,15 @@ public class ClerkChangeRoomsGui implements IGui {
 		model.fireTableDataChanged();
 		
 		if (table != null) {
+			table.setPreferredScrollableViewportSize(table.getPreferredSize());
+			table.revalidate();
 			table.repaint();
 		}
 		if (scrollPane != null) {
+			scrollPane.revalidate();
 			scrollPane.repaint();
 		}
+		panel.revalidate();
 		panel.repaint();
 	}
 	
@@ -332,8 +347,12 @@ public class ClerkChangeRoomsGui implements IGui {
 		return addRoomButton;
 	}
 	
-	public void setRoomField(int newRoomNum) {
-		this.roomUpdateField.setText(String.valueOf(newRoomNum));
+	public void setRoomField(Integer newRoomNum) {
+		String display = "";
+		if (newRoomNum != null) {
+			display = String.valueOf(newRoomNum);
+		}
+		this.roomUpdateField.setText(display);
 	}
 	
 	public void selectTableRowByRoomNum(int roomNum) {

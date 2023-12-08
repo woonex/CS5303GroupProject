@@ -657,6 +657,7 @@ public class MainController {
 	private void handleRemoveRoom() {
 		JTextField field = clerkChangeRoomsGui.getRoomUpdateField();
 		roomServices.removeRoom(Integer.parseInt(field.getText()));
+		clerkChangeRoomsGui.setRoomField(null);
 		clerkChangeRoomsGui.updateModel();
 	}
 
@@ -671,7 +672,9 @@ public class MainController {
 		defaultRoom.setBedType("queen");
 		defaultRoom.setNoSmoking(true);
 		defaultRoom.setRoom(Integer.parseInt(field.getText()));
+		defaultRoom.setDailyCost(50.00);
 		roomServices.addRoom(defaultRoom);
+		clerkChangeRoomsGui.setRoomField(null);
 		clerkChangeRoomsGui.updateModel();
 	}
 
