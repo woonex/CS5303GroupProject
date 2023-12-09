@@ -224,11 +224,14 @@ public class GuestMakeReservationGui implements IGui {
 		model.fireTableDataChanged();
 		
 		if (table != null) {
+			table.setPreferredScrollableViewportSize(table.getPreferredSize());
+			table.revalidate();
 			table.repaint();
 		}
 		if (scrollPane != null) {
 			scrollPane.repaint();
 		}
+		panel.revalidate();
 		panel.repaint();
 	}
 
