@@ -227,7 +227,7 @@ public class ClerkChangeRoomsGui implements IGui {
 		
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() , room.getDailyCost()};
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() , String.format("%.2f", room.getDailyCost())};
 			model.addRow(row);
 		}
 		

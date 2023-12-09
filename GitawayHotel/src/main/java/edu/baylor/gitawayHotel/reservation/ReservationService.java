@@ -224,7 +224,12 @@ public class ReservationService {
 	 * @return
 	 */
 	public List<Reservation> getReservationsForRoom(Room room) {
-		return this.reservations.get(room);
+		List<Reservation> tmp = this.reservations.get(room);
+		if (tmp == null) {
+			tmp = new ArrayList<Reservation>();
+			this.reservations.put(room, tmp);
+		}
+		return tmp;
 	}
 	
 	/**Gets all the reservations of the hotel
@@ -372,5 +377,27 @@ public class ReservationService {
 
 	public void addNewRoom(Room room) {
 		this.reservations.put(room, new ArrayList<Reservation>());
+	}
+
+	public void updateRooms(List<Room> rooms) {
+		for (Room room : rooms) {
+			Iterator<Entry<Room, List<Reservation>>> itr = this.reservations.entrySet().iterator();
+			
+			while (itr.hasNext()) {
+//			for (Entry<Room, List<Reservation>> entry : this.reservations.entrySet()) {
+				Entry<Room, List<Reservation>> entry = itr.next();
+				Room entryRoom = entry.getKey();
+				if (room.getRoom() == entryRoom.getRoom()) {
+					List<Reservation> tmp = entry.getValue();
+					
+					itr.remove();
+					this.reservations.put(room, tmp);
+					
+					break;
+				}
+			}
+		}
+		
+		
 	}
 }

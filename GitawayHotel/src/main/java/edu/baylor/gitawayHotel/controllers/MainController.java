@@ -581,6 +581,7 @@ public class MainController {
 	 */
 	private void saveRooms() {
 		roomServices.saveRooms(clerkChangeRoomsGui.getRoomsInTable());
+		reservationService.updateRooms(clerkChangeRoomsGui.getRoomsInTable());
 	}
 
 	/**
