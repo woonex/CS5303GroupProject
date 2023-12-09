@@ -24,7 +24,7 @@ For *users.json*:
   {
     "username" : "Guest"
     "password" : "password"
-    "userType" : "guest" (or "clerk", "admin")
+    "userType" : {"guest", "clerk", "admin"}
   },
 ]
 ```
@@ -34,7 +34,7 @@ For *rooms.json*:
   {
     "room": 101,
     "bedQty": 2,
-    "bedType": "king" (or "queen", "full", "twin"},
+    "bedType": {"king", "queen", "full", "twin"},
     "noSmoking": true
   },
 ]
