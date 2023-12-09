@@ -37,20 +37,20 @@ import edu.baylor.gitawayHotel.textPrompt.TextPrompt;
 /**A class for viewing rooms or creating reservations for guests
  *
  */
-public class ViewRoomsGui implements IGui {
-	private static final Logger logger = LogManager.getLogger(ViewRoomsGui.class);
+public class GuestMakeReservationGui implements IGui {
+	private static final Logger logger = LogManager.getLogger(GuestMakeReservationGui.class);
 	private static final DateTimeFormatter DATE_FORMATTER = LocalDateAdapter.DATE_FORMATTER;
 	private JPanel panel;
 	private JPanel datePanel;
 	private JPanel actionPanel;
 	private DefaultTableModel model;
-	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" };
-	private JButton saveRoomsButton;
+	private String[] columnNames = { "Number", "Bed Quantity", "Bed Type", "No Smoking" , "Daily Cost"};
+//	private JButton saveRoomsButton;
 	private RoomServices roomServices;
 	private JButton backButton;
-	private JTextField roomUpdateField;
-	private JButton removeRoomButton;
-	private JButton addRoomButton;
+//	private JTextField roomUpdateField;
+//	private JButton removeRoomButton;
+//	private JButton addRoomButton;
 	private JButton searchButton;
 	private JTextField startDateField;
 	private TextPrompt startDatePrompt;
@@ -63,7 +63,7 @@ public class ViewRoomsGui implements IGui {
 	private JButton reserveButton;
 	private boolean searchClicked = false;
 
-	public ViewRoomsGui(RoomServices roomServices) {
+	public GuestMakeReservationGui(RoomServices roomServices) {
 		this.roomServices = roomServices;
 		layoutMainArea();
 	}
@@ -103,12 +103,6 @@ public class ViewRoomsGui implements IGui {
 		
 
 		scrollPane = new JScrollPane(table);
-		
-		// clerk/admin actions
-		saveRoomsButton = new JButton("Save Rooms");
-		addRoomButton = new JButton("Add Room");
-		removeRoomButton = new JButton("Remove Room");
-		roomUpdateField = new JTextField(20);
 
 		// guest actions
 		startDateField = new JTextField(10);
@@ -119,82 +113,66 @@ public class ViewRoomsGui implements IGui {
 
 		// everybody actions
 		backButton = new JButton("Back to previous");
-		
-		if (userType == null) {
-			return;
-		}
-		switch (userType) {
-		case ADMIN:
-		case HOTEL_CLERK:
-			panel.add(scrollPane);
-			panel.add(roomUpdateField);
-			panel.add(addRoomButton);
-			panel.add(removeRoomButton);
-			panel.add(saveRoomsButton);
-			panel.add(backButton);
-			break;
-		case GUEST:
-		default:
-			datePanel = new JPanel(new BorderLayout());
-			startDatePrompt = new TextPrompt("Check-in date", startDateField);
-			endDatePrompt = new TextPrompt("Check-out date", endDateField);
-			startDatePrompt.changeAlpha(0.5f);
-			endDatePrompt.changeAlpha(0.5f);
-			
-			//add a button to the search listener to detect that the search button is clicked
-			searchButton.addActionListener(e -> {
-				searchClicked = true;
-			});
-			
-			/*define something that listens to the document of the text fields and will flag the search as not clicked
-			 * (requires the user to click the search each time after modifying the date)
-			*/
-			DocumentListener dateFieldListener = new DocumentListener() {
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					changed();
-				}
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					changed();
-				}
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					changed();
-				}
-				private void changed() {
-					searchClicked = false;
-					reserveButton.setEnabled(false);
-				}
-			};
-			startDateField.getDocument().addDocumentListener(dateFieldListener);
-			endDateField.getDocument().addDocumentListener(dateFieldListener);
-			
-			//setup date entry portion
-			JPanel topDate = new JPanel(new GridLayout(1, 2));
-			topDate.add(new NonVerticalExpanding(startDateField));
-			topDate.add(new NonVerticalExpanding(endDateField));
-			datePanel.add(topDate, BorderLayout.NORTH);
-			
-			JPanel middleDate = new JPanel(new GridLayout(1, 2));
-			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
-			datePanel.add(middleDate, BorderLayout.CENTER);
-			
-			JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			bottomDate.add(searchButton);
-			datePanel.add(bottomDate, BorderLayout.SOUTH);
-			
-			actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-			actionPanel.add(backButton);
-			actionPanel.add(reserveButton);
 
-			panel.add(datePanel);
-			panel.add(scrollPane);
-			panel.add(actionPanel);
-			
-			break;
-		}
+
+		datePanel = new JPanel(new BorderLayout());
+		startDatePrompt = new TextPrompt("Check-in date", startDateField);
+		endDatePrompt = new TextPrompt("Check-out date", endDateField);
+		startDatePrompt.changeAlpha(0.5f);
+		endDatePrompt.changeAlpha(0.5f);
+
+		//add a button to the search listener to detect that the search button is clicked
+		searchButton.addActionListener(e -> {
+			searchClicked = true;
+		});
+
+		/*define something that listens to the document of the text fields and will flag the search as not clicked
+		 * (requires the user to click the search each time after modifying the date)
+		 */
+		DocumentListener dateFieldListener = new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				changed();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				changed();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				changed();
+			}
+			private void changed() {
+				searchClicked = false;
+				reserveButton.setEnabled(false);
+			}
+		};
+		startDateField.getDocument().addDocumentListener(dateFieldListener);
+		endDateField.getDocument().addDocumentListener(dateFieldListener);
+
+		//setup date entry portion
+		JPanel topDate = new JPanel(new GridLayout(1, 2));
+		topDate.add(new NonVerticalExpanding(startDateField));
+		topDate.add(new NonVerticalExpanding(endDateField));
+		datePanel.add(topDate, BorderLayout.NORTH);
+
+		JPanel middleDate = new JPanel(new GridLayout(1, 2));
+		middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+		middleDate.add(new NonVerticalExpanding(new JLabel("yyyy-MM-dd")));
+		datePanel.add(middleDate, BorderLayout.CENTER);
+
+		JPanel bottomDate = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		bottomDate.add(searchButton);
+		datePanel.add(bottomDate, BorderLayout.SOUTH);
+
+		actionPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		actionPanel.add(backButton);
+		actionPanel.add(reserveButton);
+
+		panel.add(datePanel);
+		panel.add(scrollPane);
+		panel.add(actionPanel);
+
 	}
 	
 	/**Sets whether the reserve vutton should be available by checking the gui state
@@ -226,15 +204,7 @@ public class ViewRoomsGui implements IGui {
 		model = new DefaultTableModel(columnNames, 0) { // makes table editable for admin and clerk, uneditable for all others
 			@Override
 			public boolean isCellEditable(int row, int column) {
-				switch (userType) {
-				case ADMIN:
-				case HOTEL_CLERK:
-					return true;
-				case GUEST:
-					return false;
-				default:
-					return false;
-				}
+				return false;
 			}
 		};
 	}
@@ -247,7 +217,7 @@ public class ViewRoomsGui implements IGui {
 		
 		// adds each object in the rooms.json file to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking(), String.format("%.2f", room.getDailyCost())};
 			model.addRow(row);
 		}
 		
@@ -260,68 +230,6 @@ public class ViewRoomsGui implements IGui {
 			scrollPane.repaint();
 		}
 		panel.repaint();
-	}
-	
-	/**Gets the rooms in the table that the user has entered
-	 * @return list of rooms
-	 */
-	public List<Room> getRoomsInTable() {
-		List<Room> rooms = new ArrayList<Room>();
-		
-		for (int i = 0; i < this.model.getRowCount(); i++) {
-			Room room = new Room();
-			for (int j = 0; j < columnNames.length; j++) {
-				Object currentVal = model.getValueAt(i, j);
-				if (j == 0) {
-					room.setRoom(handleIntConversion(currentVal));
-				} else if (j == 1) {
-					room.setBedQty(handleIntConversion(currentVal));
-				} else if (j == 2) {
-					room.setBedType((String) currentVal);
-				} else if (j == 3) {
-					room.setNoSmoking(handleBoolConversion(currentVal));
-				}
-			}
-			rooms.add(room);
-		}
-		return rooms;
-	}
-	
-	/**Handles boolean coversion of generic object
-	 * TODO add error handling and defaulting
-	 * @param value
-	 * @return
-	 */
-	private static Boolean handleBoolConversion(Object value) {
-		if (value instanceof Boolean) {
-			return (Boolean) value;
-		} else if (value instanceof String) {
-			String val = (String) value;
-			return Boolean.parseBoolean(val);
-		}
-		return false;
-	}
-	
-	/**Handles integer conversion of generic object
-	 * TODO add error handling and defaulting
-	 * @param value
-	 * @return
-	 */
-	private static Integer handleIntConversion(Object value) {
-		if (value instanceof Integer) {
-			return (Integer) value;
-		} else if (value instanceof String) {
-			String val = (String) value;
-			return Integer.parseInt(val);
-		}
-		return -1;
-	}
-	
-	/**Gets the save rooms button
-	 * @return
-	 */
-	public JButton getSaveRoomsButton() {
-		return this.saveRoomsButton;
 	}
 
 	/**Gets the back button
@@ -349,18 +257,6 @@ public class ViewRoomsGui implements IGui {
 		this.searchClicked = false;
 		updateModel();
 		return this.panel;
-	}
-
-	public JTextField getRoomUpdateField() {
-		return roomUpdateField;
-	}
-
-	public JButton getRemoveRoomButton() {
-		return removeRoomButton;
-	}
-
-	public JButton getAddRoomButton() {
-		return addRoomButton;
 	}
 	
 	public JButton getReserveRoomButton() {
@@ -424,7 +320,7 @@ public class ViewRoomsGui implements IGui {
 		
 		// adds each object in availableRooms to the model 
 		for (Room room : rooms) {
-			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking() };
+			Object[] row = { room.getRoom(), room.getBedQty(), room.getBedType(), room.getNoSmoking(), String.format("%.2f", room.getDailyCost()) };
 			model.addRow(row);
 		}
 		
@@ -476,10 +372,6 @@ public class ViewRoomsGui implements IGui {
 			text = DATE_FORMATTER.format(endDate);
 		}
 		endDateField.setText(text);
-	}
-	
-	public void setRoomField(int newRoomNum) {
-		this.roomUpdateField.setText(String.valueOf(newRoomNum));
 	}
 	
 	public void selectTableRowByRoomNum(int roomNum) {

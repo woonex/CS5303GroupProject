@@ -19,7 +19,9 @@ import edu.baylor.gitawayHotel.Room.RoomServices;
 import edu.baylor.gitawayHotel.gui.AdminGui;
 import edu.baylor.gitawayHotel.gui.ChangeCredentialGui;
 import edu.baylor.gitawayHotel.gui.CredentialGui;
-import edu.baylor.gitawayHotel.gui.ViewRoomsGui;
+import edu.baylor.gitawayHotel.gui.SelectUserGui;
+import edu.baylor.gitawayHotel.gui.ClerkChangeRoomsGui;
+import edu.baylor.gitawayHotel.gui.CreateClerkGui;
 import edu.baylor.gitawayHotel.user.User;
 import edu.baylor.gitawayHotel.user.UserServices;
 import edu.baylor.gitawayHotel.user.UserType;
@@ -29,10 +31,10 @@ public class MainControllerTest {
 	private static final String DEFAULT_PW = "password";
 	
 	private static RoomServices roomServices = new RoomServices();
-	private static User ADMIN = new User("admin", DEFAULT_PW, UserType.ADMIN);
-	private static User CLERK = new User("clerk", DEFAULT_PW, UserType.HOTEL_CLERK);
-	private static User GUEST = new User("guest", DEFAULT_PW, UserType.GUEST);
-	private static final Set<User> TEST_USERS= Set.of(ADMIN, CLERK, GUEST);
+	private static User ADMIN = new User("TestAdmin", DEFAULT_PW, UserType.ADMIN);
+	private static User CLERK = new User("TestClerk", DEFAULT_PW, UserType.HOTEL_CLERK);
+	private static User GUEST = new User("TestGuest", DEFAULT_PW, UserType.GUEST);
+	private static final Set<User> TEST_USERS = Set.of(ADMIN, CLERK, GUEST);
 	
 	@BeforeAll
 	static void addUsersIfNotPresent() {
@@ -169,6 +171,8 @@ public class MainControllerTest {
 			e.printStackTrace();
 			Assertions.fail("Exception thrown during execution");
 		}
+		
+		closeApp(mainController);
 	}
 	
 	@Test
@@ -177,10 +181,14 @@ public class MainControllerTest {
 		login(mainController, ADMIN);
 		
 		AdminGui adminGui = mainController.getAdminGui();
-		String clerkUsername = "testClerk";
-		adminGui.setClerkUsername(clerkUsername);
-		adminGui.setClerkPassword(DEFAULT_PW);
-		adminGui.getCreateUserButton().doClick();
+		adminGui.getCreateClerkButton().doClick();
+		
+		CreateClerkGui createClerkGui = mainController.getCreateClerkGui();
+		
+		String clerkUsername = "TEST CLERK THAT WILL BE DELETED";
+		createClerkGui.setClerkUsername(clerkUsername);
+		createClerkGui.setClerkPassword(DEFAULT_PW);
+		createClerkGui.getCreateUserButton().doClick();
 		
 		try {
 			SwingUtilities.invokeAndWait(() -> {
@@ -192,7 +200,6 @@ public class MainControllerTest {
 				
 				createdClerk = userServices.getUser(clerkUsername);
 				Assertions.assertNull(createdClerk);
-				
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
 			e.printStackTrace();
@@ -208,15 +215,19 @@ public class MainControllerTest {
 		login(mainController, ADMIN);
 		
 		AdminGui adminGui = mainController.getAdminGui();
+		adminGui.getCreateClerkButton().doClick();
+		
+		CreateClerkGui createClerkGui = mainController.getCreateClerkGui();
+		
 		String clerkUsername = CLERK.getUsername();
-		adminGui.setClerkUsername(clerkUsername);
-		adminGui.setClerkPassword(DEFAULT_PW);
+		createClerkGui.setClerkUsername(clerkUsername);
+		createClerkGui.setClerkPassword(DEFAULT_PW);
 		
 		
 		NotificationWindowLaunch listener = new NotificationWindowLaunch();
 		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
 
-		adminGui.getCreateUserButton().doClick();
+		createClerkGui.getCreateUserButton().doClick();
 		
 		try {
 			SwingUtilities.invokeAndWait(() -> {
@@ -225,6 +236,44 @@ public class MainControllerTest {
 				Assertions.assertTrue(matches);
 			});
 		} catch (InvocationTargetException | InterruptedException e) {
+			e.printStackTrace();
+			Assertions.fail("Exception thrown during execution");
+		}
+		
+		closeApp(mainController);
+	}
+	
+	@Test
+	void testAdminResetPasswordOfUser() {
+		MainController mainController = new MainController(roomServices);
+		mainController.getSplashScreen().getNextButton().doClick();
+		login(mainController, ADMIN);
+		
+		//pre-update password to ensure it can be changed
+		String tmpPass = DEFAULT_PW.repeat(2);
+		mainController.getUserServices().updateUser(GUEST.getUsername(), tmpPass);
+		User tmp = mainController.getUserServices().getUser(GUEST.getUsername());
+		Assertions.assertEquals(tmp.getPassword(), tmpPass);
+		
+		//get the admin gui
+		AdminGui adminGui = mainController.getAdminGui();
+		adminGui.getResetUserPasswordButton().doClick();
+		
+		//selec the user to reset password for
+		SelectUserGui sug = mainController.getSelectUserGui();
+		sug.selectUser(GUEST);
+		
+		NotificationWindowLaunch listener = new NotificationWindowLaunch();
+		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.WINDOW_EVENT_MASK);
+		
+		try {
+			SwingUtilities.invokeAndWait(() -> {
+				sug.getSelectButton().doClick();
+				User user = mainController.getUserServices().getUser(GUEST.getUsername());
+				
+				Assertions.assertNotEquals(tmpPass, user.getPassword());
+			});
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assertions.fail("Exception thrown during execution");
 		}
@@ -278,7 +327,7 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
 		try {
 			SwingUtilities.invokeAndWait(() -> {
 				JPanel activePanel = mainController.getViewRoomsGui().getFullPanel();
@@ -304,8 +353,8 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
-		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
+		ClerkChangeRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 9001;
 		viewRoomsGui.setRoomField(newRoomNum);
@@ -334,8 +383,8 @@ public class MainControllerTest {
 		mainController.getSplashScreen().getNextButton().doClick();
 		login(mainController, CLERK);
 		
-		mainController.getClerkGui().getViewRoomsButton().doClick();
-		ViewRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
+		mainController.getClerkGui().getModifyRoomsButton().doClick();
+		ClerkChangeRoomsGui viewRoomsGui = mainController.getViewRoomsGui();
 		
 		int newRoomNum = 505050;
 		viewRoomsGui.setRoomField(newRoomNum);
@@ -467,27 +516,13 @@ public class MainControllerTest {
 	}
 	
 	@AfterAll
-	static void resetPasswords() {
+	static void removeTestUsers() {
 		MainController mainController = new MainController(roomServices);
-		UserServices userServices = mainController.getUserServices();
-		
-		ChangeCredentialGui credentialGui = mainController.getChangeCredentialGui();
 		Set<User> users = Set.of(ADMIN, CLERK, GUEST);
-		
 		for (User user : users) {
-			credentialGui.setUsername(user.getUsername());
-			credentialGui.setCurrentPassword(user.getPassword());
-			credentialGui.setNewPassword(DEFAULT_PW);
-			try {
-				SwingUtilities.invokeAndWait(() -> {
-					credentialGui.getLoginButton().doClick();
-					User diskuser = userServices.getUser(user.getUsername());
-					Assertions.assertEquals(DEFAULT_PW, diskuser.getPassword());
-				});
-			} catch (InvocationTargetException | InterruptedException e) {
-				e.printStackTrace();
-			} 
+			mainController.getUserServices().removeUserByUsername(user.getUsername());
 		}
+		closeApp(mainController);
 	}
 	
 }

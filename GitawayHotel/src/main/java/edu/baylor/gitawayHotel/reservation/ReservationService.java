@@ -38,9 +38,11 @@ import edu.baylor.gitawayHotel.user.User;
 public class ReservationService {
 	private static final Logger logger = LogManager.getLogger(ReservationService.class);
 	private static final String FILENAME = "reservations.json";
+	
 
 	private File diskFile;
 	private Map<Room, List<Reservation>> reservations;
+	private List<Reservation> canceled = new ArrayList<Reservation>();
 	private RoomServices roomServices;
 
 	private static final Gson gson = new GsonBuilder()
@@ -93,6 +95,9 @@ public class ReservationService {
 		Set<Room> available = new HashSet<Room>();
 		for (Entry<Room, List<Reservation>> entry : reservations.entrySet()) {
 			Room room = entry.getKey();
+			if (roomServices.getRoomByNumber(room.getRoom()) == null) {
+				continue;
+			}
 			List<Reservation> curReses = entry.getValue();
 			boolean roomAvailable = true;
 			for (Reservation res : curReses) {
@@ -157,10 +162,14 @@ public class ReservationService {
 		
 		roomReservations.add(reservation);
 		
-		saveReservations(getReservations());
+		saveReservations(getAllReservations());
 	}
 	
 	public void removeReservation(Reservation reservation) {
+		removeReservation(reservation, false);	
+	}
+	
+	public void removeReservation(Reservation reservation, boolean bypassFee) {
 		List<Reservation> roomRes = this.reservations.get(reservation.getRoom());
 		
 		Iterator<Reservation> itr = roomRes.iterator();
@@ -172,11 +181,28 @@ public class ReservationService {
 			}
 		}
 		
-		saveReservations(getReservations());
+		if (!bypassFee) {
+			if (reservation.willIncurCancellationFee()) {
+				reservation.setCancelled();
+				this.canceled.add(reservation);
+			}
+		}
+		
+		saveReservations(getAllReservations());
 	}
 	
 	public List<Reservation> getReservationsByUser(User user) {
-		return getReservations().stream()
+		return getReservationsByUser(user, false);
+	}
+	
+	public List<Reservation> getReservationsByUser(User user, boolean includeCancelled) {
+		List<Reservation> base;
+		if (includeCancelled) {
+			base = getAllReservations();
+		} else {
+			base = getReservations();
+		}
+		return base.stream()
 				.filter(res -> res.getGuest().equals(user))
 				.collect(Collectors.toList());
 	}
@@ -198,7 +224,12 @@ public class ReservationService {
 	 * @return
 	 */
 	public List<Reservation> getReservationsForRoom(Room room) {
-		return this.reservations.get(room);
+		List<Reservation> tmp = this.reservations.get(room);
+		if (tmp == null) {
+			tmp = new ArrayList<Reservation>();
+			this.reservations.put(room, tmp);
+		}
+		return tmp;
 	}
 	
 	/**Gets all the reservations of the hotel
@@ -211,11 +242,21 @@ public class ReservationService {
 				.sorted()
 				.collect(Collectors.toList());
 	}
+	
+	private List<Reservation> getAllReservations() {
+		List<Reservation> all = new ArrayList<>(getReservations());
+		all.addAll(getCanceledReservations());
+		return all;
+	}
+	
+	public List<Reservation> getCanceledReservations() {
+		return this.canceled;
+	}
 
 	/**Gets the map of rooms by room number that are present in the file
 	 * @return map of rooms or blank map for file error
 	 */
-	private static Map<Room, List<Reservation>> loadReservations(File file, List<Room> rooms) {
+	private Map<Room, List<Reservation>> loadReservations(File file, List<Room> rooms) {
 		logger.trace("ReservationService loadReservations() invoked");
 		try (FileReader reader = new FileReader(file)) {
 			Reservation[] aReservations = gson.fromJson(reader, Reservation[].class);
@@ -228,7 +269,16 @@ public class ReservationService {
 							));
 
 			for (Reservation res : reservations) {
-				items.get(res.getRoom()).add(res);
+				if (res.wasCancelled()) {
+					canceled.add(res);
+				} else {
+					List<Reservation> tmp = items.get(res.getRoom());
+					if (tmp == null) {
+						tmp = new ArrayList<Reservation>();
+						items.put(res.getRoom(), tmp);
+					}
+					tmp.add(res);
+				}
 			}
 			return items;
 		} catch (IOException e) {
@@ -323,5 +373,31 @@ public class ReservationService {
 		String dir = new File(url.getPath()).getParent();
 		dir = dir.replace("%20", " ");
 		return dir;
+	}
+
+	public void addNewRoom(Room room) {
+		this.reservations.put(room, new ArrayList<Reservation>());
+	}
+
+	public void updateRooms(List<Room> rooms) {
+		for (Room room : rooms) {
+			Iterator<Entry<Room, List<Reservation>>> itr = this.reservations.entrySet().iterator();
+			
+			while (itr.hasNext()) {
+//			for (Entry<Room, List<Reservation>> entry : this.reservations.entrySet()) {
+				Entry<Room, List<Reservation>> entry = itr.next();
+				Room entryRoom = entry.getKey();
+				if (room.getRoom() == entryRoom.getRoom()) {
+					List<Reservation> tmp = entry.getValue();
+					
+					itr.remove();
+					this.reservations.put(room, tmp);
+					
+					break;
+				}
+			}
+		}
+		
+		
 	}
 }

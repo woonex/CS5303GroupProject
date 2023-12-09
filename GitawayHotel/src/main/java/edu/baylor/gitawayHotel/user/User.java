@@ -4,7 +4,7 @@ import java.util.Objects;
 
 import com.google.gson.JsonObject;
 
-public class User {
+public class User implements Comparable<User> {
 	private String username;
 	private String password;
 	private UserType userType;
@@ -59,6 +59,11 @@ public class User {
 	public int hashCode() {
 		return Objects.hash(username);
 	}
+	
+	@Override
+	public String toString() {
+		return this.username;
+	}
 
 	/**A user is defined as unique by the username alone 
 	 * their password is really a transient field that can change
@@ -72,6 +77,13 @@ public class User {
 			return false;
 		User other = (User) obj;
 		return Objects.equals(username, other.username);
+	}
+
+
+
+	@Override
+	public int compareTo(User o) {
+		return this.getUsername().compareTo(o.getUsername());
 	}
 	
 	

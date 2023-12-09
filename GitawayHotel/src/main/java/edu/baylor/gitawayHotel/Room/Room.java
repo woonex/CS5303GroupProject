@@ -13,6 +13,7 @@ public class Room implements Comparable<Room> {
     private Integer bedQty;
     private String bedType;
     private Boolean noSmoking;
+    private Double dailyCost;
 
     public int getRoom() {
         return room;
@@ -46,7 +47,15 @@ public class Room implements Comparable<Room> {
         this.noSmoking = noSmoking;
     }
     
-    /**Gets a clone of the room without the room number
+    public Double getDailyCost() {
+		return dailyCost;
+	}
+
+	public void setDailyCost(Double dailyCost) {
+		this.dailyCost = dailyCost;
+	}
+
+	/**Gets a clone of the room without the room number
      * @return
      */
     public Room getUniqueCharacteristics() {

@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.management.InstanceAlreadyExistsException;
@@ -240,7 +241,6 @@ public class UserServices {
 		logger.trace("UserServices writeEmptyJson() invoked");
 		try (FileWriter writer = new FileWriter(f)) {
 			gson.toJson(defaultUsers, writer);
-            writer.write("[\n]\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -273,5 +273,16 @@ public class UserServices {
 		users.remove(username);
 		
 		saveUsersToDisk(users.values(), diskFile);
+	}
+
+	public Set<User> getAllGuests() {
+		return users.values().stream()
+				.filter(user -> UserType.GUEST.equals(user.getUserType()))
+				.collect(Collectors.toSet());
+	}
+	
+	public Set<User> getAllUsers() {
+		return users.values().stream()
+				.collect(Collectors.toSet());
 	}
 }

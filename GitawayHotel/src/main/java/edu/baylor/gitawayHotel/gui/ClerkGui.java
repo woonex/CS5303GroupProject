@@ -1,7 +1,6 @@
 package edu.baylor.gitawayHotel.gui;
 
-import java.awt.BorderLayout;
-
+import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -15,7 +14,7 @@ import edu.baylor.gitawayHotel.user.UserType;
  *
  */
 public class ClerkGui extends AuthenticatedGui {
-	private JButton viewRoomsButton;
+	private JButton modifyRoomsButton;
 	
 
 	public ClerkGui() {
@@ -23,12 +22,26 @@ public class ClerkGui extends AuthenticatedGui {
 	}
 
 	private JPanel panel;
+	private JButton viewRoomStatusButton;
+	private JButton viewReservationsButton;
+	private JButton makeReservationButton;
+	private JButton generateBillingButton;
+	
 
 	@Override
 	protected JPanel layoutMainArea() {
 		panel = new JPanel();
-		viewRoomsButton = new JButton("View Rooms");
-		panel.add(viewRoomsButton, BorderLayout.CENTER);
+		modifyRoomsButton = new JButton("Modify Room Information");
+		viewRoomStatusButton = new JButton("View Room Status / Manage Check In");
+		viewReservationsButton = new JButton("View Reservations");
+		makeReservationButton = new JButton("Make Reservations");
+		generateBillingButton = new JButton("Generate Billing");
+		
+		panel.add(modifyRoomsButton);//, BorderLayout.CENTER);
+		panel.add(viewRoomStatusButton);
+		panel.add(viewReservationsButton);
+		panel.add(makeReservationButton);
+		panel.add(generateBillingButton);
 
 		return panel;
 	}
@@ -36,13 +49,29 @@ public class ClerkGui extends AuthenticatedGui {
 	/**Gets the view rooms button 
 	 * @return the view rooms button
 	 */
-	public JButton getViewRoomsButton() {
-		return this.viewRoomsButton;
+	public JButton getModifyRoomsButton() {
+		return this.modifyRoomsButton;
+	}
+	
+	public JButton getViewRoomStatusButton() {
+		return this.viewRoomStatusButton;
+	}
+	
+	public JButton getViewReservationsButton() {
+		return this.viewReservationsButton;
+	}
+	
+	public JButton getMakeReservationButton() {
+		return this.makeReservationButton;
 	}
 
 	@Override
 	protected UserType getUserType() {
 		return UserType.HOTEL_CLERK;
+	}
+
+	public JButton getGenerateBillingButton() {
+		return this.generateBillingButton;
 	}
 
 }
