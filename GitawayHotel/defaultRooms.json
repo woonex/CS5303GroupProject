@@ -3,24 +3,28 @@
         "room": 101,
         "bedQty": 2,
         "bedType": "queen",
-        "noSmoking": true
+        "noSmoking": true,
+        "dailyCost": 50.0
     },
     {
         "room": 102,
         "bedQty": 1,
         "bedType": "king",
-        "noSmoking": true
+        "noSmoking": true,
+        "dailyCost": 75.0
     },
     {
         "room": 103,
         "bedQty": 2,
         "bedType": "double",
-        "noSmoking": false
+        "noSmoking": false,
+        "dailyCost": 40.0
     },
     {
         "room": 104,
         "bedQty": 2,
         "bedType": "single",
-        "noSmoking": true
+        "noSmoking": true,
+        "dailyCost": 45.0
     }
 ]
